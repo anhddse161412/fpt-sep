@@ -6,21 +6,27 @@ module.exports = (sequelize, DataTypes) => {
       },
       cvFile: {
          type: DataTypes.STRING,
+         allowNull: true,
       },
       hoursPerWeek: {
          type: DataTypes.STRING,
+         allowNull: true,
       },
       languages: {
          type: DataTypes.STRING,
+         allowNull: true,
       },
       education: {
          type: DataTypes.STRING,
+         allowNull: true,
       },
       introduction: {
          type: DataTypes.STRING,
+         allowNull: true,
       },
       title: {
          type: DataTypes.STRING,
+         allowNull: true,
       },
    });
 

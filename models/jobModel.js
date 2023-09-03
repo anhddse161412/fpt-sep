@@ -9,27 +9,35 @@ module.exports = (sequelize, DataTypes) => {
       },
       fileAttachment: {
          type: DataTypes.STRING,
-         allowNull: false,
+         allowNull: true,
       },
       proposalSubmitDeadline: {
          type: DataTypes.STRING,
-         allowNull: false,
+         allowNull: true,
       },
       lowestIncome: {
          type: DataTypes.STRING,
-         allowNull: false,
+         allowNull: true,
       },
       highestIncome: {
          type: DataTypes.STRING,
-         allowNull: false,
+         allowNull: true,
       },
       skillSets: {
          type: DataTypes.STRING,
-         allowNull: false,
+         allowNull: true,
+      },
+      applied: {
+         type: DataTypes.STRING,
+         allowNull: true,
+      },
+      favorite: {
+         type: DataTypes.BOOLEAN,
+         allowNull: true,
       },
       status: {
          type: DataTypes.BOOLEAN,
-         allowNull: false,
+         allowNull: true,
       },
    });
 

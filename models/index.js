@@ -32,18 +32,18 @@ db.sequelize = sequelize;
 db.Op = Op;
 
 // model
-
 db.accounts = require("./accountModel")(sequelize, DataTypes);
-db.categorys = require("./categoryModel")(sequelize, DataTypes);
-db.subCategorys = require("./subCategoryModel")(sequelize, DataTypes);
+db.categories = require("./categoryModel")(sequelize, DataTypes);
+db.subCategories = require("./subCategoryModel")(sequelize, DataTypes);
 db.jobs = require("./jobModel")(sequelize, DataTypes);
 db.clients = require("./clientModel")(sequelize, DataTypes);
 db.freelancers = require("./freelancerModel")(sequelize, DataTypes);
+db.proposals = require("./proposalModel")(sequelize, DataTypes);
 
-// many many table
-
-db.jobSubcategory = require("./jobSubcategoryModel")(sequelize, DataTypes);
+// many many model
+db.jobSubCategory = require("./jobSubCategoryModel")(sequelize, DataTypes);
 db.favorite = require("./favoriteModel")(sequelize, DataTypes);
+db.jobProposal = require("./jobProposalModel")(sequelize, DataTypes);
 // creation
 
 db.sequelize.sync({ force: false, alter: true }).then(() => {
@@ -52,14 +52,14 @@ db.sequelize.sync({ force: false, alter: true }).then(() => {
 
 // 1 to Many Relation
 // category_subcategory
-db.categorys.hasMany(db.subCategorys, {
+db.categories.hasMany(db.subCategories, {
    foreignKey: "categoryId",
-   as: "subCategorys",
+   as: "subcategories",
 });
 
-db.subCategorys.belongsTo(db.categorys, {
+db.subCategories.belongsTo(db.categories, {
    foreignKey: "categoryId",
-   as: "categorys",
+   as: "categories",
 });
 
 // account_client
@@ -95,11 +95,27 @@ db.jobs.belongsTo(db.clients, {
    as: "clients",
 });
 
+// job_freelancer
+
+// freelancer - proposal
+db.freelancers.hasMany(db.proposals, {
+   foreignKey: "freelancerId",
+   as: "proposals",
+});
+
+db.proposals.belongsTo(db.freelancers, {
+   foreignKey: "freelancerId",
+   as: "freelancers",
+});
+
 // Many to Many relation
 db.jobs.belongsToMany(db.accounts, { through: db.favorite });
 db.accounts.belongsToMany(db.jobs, { through: db.favorite });
 
-db.jobs.belongsToMany(db.subCategorys, { through: db.jobSubcategory });
-db.subCategorys.belongsToMany(db.jobs, { through: db.jobSubcategory });
+db.jobs.belongsToMany(db.subCategories, { through: db.jobSubCategory });
+db.subCategories.belongsToMany(db.jobs, { through: db.jobSubCategory });
+
+db.jobs.belongsToMany(db.proposals, { through: db.jobProposal });
+db.proposals.belongsToMany(db.jobs, { through: db.jobProposal });
 
 module.exports = db;

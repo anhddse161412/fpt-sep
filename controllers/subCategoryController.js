@@ -2,8 +2,8 @@ const db = require("../models");
 // image Upload
 
 // create main Model
-const SubCategory = db.subCategorys;
-const Category = db.categorys;
+const SubCategory = db.subCategories;
+const Category = db.categories;
 // main work
 
 // 1. create SubCategory
@@ -28,15 +28,15 @@ const createSubCategory = async (req, res) => {
 // 2. get all SubCategory
 const getAllSubCategory = async (req, res) => {
    try {
-      let subCategorys = await SubCategory.findAll({
+      let subCategories = await SubCategory.findAll({
          include: [
             {
                model: Category,
-               as: "categorys",
+               as: "categories",
             },
          ],
       });
-      res.status(200).send(subCategorys);
+      res.status(200).send(subCategories);
    } catch (error) {
       console.log(error);
    }
@@ -69,7 +69,7 @@ const getSubCategoryWithCategory = async (req, res) => {
       include: [
          {
             model: Category,
-            as: "categorys",
+            as: "categories",
          },
       ],
       where: { id: req.params.subCategoryID },

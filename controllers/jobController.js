@@ -8,6 +8,9 @@ const Account = db.accounts;
 const Category = db.categorys;
 const SubCategory = db.subCategorys;
 const Client = db.clients;
+const Favorite = db.favorite;
+const Freelancer = db.freelancers;
+const Proposal = db.proposals;
 // main work
 
 // 1. create Job
@@ -38,11 +41,26 @@ const createJob = async (req, res) => {
    }
 };
 
-// 2. get all Job
+// 2. developing freelancer for job
 const getAllJob = async (req, res) => {
    try {
-      let jobs = await Job.findAll({});
-      res.status(200).send(jobs);
+      let job = await Job.findAll({});
+      // include: [
+      //    {
+      //       model: Proposal,
+      //       as: "proposals",
+      //    },
+      // ],
+      // }).then((res) => {
+      //    res.forEach(async (item) => {
+      //       let i = await item.countProposals();
+      //       console.log(i.toString());
+      //       item.setDataValue("applied", i.toString());
+      //       item.save();
+      //    });
+      //    return res;
+      // });
+      res.status(200).send(job);
    } catch (error) {
       console.log(error);
    }
@@ -89,16 +107,33 @@ const getJobWithClientId = async (req, res) => {
 // Add job to favorite
 const addFavoriteJob = async (req, res) => {
    const job = await Job.findOne({
-      where: { id: req.params.jobID },
+      where: { id: req.body.jobId },
    });
    const account = await Account.findOne({
       where: { id: req.body.accountId },
    });
    job.addAccount(account);
 
-   res.status(200).send(job);
+   res.status(200).send("job favorite add");
 };
 
+// apply for job by proposal
+const applyJob = async (req, res) => {
+   const job = await Job.findOne({
+      where: { id: req.body.jobId },
+   });
+   const proposal = await Proposal.findOne({
+      where: { id: req.body.proposalId },
+   });
+
+   await job.addProposal(proposal).then(async (res) => {
+      let proposalCounter = await job.countProposals();
+      job.setDataValue("applied", proposalCounter.toString());
+      job.save();
+   });
+
+   res.status(200).send("applied");
+};
 // get job pagination
 const paginationJob = async (req, res) => {
    reqLimit = Number(req.query.limit);
@@ -179,6 +214,6 @@ module.exports = {
    getJobWithClientId,
    addFavoriteJob,
    paginationJob,
-
+   applyJob,
    getJobBySubCategory,
 };

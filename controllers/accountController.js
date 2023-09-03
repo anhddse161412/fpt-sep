@@ -9,6 +9,7 @@ const Account = db.accounts;
 const Job = db.jobs;
 const Freelancer = db.freelancers;
 const Client = db.clients;
+const Favorite = db.favorite;
 // main work
 
 // 1. register account
@@ -66,7 +67,7 @@ const getAllAccount = async (req, res) => {
 const getAccountById = async (req, res) => {
    try {
       let accounts = await Account.findOne({
-         where: { id: req.params.accountID },
+         where: { id: req.params.accountId },
       });
       res.status(200).send(accounts);
    } catch (error) {
@@ -77,7 +78,7 @@ const getAccountById = async (req, res) => {
 const updateAccount = async (req, res) => {
    try {
       let accounts = await Account.update(req.body, {
-         where: { id: req.params.accountID },
+         where: { id: req.params.accountId },
       });
       res.status(200).send(accounts);
    } catch (error) {
@@ -128,6 +129,7 @@ const loginGoogle = (req, res) => {
    console.log(req.user._json);
    res.status(200).send(req.user._json);
 };
+
 const getAccountWithJobId = async (req, res) => {
    const data = await Account.findAll({
       include: [
@@ -136,10 +138,18 @@ const getAccountWithJobId = async (req, res) => {
             as: "jobs",
          },
       ],
-      where: { id: req.params.accountID },
+      where: { id: req.params.accountId },
    });
 
    res.status(200).send(data);
+};
+
+const getFavoriteJobOfAccount = async (req, res) => {
+   let favoriteJobList = await Favorite.findAll({
+      where: { accountId: req.params.accountId },
+      attributes: { exclude: ["createdAt", "updatedAt"] },
+   });
+   res.status(200).send(favoriteJobList);
 };
 module.exports = {
    register,
@@ -150,4 +160,5 @@ module.exports = {
    login,
    isLoggedIn,
    loginGoogle,
+   getFavoriteJobOfAccount,
 };

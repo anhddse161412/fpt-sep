@@ -49,9 +49,13 @@ router.get("/auth/logout", (req, res) => {
 
 // router with params
 router
-   .route("/profile/:accountID")
+   .route("/favorite/:accountId")
+   .get(accountController.getFavoriteJobOfAccount);
+
+router
+   .route("/profile/:accountId")
    .get(accountController.getAccountById)
    .post(accountController.updateAccount);
 
-router.route("/job/:accountID").get(accountController.getAccountWithJobId);
+router.route("/job/:accountId").get(accountController.getAccountWithJobId);
 module.exports = router;
