@@ -46,22 +46,22 @@ const createJob = async (req, res) => {
 // 2. developing freelancer for job
 const getAllJob = async (req, res) => {
    try {
-      let job = await Job.findAll({});
-      // include: [
-      //    {
-      //       model: Proposal,
-      //       as: "proposals",
-      //    },
-      // ],
-      // }).then((res) => {
-      //    res.forEach(async (item) => {
-      //       let i = await item.countProposals();
-      //       console.log(i.toString());
-      //       item.setDataValue("applied", i.toString());
-      //       item.save();
-      //    });
-      //    return res;
-      // });
+      let job = await Job.findAll({
+         include: [
+            {
+               model: Client,
+               as: "clients",
+               include: [
+                  {
+                     model: Account,
+                     as: "accounts",
+                     attributes: ["name", "image"],
+                  },
+               ],
+               attributes: { exclude: ["createdAt", "updatedAt"] },
+            },
+         ],
+      });
       res.status(200).send(job);
    } catch (error) {
       console.log(error);
@@ -89,8 +89,6 @@ const updateJob = async (req, res) => {
       console.log(error);
    }
 };
-
-// 7. connect one to many relation
 
 const getJobWithClientId = async (req, res) => {
    const data = await Job.findOne({
@@ -150,7 +148,13 @@ const paginationJob = async (req, res) => {
          {
             model: Client,
             as: "clients",
-            include: [{ model: Account, as: "accounts", attributes: ["name"] }],
+            include: [
+               {
+                  model: Account,
+                  as: "accounts",
+                  attributes: ["name", "image"],
+               },
+            ],
             attributes: { exclude: ["createdAt", "updatedAt"] },
          },
       ],
