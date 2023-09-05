@@ -20,10 +20,12 @@ const createJob = async (req, res) => {
       let info = {
          title: req.body.title,
          description: req.body.description,
-         duration: req.body.duration,
-         scope: req.body.scope,
-         endDate: req.body.endDate,
-         fee: req.body.fee,
+         fileAttachment: req.body.fileAttachment,
+         proposalSubmitDeadline: req.body.proposalSubmitDeadline,
+         lowestIncome: req.body.lowestIncome,
+         highestIncome: req.body.highestIncome,
+         skillSets: req.body.skillSets,
+         applied: req.body.applied,
          client_id: req.body.client_id,
          status: req.body.status ? req.body.status : false,
       };
