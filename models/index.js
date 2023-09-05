@@ -54,7 +54,7 @@ db.sequelize.sync({ force: false, alter: true }).then(() => {
 // category_subcategory
 db.categories.hasMany(db.subCategories, {
    foreignKey: "categoryId",
-   as: "subcategories",
+   as: "subCategories",
 });
 
 db.subCategories.belongsTo(db.categories, {
