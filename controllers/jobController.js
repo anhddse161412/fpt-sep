@@ -191,7 +191,7 @@ const getJobBySubCategory = async (req, res) => {
       include: [
          {
             model: SubCategory,
-            as: "subcategories",
+            as: "subCategories",
             where: {
                name: {
                   [db.Op.like]: `%${req.params.subCategory}`,
@@ -200,7 +200,7 @@ const getJobBySubCategory = async (req, res) => {
             include: [
                {
                   model: Category,
-                  as: "categorys",
+                  as: "categories",
                   attributes: ["name"],
                },
             ],
