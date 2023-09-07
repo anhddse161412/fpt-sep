@@ -11,6 +11,7 @@ const Client = db.clients;
 const Favorite = db.favorite;
 const Freelancer = db.freelancers;
 const Proposal = db.proposals;
+const Skill = db.skills;
 // main work
 
 // 1. create Job
@@ -29,13 +30,20 @@ const createJob = async (req, res) => {
          client_id: req.body.client_id,
          status: req.body.status ? req.body.status : false,
       };
-      subCategoryList = req.body.subCategory;
+      let subCategoryList = req.body.subCategory;
+      let skillList = req.body.skill;
 
       const job = await Job.create(info);
-      subCategoryList.forEach(async (item) => {
-         const subCategory = await SubCategory.findOne({ name: item });
-         subCategory.addJobs(job);
+      // subCategoryList.forEach(async (item) => {
+      //    const subCategory = await SubCategory.findOne({ name: item });
+      //    subCategory.addJobs(job);
+      // });
+
+      skillList.forEach(async (item) => {
+         const skill = await Skill.findOne({ name: item });
+         skill.addJobs(job);
       });
+
       console.log(Job);
       res.status(200).send("job Created");
    } catch (error) {

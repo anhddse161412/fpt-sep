@@ -6,7 +6,7 @@ var cors = require("cors");
 
 const route = require("./routes/Route");
 var passport = require("passport");
-var session = require("cookie-session");
+var session = require("express-session");
 
 const swaggerUI = require("swagger-ui-express");
 const swaggerFile = require("./swagger_output.json");
