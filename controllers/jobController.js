@@ -5,8 +5,8 @@ const db = require("../models");
 // create main Model
 const Job = db.jobs;
 const Account = db.accounts;
-const Category = db.categorys;
-const SubCategory = db.subCategorys;
+const Category = db.categories;
+const SubCategory = db.subCategories;
 const Client = db.clients;
 const Favorite = db.favorite;
 const Freelancer = db.freelancers;
@@ -200,7 +200,7 @@ const getJobBySubCategory = async (req, res) => {
             include: [
                {
                   model: Category,
-                  as: "categorys",
+                  as: "categories",
                   attributes: ["name"],
                },
             ],

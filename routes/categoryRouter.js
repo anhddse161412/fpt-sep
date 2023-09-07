@@ -6,7 +6,7 @@ const router = require("express").Router();
 
 // use routers
 router.post("/create", categoryController.createCategory);
-router.route("/all").get(categoryController.getAllCategory);
+router.route("/").get(categoryController.getAllCategory);
 
 router
    .route("/subCategory/:categoryID")
