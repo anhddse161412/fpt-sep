@@ -39,11 +39,13 @@ db.jobs = require("./jobModel")(sequelize, DataTypes);
 db.clients = require("./clientModel")(sequelize, DataTypes);
 db.freelancers = require("./freelancerModel")(sequelize, DataTypes);
 db.proposals = require("./proposalModel")(sequelize, DataTypes);
+db.skills = require("./skillModel")(sequelize, DataTypes);
 
 // many many model
 db.jobSubCategory = require("./jobSubCategoryModel")(sequelize, DataTypes);
 db.favorite = require("./favoriteModel")(sequelize, DataTypes);
 db.jobProposal = require("./jobProposalModel")(sequelize, DataTypes);
+db.jobSkill = require("./jobSkillModel")(sequelize, DataTypes);
 // creation
 
 db.sequelize.sync({ force: false, alter: true }).then(() => {
@@ -117,5 +119,8 @@ db.subCategories.belongsToMany(db.jobs, { through: db.jobSubCategory });
 
 db.jobs.belongsToMany(db.proposals, { through: db.jobProposal });
 db.proposals.belongsToMany(db.jobs, { through: db.jobProposal });
+
+db.jobs.belongsToMany(db.skills, { through: db.jobSkill });
+db.skills.belongsToMany(db.jobs, { through: db.jobSkill });
 
 module.exports = db;

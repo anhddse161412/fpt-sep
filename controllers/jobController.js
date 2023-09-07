@@ -114,7 +114,19 @@ const addFavoriteJob = async (req, res) => {
    });
    job.addAccount(account);
 
-   res.status(200).send("job favorite add");
+   res.status(200).send("job favorite added");
+};
+
+const removeFavoriteJob = async (req, res) => {
+   const job = await Job.findOne({
+      where: { id: req.body.jobId },
+   });
+   const account = await Account.findOne({
+      where: { id: req.body.accountId },
+   });
+   job.removeAccount(account);
+
+   res.status(200).send("job favorite removed");
 };
 
 // apply for job by proposal
@@ -218,8 +230,9 @@ module.exports = {
    getAllJob,
    updateJob,
    getJobWithClientId,
-   addFavoriteJob,
    paginationJob,
    applyJob,
    getJobBySubCategory,
+   addFavoriteJob,
+   removeFavoriteJob,
 };

@@ -15,7 +15,9 @@ router
 
 router.route("/client/:jobID").get(jobController.getJobWithClientId);
 
-router.route("/favorite").post(jobController.addFavoriteJob);
+router.route("/favorite/add").post(jobController.addFavoriteJob);
+router.route("/favorite/remove").post(jobController.removeFavoriteJob);
+
 router.route("/apply").post(jobController.applyJob);
 router
    .route("/detail/:jobID")
