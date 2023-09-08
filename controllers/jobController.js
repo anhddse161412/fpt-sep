@@ -8,8 +8,6 @@ const Account = db.accounts;
 const Category = db.categories;
 const SubCategory = db.subCategories;
 const Client = db.clients;
-const Favorite = db.favorite;
-const Freelancer = db.freelancers;
 const Proposal = db.proposals;
 const Skill = db.skills;
 // main work
@@ -63,7 +61,6 @@ const getAllJob = async (req, res) => {
             {
                model: Client,
                as: "clients",
-
                include: [
                   {
                      model: Account,
@@ -72,12 +69,7 @@ const getAllJob = async (req, res) => {
                   },
                ],
 
-               attributes: { exclude: ["createdAt", "updatedAt"] },
-            },
-            {
-               model: Proposal,
-               as: "proposals",
-               attributes: { exclude: ["createdAt", "updatedAt"] },
+               attributes: ["id"],
             },
             {
                model: Skill,
@@ -85,6 +77,8 @@ const getAllJob = async (req, res) => {
                attributes: { exclude: ["createdAt", "updatedAt"] },
             },
          ],
+         attributes: { exclude: ["createdAt"] },
+         order: [["updatedAt", "ASC"]],
       });
       res.status(200).send(job);
    } catch (error) {
@@ -200,6 +194,11 @@ const paginationJob = async (req, res) => {
                      attributes: ["name", "image"],
                   },
                ],
+               attributes: ["id"],
+            },
+            {
+               model: Skill,
+               as: "skills",
                attributes: { exclude: ["createdAt", "updatedAt"] },
             },
          ],
