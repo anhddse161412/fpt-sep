@@ -75,6 +75,11 @@ const getAllJob = async (req, res) => {
                attributes: { exclude: ["createdAt", "updatedAt"] },
             },
             {
+               model: Proposal,
+               as: "proposals",
+               attributes: { exclude: ["createdAt", "updatedAt"] },
+            },
+            {
                model: Skill,
                as: "skills",
                attributes: { exclude: ["createdAt", "updatedAt"] },
@@ -195,11 +200,6 @@ const paginationJob = async (req, res) => {
                      attributes: ["name", "image"],
                   },
                ],
-               attributes: { exclude: ["createdAt", "updatedAt"] },
-            },
-            {
-               model: Skill,
-               as: "skills",
                attributes: { exclude: ["createdAt", "updatedAt"] },
             },
          ],
