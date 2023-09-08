@@ -127,7 +127,10 @@ const isLoggedIn = (req, res, next) => {
 
 const loginGoogle = (req, res) => {
    console.log(req.user._json);
-   res.status(200).send(req.user._json);
+   const jsontoken = sign({ result: req.user._json }, process.env.JWT_KEY, {
+      expiresIn: "1h",
+   });
+   res.status(200).json({ token: jsontoken, message: "Đăng nhập thành công!" });
 };
 
 const getAccountWithJobId = async (req, res) => {

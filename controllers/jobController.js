@@ -34,15 +34,19 @@ const createJob = async (req, res) => {
       let skillList = req.body.skill;
 
       const job = await Job.create(info);
-      // subCategoryList.forEach(async (item) => {
-      //    const subCategory = await SubCategory.findOne({ name: item });
-      //    subCategory.addJobs(job);
-      // });
 
-      skillList.forEach(async (item) => {
-         const skill = await Skill.findOne({ name: item });
-         skill.addJobs(job);
-      });
+      if (subCategoryList) {
+         subCategoryList.forEach(async (item) => {
+            const subCategory = await SubCategory.findOne({ name: item });
+            subCategory.addJobs(job);
+         });
+      }
+      if (skillList) {
+         skillList.forEach(async (item) => {
+            const skill = await Skill.findOne({ name: item });
+            skill.addJobs(job);
+         });
+      }
 
       console.log(Job);
       res.status(200).send("job Created");
@@ -59,6 +63,7 @@ const getAllJob = async (req, res) => {
             {
                model: Client,
                as: "clients",
+
                include: [
                   {
                      model: Account,
@@ -66,6 +71,17 @@ const getAllJob = async (req, res) => {
                      attributes: ["name", "image"],
                   },
                ],
+
+               attributes: { exclude: ["createdAt", "updatedAt"] },
+            },
+            {
+               model: Proposal,
+               as: "proposals",
+               attributes: { exclude: ["createdAt", "updatedAt"] },
+            },
+            {
+               model: Skill,
+               as: "skills",
                attributes: { exclude: ["createdAt", "updatedAt"] },
             },
          ],
