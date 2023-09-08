@@ -23,10 +23,6 @@ module.exports = (sequelize, DataTypes) => {
          type: DataTypes.STRING,
          allowNull: true,
       },
-      skillSets: {
-         type: DataTypes.STRING,
-         allowNull: true,
-      },
       applied: {
          type: DataTypes.STRING,
          allowNull: true,

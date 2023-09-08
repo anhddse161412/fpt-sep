@@ -75,11 +75,6 @@ const getAllJob = async (req, res) => {
                attributes: { exclude: ["createdAt", "updatedAt"] },
             },
             {
-               model: Proposal,
-               as: "proposals",
-               attributes: { exclude: ["createdAt", "updatedAt"] },
-            },
-            {
                model: Skill,
                as: "skills",
                attributes: { exclude: ["createdAt", "updatedAt"] },
@@ -172,34 +167,62 @@ const applyJob = async (req, res) => {
 };
 // get job pagination
 const paginationJob = async (req, res) => {
-   reqLimit = Number(req.query.limit);
-   reqPage = Number(req.query.page);
+   try {
+      let limit = Number(req.query.limit) || null;
+      let page = Number(req.query.page) || null;
 
-   let limit = reqLimit ? reqLimit : 10;
-   let page = reqPage ? reqPage : 1;
+      if (!limit && page) {
+         limit = 10;
+      } else if (limit && !page) {
+         page = 1;
+      }
 
-   let offset = 0 + (page - 1) * limit;
-   const job = await Job.findAndCountAll({
-      include: [
-         {
-            model: Client,
-            as: "clients",
-            include: [
-               {
-                  model: Account,
-                  as: "accounts",
-                  attributes: ["name", "image"],
-               },
-            ],
-            attributes: { exclude: ["createdAt", "updatedAt"] },
+      if (limit && page && (limit <= 0 || page <= 0)) {
+         return res.status(400).json({ error: "Invalid limit or page number" });
+      }
+
+      let offset = (page - 1) * limit;
+
+      const { count, rows: jobs } = await Job.findAndCountAll({
+         include: [
+            {
+               model: Client,
+               as: "clients",
+               include: [
+                  {
+                     model: Account,
+                     as: "accounts",
+                     attributes: ["name", "image"],
+                  },
+               ],
+               attributes: { exclude: ["createdAt", "updatedAt"] },
+            },
+            {
+               model: Skill,
+               as: "skills",
+               attributes: { exclude: ["createdAt", "updatedAt"] },
+            },
+         ],
+         limit,
+         offset,
+         order: [["updatedAt", "ASC"]],
+      });
+
+      const totalPages = Math.ceil(count / limit);
+
+      res.status(200).json({
+         jobs,
+         pagination: {
+            totalItems: count,
+            totalPages,
+            currentPage: page,
+            itemsPerPage: limit,
          },
-      ],
-      offset: offset,
-      limit: limit,
-      order: [["updatedAt", "ASC"]],
-   });
-
-   res.status(200).send(job);
+      });
+   } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: "Internal Server Error" });
+   }
 };
 
 // get job by category
