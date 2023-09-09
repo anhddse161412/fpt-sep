@@ -15,6 +15,8 @@ const createProposal = async (req, res) => {
          fileAttach: req.body.fileAttach,
          description: req.body.description,
          sendDate: req.body.sendDate,
+         freelancerId: req.body.freelancerId,
+         jobId: req.body.jobId,
          status: req.body.status ? req.body.status : "Sent",
       };
 
@@ -102,6 +104,32 @@ const updateProposal = async (req, res) => {
    }
 };
 
+const getProposalByJobId = async (req, res) => {
+   try {
+      let proposal = await Proposal.findAll({
+         include: [
+            {
+               model: Freelancer,
+               as: "freelancers",
+
+               include: [
+                  {
+                     model: Account,
+                     as: "accounts",
+                     attributes: ["name", "image"],
+                  },
+               ],
+               attributes: ["id"],
+            },
+         ],
+         where: { jobId: req.params.jobId },
+      });
+      res.status(200).send(proposal);
+   } catch (error) {
+      console.log(error);
+   }
+};
+
 // approve proposal
 const approveProposal = async (req, res) => {
    try {
@@ -167,4 +195,5 @@ module.exports = {
    updateProposal,
    approveProposal,
    declineProposal,
+   getProposalByJobId,
 };

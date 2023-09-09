@@ -13,5 +13,6 @@ router
    .route("/detail/:proposalId")
    .get(proposalController.getProposalById)
    .post(proposalController.updateProposal);
+router.route("/job/:jobId").get(proposalController.getProposalByJobId);
 
 module.exports = router;

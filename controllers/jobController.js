@@ -23,8 +23,6 @@ const createJob = async (req, res) => {
          proposalSubmitDeadline: req.body.proposalSubmitDeadline,
          lowestIncome: req.body.lowestIncome,
          highestIncome: req.body.highestIncome,
-         skillSets: req.body.skillSets,
-         applied: req.body.applied,
          client_id: req.body.client_id,
          status: req.body.status ? req.body.status : false,
       };
