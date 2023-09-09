@@ -4,10 +4,8 @@ const db = require("../models");
 
 // create main Model
 const Account = db.accounts;
-const Job = db.jobs;
-const Freelancer = db.freelancers;
+
 const Client = db.clients;
-const Favorite = db.favorite;
 // main work
 
 // 1. register account

@@ -8,8 +8,6 @@ const Account = db.accounts;
 const Category = db.categories;
 const SubCategory = db.subCategories;
 const Client = db.clients;
-const Favorite = db.favorite;
-const Freelancer = db.freelancers;
 const Proposal = db.proposals;
 const Skill = db.skills;
 // main work
@@ -63,7 +61,6 @@ const getAllJob = async (req, res) => {
             {
                model: Client,
                as: "clients",
-
                include: [
                   {
                      model: Account,
@@ -72,12 +69,7 @@ const getAllJob = async (req, res) => {
                   },
                ],
 
-               attributes: { exclude: ["createdAt", "updatedAt"] },
-            },
-            {
-               model: Proposal,
-               as: "proposals",
-               attributes: { exclude: ["createdAt", "updatedAt"] },
+               attributes: ["id"],
             },
             {
                model: Skill,
@@ -85,6 +77,8 @@ const getAllJob = async (req, res) => {
                attributes: { exclude: ["createdAt", "updatedAt"] },
             },
          ],
+         attributes: { exclude: ["createdAt"] },
+         order: [["updatedAt", "ASC"]],
       });
       res.status(200).send(job);
    } catch (error) {
@@ -183,7 +177,7 @@ const paginationJob = async (req, res) => {
       }
 
       if (limit && page && (limit <= 0 || page <= 0)) {
-         return res.status(400).json({ error: 'Invalid limit or page number' });
+         return res.status(400).json({ error: "Invalid limit or page number" });
       }
 
       let offset = (page - 1) * limit;
@@ -192,20 +186,25 @@ const paginationJob = async (req, res) => {
          include: [
             {
                model: Client,
-               as: 'clients',
+               as: "clients",
                include: [
                   {
                      model: Account,
-                     as: 'accounts',
-                     attributes: ['name', 'image'],
+                     as: "accounts",
+                     attributes: ["name", "image"],
                   },
                ],
-               attributes: { exclude: ['createdAt', 'updatedAt'] },
+               attributes: ["id"],
+            },
+            {
+               model: Skill,
+               as: "skills",
+               attributes: { exclude: ["createdAt", "updatedAt"] },
             },
          ],
          limit,
          offset,
-         order: [['updatedAt', 'ASC']],
+         order: [["updatedAt", "ASC"]],
       });
 
       const totalPages = Math.ceil(count / limit);
@@ -221,7 +220,7 @@ const paginationJob = async (req, res) => {
       });
    } catch (error) {
       console.error(error);
-      res.status(500).json({ error: 'Internal Server Error' });
+      res.status(500).json({ error: "Internal Server Error" });
    }
 };
 

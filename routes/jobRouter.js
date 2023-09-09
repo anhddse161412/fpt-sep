@@ -1,4 +1,3 @@
-// import controllers review, products
 const jobController = require("../controllers/jobController");
 
 // router

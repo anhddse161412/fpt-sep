@@ -44,7 +44,6 @@ db.skills = require("./skillModel")(sequelize, DataTypes);
 // many many model
 db.jobSubCategory = require("./jobSubCategoryModel")(sequelize, DataTypes);
 db.favorite = require("./favoriteModel")(sequelize, DataTypes);
-db.jobProposal = require("./jobProposalModel")(sequelize, DataTypes);
 db.jobSkill = require("./jobSkillModel")(sequelize, DataTypes);
 // creation
 
@@ -110,15 +109,23 @@ db.proposals.belongsTo(db.freelancers, {
    as: "freelancers",
 });
 
+// job - proposal
+db.jobs.hasMany(db.proposals, {
+   foreignKey: "jobId",
+   as: "proposals",
+});
+
+db.proposals.belongsTo(db.jobs, {
+   foreignKey: "jobId",
+   as: "jobs",
+});
+
 // Many to Many relation
 db.jobs.belongsToMany(db.accounts, { through: db.favorite });
 db.accounts.belongsToMany(db.jobs, { through: db.favorite });
 
 db.jobs.belongsToMany(db.subCategories, { through: db.jobSubCategory });
 db.subCategories.belongsToMany(db.jobs, { through: db.jobSubCategory });
-
-db.jobs.belongsToMany(db.proposals, { through: db.jobProposal });
-db.proposals.belongsToMany(db.jobs, { through: db.jobProposal });
 
 db.jobs.belongsToMany(db.skills, { through: db.jobSkill });
 db.skills.belongsToMany(db.jobs, { through: db.jobSkill });
