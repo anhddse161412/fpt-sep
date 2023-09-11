@@ -183,6 +183,92 @@ const paginationJob = async (req, res) => {
       const { count, rows: jobs } = await Job.findAndCountAll({
          include: [
             {
+               model: SubCategory,
+               as: "subcategories",
+               include: [
+                  {
+                     model: Category,
+                     as: "categories",
+                     attributes: ["name"],
+                  },
+               ],
+               attributes: ["name"],
+            },
+            {
+               model: Client,
+               as: "clients",
+               include: [
+                  {
+                     model: Account,
+                     as: "accounts",
+                     attributes: ["name", "image"],
+                  },
+               ],
+               attributes: ["id"],
+            },
+            {
+               model: Skill,
+               as: "skills",
+               attributes: { exclude: ["createdAt", "updatedAt"] },
+            },
+         ],
+         limit,
+         offset,
+         order: [["updatedAt", "ASC"]],
+      });
+
+      const totalPages = Math.ceil(count / limit);
+
+      res.status(200).json({
+         jobs,
+         pagination: {
+            totalItems: count,
+            totalPages,
+            currentPage: page,
+            itemsPerPage: limit,
+         },
+      });
+   } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: "Internal Server Error" });
+   }
+};
+
+const paginationJobBySubCategoryId = async (req, res) => {
+   try {
+      let limit = Number(req.query.limit) || null;
+      let page = Number(req.query.page) || null;
+
+      if (!limit && page) {
+         limit = 10;
+      } else if (limit && !page) {
+         page = 1;
+      }
+
+      if (limit && page && (limit <= 0 || page <= 0)) {
+         return res.status(400).json({ error: "Invalid limit or page number" });
+      }
+
+      let offset = (page - 1) * limit;
+
+      const { count, rows: jobs } = await Job.findAndCountAll({
+         include: [
+            {
+               model: SubCategory,
+               as: "subcategories",
+               where: {
+                  id: req.params.subCategoryId,
+               },
+               include: [
+                  {
+                     model: Category,
+                     as: "categories",
+                     attributes: ["name"],
+                  },
+               ],
+               attributes: ["name"],
+            },
+            {
                model: Client,
                as: "clients",
                include: [
@@ -278,5 +364,6 @@ module.exports = {
    applyJob,
    getJobBySubCategory,
    addFavoriteJob,
+   paginationJobBySubCategoryId,
    removeFavoriteJob,
 };
