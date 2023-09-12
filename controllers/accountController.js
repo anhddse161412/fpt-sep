@@ -61,6 +61,7 @@ const getAllAccount = async (req, res) => {
       res.status(200).send(accounts);
    } catch (error) {
       console.log(error);
+      res.status(400).json({ message: error.toString() });
    }
 };
 
@@ -72,6 +73,7 @@ const getAccountById = async (req, res) => {
       res.status(200).send(accounts);
    } catch (error) {
       console.log(error);
+      res.status(400).json({ message: error.toString() });
    }
 };
 
@@ -83,6 +85,7 @@ const updateAccount = async (req, res) => {
       res.status(200).send(accounts);
    } catch (error) {
       console.log(error);
+      res.status(400).json({ message: error.toString() });
    }
 };
 
@@ -118,6 +121,7 @@ const login = async (req, res) => {
       }
    } catch (error) {
       console.log(error);
+      res.status(400).json({ message: error.toString() });
    }
 };
 
@@ -125,12 +129,38 @@ const isLoggedIn = (req, res, next) => {
    req.user ? next() : res.sendStatus(401);
 };
 
-const loginGoogle = (req, res) => {
-   console.log(req.user._json);
-   const jsontoken = sign({ result: req.user._json }, process.env.JWT_KEY, {
-      expiresIn: "1h",
-   });
-   res.status(200).json({ token: jsontoken, message: "Đăng nhập thành công!" });
+const loginGoogle = async (req, res) => {
+   try {
+      let account = await Account.findOne({
+         where: { email: req.body.email },
+      });
+      if (!account) {
+         const salt = genSaltSync(10);
+         let info = {
+            name: req.body.name,
+            image: req.body.imageUrl,
+            email: req.body.email,
+            password: hashSync(req.body.googleId, salt),
+            currency: 0,
+            role: "freelancer",
+            status: 1,
+         };
+         const newAccount = await Account.create(info);
+         const freelancer = await Freelancer.create({ status: "true" });
+         newAccount.setFreelancers(freelancer);
+         account = newAccount;
+      }
+      const jsontoken = sign({ result: account }, process.env.JWT_KEY, {
+         expiresIn: "1h",
+      });
+      res.status(200).json({
+         token: jsontoken,
+         message: "Đăng nhập thành công!",
+      });
+   } catch (error) {
+      console.log(error);
+      res.status(400).json({ message: error.toString() });
+   }
 };
 
 const getAccountWithJobId = async (req, res) => {
