@@ -23,7 +23,7 @@ const createJob = async (req, res) => {
          proposalSubmitDeadline: req.body.proposalSubmitDeadline,
          lowestIncome: req.body.lowestIncome,
          highestIncome: req.body.highestIncome,
-         client_id: req.body.client_id,
+         clientId: req.body.clientId,
          status: req.body.status ? req.body.status : false,
       };
       let subCategoryList = req.body.subCategory;
