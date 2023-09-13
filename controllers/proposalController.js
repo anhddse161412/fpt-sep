@@ -6,6 +6,7 @@ const db = require("../models");
 const Account = db.accounts;
 const Proposal = db.proposals;
 const Freelancer = db.freelancers;
+const Job = db.jobs;
 // main work
 
 // 1. create proposal
@@ -19,8 +20,16 @@ const createProposal = async (req, res) => {
          jobId: req.body.jobId,
          status: req.body.status ? req.body.status : "Sent",
       };
+      const job = await Job.findOne({
+         where: { id: req.body.jobId },
+      });
 
       const proposal = await Proposal.create(info);
+      job.setProposals(proposal);
+      let proposalCounter = await job.countProposals();
+      job.setDataValue("applied", proposalCounter.toString());
+      job.save();
+
       res.status(200).json({ messsage: "Tạo proposal thành công" });
    } catch (error) {
       console.log(error);
