@@ -14,5 +14,7 @@ router
    .get(proposalController.getProposalById)
    .post(proposalController.updateProposal);
 router.route("/job/:jobId").get(proposalController.getProposalByJobId);
+router.route("/freelancer/:freelancerId").get(proposalController.getProposalByFreelancerId);
+router.route("/client/:clientId").get(proposalController.getProposalByClientId);
 
 module.exports = router;

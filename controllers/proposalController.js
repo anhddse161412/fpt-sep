@@ -1,12 +1,17 @@
+const { Sequelize } = require("sequelize");
 const db = require("../models");
 
 // image Upload
+
+// Sequelize operation
+const Op = Sequelize.Op;
 
 // create main Model
 const Account = db.accounts;
 const Proposal = db.proposals;
 const Freelancer = db.freelancers;
 const Job = db.jobs;
+const Client = db.clients
 // main work
 
 // 1. create proposal
@@ -138,6 +143,82 @@ const getProposalByJobId = async (req, res) => {
    }
 };
 
+// Get Proposal by freelancer ID
+const getProposalByFreelancerId = async (req, res) => {
+   try {
+      let proposal = await Proposal.findAll({
+         include: [
+            {
+               model: Job,
+               as: "jobs",
+               include: [
+                  {
+                     model: Client,
+                     as: "clients",
+                     include: [
+                        {
+                           model: Account,
+                           as: "accounts",
+                           attributes: ["name"],
+                        },
+                     ],
+                     attributes: ["id"],
+                  },
+               ],
+               attributes: ["id", "title"],
+            },
+         ],
+         where: { freelancerId: req.params.freelancerId },
+         order: [["sendDate", "DESC"]],
+      });
+      res.status(200).send(proposal);
+   } catch (error) {
+      console.log(error);
+   }
+};
+
+// Get Proposal by Client ID
+const getProposalByClientId = async (req, res) => {
+   try {
+
+      let jobs = await Job.findAll({
+         attributes: ["id"],
+         where: { clientId: req.params.clientId, applied: { [Op.not]: null } },
+      })
+
+      let jobsId = [];
+
+      jobs.forEach(job => {
+         jobsId.push(job.id)
+      });
+
+      let proposals = await Proposal.findAll({
+         include: [{
+            model: Job,
+            as: "jobs",
+            attributes: ["id", "title"]
+         }, {
+            model: Freelancer,
+            as: "freelancers",
+            include: [
+               {
+                  model: Account,
+                  as: "accounts",
+                  attributes: ["name", "image"],
+               },
+            ],
+            attributes: ["id"],
+         }],
+         where: { jobId: { [Op.in]: jobsId } },
+         order: [["sendDate", "DESC"]],
+      })
+      res.status(200).send(proposals);
+   } catch (error) {
+      console.log(error);
+   }
+}
+
+
 // approve proposal
 const approveProposal = async (req, res) => {
    try {
@@ -204,4 +285,6 @@ module.exports = {
    approveProposal,
    declineProposal,
    getProposalByJobId,
+   getProposalByFreelancerId,
+   getProposalByClientId
 };
