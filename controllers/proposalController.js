@@ -25,7 +25,6 @@ const createProposal = async (req, res) => {
       });
 
       const proposal = await Proposal.create(info);
-      job.setProposals(proposal);
       let proposalCounter = await job.countProposals();
       job.setDataValue("applied", proposalCounter.toString());
       job.save();
