@@ -40,11 +40,13 @@ db.clients = require("./clientModel")(sequelize, DataTypes);
 db.freelancers = require("./freelancerModel")(sequelize, DataTypes);
 db.proposals = require("./proposalModel")(sequelize, DataTypes);
 db.skills = require("./skillModel")(sequelize, DataTypes);
+db.appointments = require("./AppointmentModel")(sequelize, DataTypes);
 
 // many many model
 db.jobSubCategory = require("./jobSubCategoryModel")(sequelize, DataTypes);
 db.favorite = require("./favoriteModel")(sequelize, DataTypes);
 db.jobSkill = require("./jobSkillModel")(sequelize, DataTypes);
+
 // creation
 
 db.sequelize.sync({ force: false, alter: true }).then(() => {
@@ -120,6 +122,38 @@ db.proposals.belongsTo(db.jobs, {
    as: "jobs",
 });
 
+// client - appointment
+db.clients.hasMany(db.appointments, {
+   foreignKey: "clientId",
+   as: "appointments",
+});
+
+db.appointments.belongsTo(db.clients, {
+   foreignKey: "clientId",
+   as: "clients",
+});
+
+// freelancer - appointment
+db.freelancers.hasMany(db.appointments, {
+   foreignKey: "freelancerId",
+   as: "appointments",
+});
+
+db.appointments.belongsTo(db.freelancers, {
+   foreignKey: "freelancerId",
+   as: "freelancers",
+});
+
+// freelancer - appointment
+db.jobs.hasMany(db.appointments, {
+   foreignKey: "jobId",
+   as: "appointments",
+});
+
+db.appointments.belongsTo(db.jobs, {
+   foreignKey: "jobId",
+   as: "jobs",
+});
 // Many to Many relation
 db.jobs.belongsToMany(db.accounts, { through: db.favorite });
 db.accounts.belongsToMany(db.jobs, { through: db.favorite });

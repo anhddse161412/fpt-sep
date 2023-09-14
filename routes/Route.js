@@ -9,7 +9,7 @@ var skillRouter = require("./skillRouter");
 var freelancerRouter = require("./freelancerRouter");
 var clientRouter = require("./clientRouter");
 var proposalRouter = require("./proposalRouter");
-
+var Appointment = require("./appointmentRouter");
 router.use("/accounts", accountsRouter);
 router.use("/category", categoryRouter);
 router.use("/subCategory", subCategoryRouter);
@@ -18,5 +18,6 @@ router.use("/skill", skillRouter);
 router.use("/freelancer", freelancerRouter);
 router.use("/client", clientRouter);
 router.use("/proposal", proposalRouter);
+router.use("/appointment", Appointment);
 
 module.exports = router;
