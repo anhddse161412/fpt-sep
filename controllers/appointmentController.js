@@ -198,7 +198,7 @@ const getAppointmentByJobId = async (req, res) => {
 const updateAppointment = async (req, res) => {
    try {
       let appointment = await Appointment.update(req.body, {
-         where: { id: req.params.appointmentId },
+         where: { appointmentId: req.params.appointmentId },
       });
       res.status(200).send(appointment);
    } catch (error) {
