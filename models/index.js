@@ -134,17 +134,6 @@ db.appointments.belongsTo(db.clients, {
 });
 
 // freelancer - appointment
-db.freelancers.hasMany(db.appointments, {
-   foreignKey: "freelancerId",
-   as: "appointments",
-});
-
-db.appointments.belongsTo(db.freelancers, {
-   foreignKey: "freelancerId",
-   as: "freelancers",
-});
-
-// freelancer - appointment
 db.jobs.hasMany(db.appointments, {
    foreignKey: "jobId",
    as: "appointments",
