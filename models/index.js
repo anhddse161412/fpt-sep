@@ -46,7 +46,7 @@ db.appointments = require("./AppointmentModel")(sequelize, DataTypes);
 db.jobSubCategory = require("./jobSubCategoryModel")(sequelize, DataTypes);
 db.favorite = require("./favoriteModel")(sequelize, DataTypes);
 db.jobSkill = require("./jobSkillModel")(sequelize, DataTypes);
-
+db.freelancerSkill = require("./freelancerSkillModel")(sequelize, DataTypes);
 // creation
 
 db.sequelize.sync({ force: false, alter: true }).then(() => {
@@ -163,5 +163,8 @@ db.subCategories.belongsToMany(db.jobs, { through: db.jobSubCategory });
 
 db.jobs.belongsToMany(db.skills, { through: db.jobSkill });
 db.skills.belongsToMany(db.jobs, { through: db.jobSkill });
+
+db.freelancers.belongsToMany(db.skills, { through: db.freelancerSkill });
+db.skills.belongsToMany(db.freelancers, { through: db.freelancerSkill });
 
 module.exports = db;

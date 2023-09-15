@@ -1,11 +1,11 @@
 module.exports = (sequelize, DataTypes) => {
-   const JobSkill = sequelize.define("jobskill", {
-      jobSkillId: {
+   const FreelancerSkill = sequelize.define("freelancerskill", {
+      freelancerSkillId: {
          type: DataTypes.INTEGER,
          primaryKey: true,
          autoIncrement: true,
       },
    });
 
-   return JobSkill;
+   return FreelancerSkill;
 };
