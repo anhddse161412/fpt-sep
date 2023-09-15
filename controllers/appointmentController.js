@@ -119,6 +119,7 @@ const getAppointmentById = async (req, res) => {
                as: "jobs",
             },
          ],
+         where: { appointmentId: req.params.appointmentId }
       });
       res.status(200).send(appointment);
    } catch (error) {
