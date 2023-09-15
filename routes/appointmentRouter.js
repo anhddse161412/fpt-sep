@@ -8,7 +8,7 @@ router.post("/create", AppointmentController.createAppointment);
 router.route("/").get(AppointmentController.getAllAppointment);
 
 router
-   .route("/detail/:proposalId")
+   .route("/detail/:appointmentId")
    .get(AppointmentController.getAppointmentById)
    .post(AppointmentController.updateAppointment);
 router.route("/job/:jobId").get(AppointmentController.getAppointmentByJobId);
