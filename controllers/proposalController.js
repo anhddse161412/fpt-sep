@@ -165,7 +165,6 @@ const getProposalByFreelancerId = async (req, res) => {
                      attributes: ["id"],
                   },
                ],
-               attributes: ["id", "title"],
             },
          ],
          where: { freelancerId: req.params.freelancerId },
@@ -196,8 +195,8 @@ const getProposalByClientId = async (req, res) => {
          include: [{
             model: Job,
             as: "jobs",
-            attributes: ["id", "title"]
-         }, {
+         },
+         {
             model: Freelancer,
             as: "freelancers",
             include: [
