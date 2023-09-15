@@ -212,9 +212,10 @@ const paginationJob = async (req, res) => {
                attributes: { exclude: ["createdAt", "updatedAt"] },
             },
          ],
+         where: { status: true },
          limit,
          offset,
-         order: [["updatedAt", "ASC"]],
+         order: [["updatedAt", "DESC"]],
       });
 
       const totalPages = Math.ceil(count / limit);
