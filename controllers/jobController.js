@@ -86,10 +86,30 @@ const getAllJob = async (req, res) => {
 
 const getJobById = async (req, res) => {
    try {
-      let job = await Job.findOne({
-         where: { id: req.params.jobID },
-      });
-      res.status(200).send(job);
+      if (!req.body.freelancerId) {
+         let job = await Job.findOne({
+            where: { id: req.params.jobID },
+         });
+         res.status(200).send(job);
+      } else {
+         let job = await Job.findOne({
+            include: [
+               {
+                  model: Proposal,
+                  as: "proposals",
+                  where: { freelancerId: req.body.freelancerId },
+               }
+            ],
+            where: { id: req.params.jobID },
+         });
+
+         if (!job) {
+            job = await Job.findOne({
+               where: { id: req.params.jobID },
+            });
+         }
+         res.status(200).send(job);
+      }
    } catch (error) {
       console.log(error);
    }
