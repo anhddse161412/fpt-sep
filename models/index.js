@@ -41,6 +41,7 @@ db.freelancers = require("./freelancerModel")(sequelize, DataTypes);
 db.proposals = require("./proposalModel")(sequelize, DataTypes);
 db.skills = require("./skillModel")(sequelize, DataTypes);
 db.appointments = require("./AppointmentModel")(sequelize, DataTypes);
+db.certificates = require("./certificateModel")(sequelize, DataTypes);
 
 // many many model
 db.jobSubCategory = require("./jobSubCategoryModel")(sequelize, DataTypes);
@@ -98,7 +99,16 @@ db.jobs.belongsTo(db.clients, {
    as: "clients",
 });
 
-// job_freelancer
+// freelancer - certificate
+db.freelancers.hasMany(db.certificates, {
+   foreignKey: "freelancerId",
+   as: "certificates",
+});
+
+db.certificates.belongsTo(db.freelancers, {
+   foreignKey: "freelancerId",
+   as: "freelancers",
+});
 
 // freelancer - proposal
 db.freelancers.hasMany(db.proposals, {
