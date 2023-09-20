@@ -88,6 +88,18 @@ const getJobById = async (req, res) => {
    try {
       if (!req.body.freelancerId) {
          let job = await Job.findOne({
+            include: [
+               {
+                  model: Client,
+                  as: "clients",
+                  include: [
+                     {
+                        model: Account,
+                        as: "accounts",
+                     },
+                  ],
+               },
+            ],
             where: { id: req.params.jobID },
          });
          res.status(200).send(job);
@@ -98,13 +110,35 @@ const getJobById = async (req, res) => {
                   model: Proposal,
                   as: "proposals",
                   where: { freelancerId: req.body.freelancerId },
-               }
+               },
+               {
+                  model: Client,
+                  as: "clients",
+                  include: [
+                     {
+                        model: Account,
+                        as: "accounts",
+                     },
+                  ],
+               },
             ],
             where: { id: req.params.jobID },
          });
 
          if (!job) {
             job = await Job.findOne({
+               include: [
+                  {
+                     model: Client,
+                     as: "clients",
+                     include: [
+                        {
+                           model: Account,
+                           as: "accounts",
+                        },
+                     ],
+                  },
+               ],
                where: { id: req.params.jobID },
             });
          }
