@@ -90,6 +90,11 @@ const getJobById = async (req, res) => {
          let job = await Job.findOne({
             include: [
                {
+                  model: Skill,
+                  as: "skills",
+                  attributes: { exclude: ["createdAt", "updatedAt"] },
+               },
+               {
                   model: Client,
                   as: "clients",
                   include: [
@@ -106,6 +111,11 @@ const getJobById = async (req, res) => {
       } else {
          let job = await Job.findOne({
             include: [
+               {
+                  model: Skill,
+                  as: "skills",
+                  attributes: { exclude: ["createdAt", "updatedAt"] },
+               },
                {
                   model: Proposal,
                   as: "proposals",
@@ -128,6 +138,11 @@ const getJobById = async (req, res) => {
          if (!job) {
             job = await Job.findOne({
                include: [
+                  {
+                     model: Skill,
+                     as: "skills",
+                     attributes: { exclude: ["createdAt", "updatedAt"] },
+                  },
                   {
                      model: Client,
                      as: "clients",
