@@ -42,7 +42,7 @@ db.proposals = require("./proposalModel")(sequelize, DataTypes);
 db.skills = require("./skillModel")(sequelize, DataTypes);
 db.appointments = require("./AppointmentModel")(sequelize, DataTypes);
 db.certificates = require("./certificateModel")(sequelize, DataTypes);
-db.recommendPoints = require("./recommendPoint.js")(sequelize, DataTypes)
+db.recommendPoints = require("./recommendPoint.js")(sequelize, DataTypes);
 
 // many many model
 db.jobSubCategory = require("./jobSubCategoryModel")(sequelize, DataTypes);
@@ -145,14 +145,14 @@ db.appointments.belongsTo(db.clients, {
 });
 
 // freelancer - appointment
-db.jobs.hasMany(db.appointments, {
-   foreignKey: "jobId",
+db.proposals.hasMany(db.appointments, {
+   foreignKey: "proposalId",
    as: "appointments",
 });
 
-db.appointments.belongsTo(db.jobs, {
-   foreignKey: "jobId",
-   as: "jobs",
+db.appointments.belongsTo(db.proposals, {
+   foreignKey: "proposalId",
+   as: "proposals",
 });
 
 // freelancer - recommendPoint
