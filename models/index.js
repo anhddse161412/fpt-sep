@@ -42,6 +42,7 @@ db.proposals = require("./proposalModel")(sequelize, DataTypes);
 db.skills = require("./skillModel")(sequelize, DataTypes);
 db.appointments = require("./AppointmentModel")(sequelize, DataTypes);
 db.certificates = require("./certificateModel")(sequelize, DataTypes);
+db.recommendPoints = require("./recommendPoint.js")(sequelize, DataTypes)
 
 // many many model
 db.jobSubCategory = require("./jobSubCategoryModel")(sequelize, DataTypes);
@@ -153,6 +154,29 @@ db.appointments.belongsTo(db.jobs, {
    foreignKey: "jobId",
    as: "jobs",
 });
+
+// freelancer - recommendPoint
+db.freelancers.hasMany(db.recommendPoints, {
+   foreignKey: "freelancerId",
+   as: "recommendPoints",
+});
+
+db.recommendPoints.belongsTo(db.freelancers, {
+   foreignKey: "freelancerId",
+   as: "freelancers",
+});
+
+// job - recommendPoint
+db.jobs.hasMany(db.recommendPoints, {
+   foreignKey: "jobId",
+   as: "recommendPoints",
+});
+
+db.recommendPoints.belongsTo(db.jobs, {
+   foreignKey: "jobId",
+   as: "jobs",
+});
+
 // Many to Many relation
 db.jobs.belongsToMany(db.accounts, { through: db.favorite });
 db.accounts.belongsToMany(db.jobs, { through: db.favorite });
