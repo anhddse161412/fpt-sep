@@ -35,7 +35,7 @@ const getFreelancerById = async (req, res) => {
                as: "accounts",
             },
          ],
-         where: { id: req.params.freelancerId },
+         where: { accountId: req.params.accountId },
       });
       res.status(200).send(freelancer);
    } catch (error) {
@@ -45,15 +45,12 @@ const getFreelancerById = async (req, res) => {
 
 const updateFreelancerAccount = async (req, res) => {
    try {
-      let freelancer = await Account.update(req.body, {
-         include: [
-            {
-               model: Account,
-               as: "accounts",
-            },
-         ],
-         where: { id: req.params.freelancerId },
+      let freelancer = await Freelancer.update(req.body, {
+         where: { accountId: req.params.accountId },
       });
+      let account = await Account.update(req.body.account, {
+         where: { id: req.params.accountId }
+      })
       res.status(200).send(freelancer);
    } catch (error) {
       console.log(error);

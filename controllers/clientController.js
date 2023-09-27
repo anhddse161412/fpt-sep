@@ -36,7 +36,7 @@ const getClientById = async (req, res) => {
                as: "accounts",
             },
          ],
-         where: { id: req.params.clientId },
+         where: { accountId: req.params.accountId },
       });
       res.status(200).send(client);
    } catch (error) {
@@ -47,14 +47,11 @@ const getClientById = async (req, res) => {
 const updateClientAccount = async (req, res) => {
    try {
       let client = await Client.update(req.body, {
-         include: [
-            {
-               model: Account,
-               as: "accounts",
-            },
-         ],
-         where: { id: req.params.clientId },
+         where: { accountId: req.params.accountId },
       });
+      let account = await Account.update(req.body.account, {
+         where: { id: req.params.accountId }
+      })
       res.status(200).send(client);
    } catch (error) {
       console.log(error);

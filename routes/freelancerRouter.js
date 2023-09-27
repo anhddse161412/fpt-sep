@@ -7,7 +7,7 @@ const router = require("express").Router();
 // use routers
 router.route("/").get(freelancerController.getAllFreelancer);
 router
-   .route("/profile/:freelancerId")
+   .route("/profile/:accountId")
    .get(freelancerController.getFreelancerById)
    .post(freelancerController.updateFreelancerAccount);
 module.exports = router;
