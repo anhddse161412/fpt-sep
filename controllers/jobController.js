@@ -86,7 +86,7 @@ const getAllJob = async (req, res) => {
 
 const getJobById = async (req, res) => {
    try {
-      if (!req.body.freelancerId) {
+      if (!req.query.freelancerId) {
          let job = await Job.findOne({
             include: [
                {
@@ -119,7 +119,7 @@ const getJobById = async (req, res) => {
                {
                   model: Proposal,
                   as: "proposals",
-                  where: { freelancerId: req.body.freelancerId },
+                  where: { freelancerId: req.query.freelancerId },
                },
                {
                   model: Client,
