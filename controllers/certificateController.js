@@ -18,10 +18,10 @@ const createCertificate = async (req, res) => {
          expirationDate: req.body.expirationDate,
          credentialId: req.body.credentialId,
          credentialUrl: req.body.credentialUrl,
-         status: req.body.status ? req.body.status : false,
+         status: req.body.status ? req.body.status : true,
       };
       const freelancer = await Freelancer.findOne({
-         where: { id: req.body.freelancerId },
+         where: { accountId: req.body.accountId },
       });
 
       const certificate = await Certificate.create(info);
