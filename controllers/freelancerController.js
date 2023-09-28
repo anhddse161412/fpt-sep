@@ -5,6 +5,8 @@ const db = require("../models");
 // create main Model
 const Account = db.accounts;
 const Freelancer = db.freelancers;
+const Skill = db.skills
+const Certificate = db.certificates
 // main work
 
 // 1. register account
@@ -34,6 +36,14 @@ const getFreelancerById = async (req, res) => {
                model: Account,
                as: "accounts",
             },
+            {
+               model: Skill,
+               as: "skills",
+            },
+            {
+               model: Certificate,
+               as: "certificates"
+            }
          ],
          where: { accountId: req.params.accountId },
       });
