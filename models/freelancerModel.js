@@ -16,10 +16,6 @@ module.exports = (sequelize, DataTypes) => {
          type: DataTypes.STRING,
          allowNull: true,
       },
-      education: {
-         type: DataTypes.STRING,
-         allowNull: true,
-      },
       introduction: {
          type: DataTypes.STRING,
          allowNull: true,
