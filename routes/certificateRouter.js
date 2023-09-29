@@ -15,5 +15,7 @@ router
 router
    .route("/detail/:certificateId")
    .get(certificateController.getCertificateById)
-   .post(certificateController.updateCertificate);
+   .post(certificateController.updateCertificate)
+   .delete(certificateController.removeCertificate);
+
 module.exports = router;

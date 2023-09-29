@@ -87,10 +87,19 @@ const getCertificateByFreelancerId = async (req, res) => {
    res.status(200).send(data);
 };
 
+// 6. remove certificate
+const removeCertificate = async (req, res) => {
+   const certificate = await Certificate.destroy({
+      where: { id: req.params.certificateId }
+   })
+   res.status(200).send("Xóa thành công!")
+}
+
 module.exports = {
    createCertificate,
    getAllCertificate,
    getCertificateById,
    getCertificateByFreelancerId,
    updateCertificate,
+   removeCertificate,
 };
