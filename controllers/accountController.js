@@ -20,7 +20,6 @@ const register = async (req, res) => {
          email: req.body.email,
          password: req.body.password,
          role: req.body.role ? req.body.role : "client",
-         currency: 0,
          status: true,
       };
       // check dulicate

@@ -10,6 +10,11 @@ module.exports = (sequelize, DataTypes) => {
       companyWebsite: {
          type: DataTypes.STRING,
       },
+      currency: {
+         type: DataTypes.INTEGER,
+         allowNull: false,
+         default: 0
+      },
    });
 
    return Client;
