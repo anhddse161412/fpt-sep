@@ -6,7 +6,7 @@ const sequelize = new Sequelize(dbConfig.DB, dbConfig.USER, dbConfig.PASSWORD, {
    host: dbConfig.HOST,
    dialect: dbConfig.dialect,
    operatorsAliases: false,
-
+   port: 25060,
    pool: {
       max: dbConfig.pool.max,
       min: dbConfig.pool.min,
@@ -180,14 +180,14 @@ db.recommendPoints.belongsTo(db.jobs, {
 });
 
 // account - payment
-db.accounts.hasMany(db.payments, {
-   foreignKey: "accountId",
+db.clients.hasMany(db.payments, {
+   foreignKey: "clientId",
    as: "payments",
 });
 
-db.payments.belongsTo(db.accounts, {
-   foreignKey: "accountId",
-   as: "accounts",
+db.payments.belongsTo(db.clients, {
+   foreignKey: "clientId",
+   as: "clients",
 });
 
 // transaction - payment
