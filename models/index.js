@@ -43,6 +43,8 @@ db.skills = require("./skillModel")(sequelize, DataTypes);
 db.appointments = require("./AppointmentModel")(sequelize, DataTypes);
 db.certificates = require("./certificateModel")(sequelize, DataTypes);
 db.recommendPoints = require("./recommendPoint.js")(sequelize, DataTypes);
+db.payments = require("./paymentModel")(sequelize, DataTypes);
+db.transactions = require("./transactionModel")(sequelize, DataTypes);
 
 // many many model
 db.jobSubCategory = require("./jobSubCategoryModel")(sequelize, DataTypes);
@@ -144,7 +146,7 @@ db.appointments.belongsTo(db.clients, {
    as: "clients",
 });
 
-// freelancer - appointment
+// proposals - appointment
 db.proposals.hasMany(db.appointments, {
    foreignKey: "proposalId",
    as: "appointments",
@@ -175,6 +177,39 @@ db.jobs.hasMany(db.recommendPoints, {
 db.recommendPoints.belongsTo(db.jobs, {
    foreignKey: "jobId",
    as: "jobs",
+});
+
+// account - payment
+db.accounts.hasMany(db.payments, {
+   foreignKey: "accountId",
+   as: "payments",
+});
+
+db.payments.belongsTo(db.accounts, {
+   foreignKey: "accountId",
+   as: "accounts",
+});
+
+// transaction - payment
+db.payments.hasOne(db.transactions, {
+   foreignKey: "paymentId",
+   as: "transactions",
+});
+
+db.transactions.belongsTo(db.payments, {
+   foreignKey: "paymentId",
+   as: "payments",
+});
+
+// transaction - proposals
+db.proposals.hasOne(db.transactions, {
+   foreignKey: "proposalId",
+   as: "transactions",
+});
+
+db.transactions.belongsTo(db.proposals, {
+   foreignKey: "proposalId",
+   as: "proposals",
 });
 
 // Many to Many relation
