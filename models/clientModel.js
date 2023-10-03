@@ -10,6 +10,9 @@ module.exports = (sequelize, DataTypes) => {
       companyWebsite: {
          type: DataTypes.STRING,
       },
+      introduction: {
+         type: DataTypes.STRING(5000),
+      },
       currency: {
          type: DataTypes.INTEGER,
          allowNull: false,
