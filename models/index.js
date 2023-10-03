@@ -45,6 +45,7 @@ db.certificates = require("./certificateModel")(sequelize, DataTypes);
 db.recommendPoints = require("./recommendPoint.js")(sequelize, DataTypes);
 db.payments = require("./paymentModel")(sequelize, DataTypes);
 db.transactions = require("./transactionModel")(sequelize, DataTypes);
+db.languages = require("./languageModel.js")(sequelize, DataTypes)
 
 // many many model
 db.jobSubCategory = require("./jobSubCategoryModel")(sequelize, DataTypes);
@@ -210,6 +211,17 @@ db.proposals.hasOne(db.transactions, {
 db.transactions.belongsTo(db.proposals, {
    foreignKey: "proposalId",
    as: "proposals",
+});
+
+// freelancer - language
+db.freelancers.hasMany(db.languages, {
+   foreignKey: "freelancerId",
+   as: "language",
+});
+
+db.languages.belongsTo(db.freelancers, {
+   foreignKey: "freelancerId",
+   as: "freelancers",
 });
 
 // Many to Many relation
