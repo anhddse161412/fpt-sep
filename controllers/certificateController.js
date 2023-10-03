@@ -23,9 +23,9 @@ const createCertificate = async (req, res) => {
       const freelancer = await Freelancer.findOne({
          where: { accountId: req.body.accountId },
       });
+      info.freelancerId = freelancer.id;
 
       const certificate = await Certificate.create(info);
-      freelancer.setCertificates(certificate);
       res.status(200).send(certificate);
    } catch (error) {
       console.log(error);
