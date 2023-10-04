@@ -424,6 +424,15 @@ const getJobBySubCategory = async (req, res) => {
    res.status(200).send(data);
 };
 
+// get job by Client Id
+const getJobByClientId = async (req, res) => {
+   const jobs = await Job.findAll({
+      where: { clientId: req.params.clientId },
+   })
+
+   res.status(200).send(jobs);
+}
+
 module.exports = {
    createJob,
    getJobById,
@@ -436,4 +445,5 @@ module.exports = {
    addFavoriteJob,
    paginationJobBySubCategoryId,
    removeFavoriteJob,
+   getJobByClientId,
 };
