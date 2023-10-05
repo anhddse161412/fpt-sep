@@ -27,4 +27,8 @@ router
 router
    .route("/subCategory/:subCategoryId")
    .get(jobController.paginationJobBySubCategoryId);
+
+router
+   .route("/remove/:jobId")
+   .post(jobController.inactiveJob)
 module.exports = router;

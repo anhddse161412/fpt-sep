@@ -436,6 +436,18 @@ const getJobByClientId = async (req, res) => {
    res.status(200).send(jobs);
 }
 
+// inactive job
+const inactiveJob = async (req, res) => {
+   const job = await Job.findOne({
+      where: { id: req.params.jobId }
+   })
+
+   job.setDataValue("status", false);
+   job.save();
+
+   res.status(200).send("Xoa cong viec thanh cong!")
+}
+
 module.exports = {
    createJob,
    getJobById,
@@ -449,4 +461,5 @@ module.exports = {
    paginationJobBySubCategoryId,
    removeFavoriteJob,
    getJobByClientId,
+   inactiveJob,
 };
