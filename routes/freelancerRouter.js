@@ -29,6 +29,10 @@ router.route("/major/:freelancerId")
 router.route("/basicInfo/:freelancerId")
    .post(freelancerController.updateBasicInfo)
 
+// image and name
+router.route("/nameImage/:freelancerId")
+   .post(freelancerController.updateNameAndImage)
+
 // skill set
 router.route("/skills/:freelancerId")
    .post(freelancerController.updateSkillSet)

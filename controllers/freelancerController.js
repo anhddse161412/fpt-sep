@@ -127,6 +127,23 @@ const updateBasicInfo = async (req, res) => {
    res.status(200).send(account);
 }
 
+// update image & name
+const updateNameAndImage = async (req, res) => {
+   const freelancer = await Freelancer.findOne({
+      where: { id: req.params.freelancerId }
+   });
+
+   const account = await Account.findOne({
+      where: { id: freelancer.accountId }
+   });
+
+   account.setDataValue("name", req.body.name);
+   account.setDataValue("image", req.body.image);
+   account.save();
+
+   res.status(200).send(account);
+}
+
 // update skill set
 const updateSkillSet = async (req, res) => {
    try {
@@ -247,4 +264,5 @@ module.exports = {
    updateLanguages,
    deleteLanguages,
    updateSkillSet,
+   updateNameAndImage,
 };
