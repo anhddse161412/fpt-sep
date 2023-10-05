@@ -22,13 +22,11 @@ router.route("/apply").post(jobController.applyJob);
 router
    .route("/detail/:jobID")
    .get(jobController.getJobById)
-   .post(jobController.updateJob);
+   .post(jobController.updateJob)
+   .delete(jobController.inactiveJob);
 
 router
    .route("/subCategory/:subCategoryId")
    .get(jobController.paginationJobBySubCategoryId);
 
-router
-   .route("/remove/:jobId")
-   .post(jobController.inactiveJob)
 module.exports = router;
