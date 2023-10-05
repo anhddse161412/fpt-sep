@@ -439,7 +439,7 @@ const getJobByClientId = async (req, res) => {
 // inactive job
 const inactiveJob = async (req, res) => {
    const job = await Job.findOne({
-      where: { id: req.params.jobId }
+      where: { id: req.params.jobID }
    })
 
    job.setDataValue("status", false);
