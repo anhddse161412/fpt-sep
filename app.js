@@ -3,10 +3,13 @@ var path = require("path");
 var cookieParser = require("cookie-parser");
 var logger = require("morgan");
 var cors = require("cors");
-
+const cron = require("node-cron");
 const route = require("./routes/Route");
 var passport = require("passport");
 var session = require("express-session");
+
+// job controller
+var jobController = require("./controllers/jobController");
 
 const swaggerUI = require("swagger-ui-express");
 const swaggerFile = require("./swagger_output.json");
@@ -28,6 +31,14 @@ app.use(passport.session());
 
 // swagger
 app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(swaggerFile));
+
+//
+
+cron.schedule("0 0 0 * * *", function () {
+   console.log("---------------------");
+   //will run every day at 00:00 AM
+   jobController.checkJobEndDate();
+});
 
 app.use(cors());
 app.use(logger("dev"));

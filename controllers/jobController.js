@@ -431,22 +431,56 @@ const getJobBySubCategory = async (req, res) => {
 const getJobByClientId = async (req, res) => {
    const jobs = await Job.findAll({
       where: { clientId: req.params.clientId },
-   })
+   });
 
    res.status(200).send(jobs);
-}
+};
 
 // inactive job
 const inactiveJob = async (req, res) => {
    const job = await Job.findOne({
-      where: { id: req.params.jobID }
-   })
+      where: { id: req.params.jobID },
+   });
 
    job.setDataValue("status", false);
    job.save();
 
-   res.status(200).send("Xoa cong viec thanh cong!")
-}
+   res.status(200).send("Xoa cong viec thanh cong!");
+};
+
+const checkJobEndDate = async (req, res) => {
+   try {
+      let message = [];
+      let jobs = await Job.findAll({
+         attributes: ["proposalSubmitDeadline", "id"],
+         where: { status: true },
+      }).then((res) => {
+         res.forEach((item) => {
+            if (!compareDates(item.proposalSubmitDeadline)) {
+               message.push(`Job id : ${item.id} is expired`);
+               item.setDataValue("status", false);
+               item.save();
+            }
+         });
+      });
+      if (message.length == 0) {
+         message.push("No job is expired today");
+      }
+      console.log(message);
+      message = [];
+   } catch (error) {
+      console.log(error);
+   }
+};
+
+const compareDates = (date) => {
+   const currentDate = new Date().getTime();
+   let jobDate = new Date(date).getTime();
+   if (jobDate < currentDate) {
+      return false;
+   }
+   return true;
+};
 
 module.exports = {
    createJob,
@@ -462,4 +496,5 @@ module.exports = {
    removeFavoriteJob,
    getJobByClientId,
    inactiveJob,
+   checkJobEndDate,
 };
