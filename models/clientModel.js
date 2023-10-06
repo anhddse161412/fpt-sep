@@ -11,7 +11,7 @@ module.exports = (sequelize, DataTypes) => {
          type: DataTypes.STRING,
       },
       introduction: {
-         type: DataTypes.STRING(5000),
+         type: DataTypes.TEXT,
       },
       currency: {
          type: DataTypes.INTEGER,

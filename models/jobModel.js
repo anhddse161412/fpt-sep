@@ -4,7 +4,7 @@ module.exports = (sequelize, DataTypes) => {
          type: DataTypes.STRING,
       },
       description: {
-         type: DataTypes.STRING(5000),
+         type: DataTypes.TEXT,
          allowNull: false,
       },
       fileAttachment: {

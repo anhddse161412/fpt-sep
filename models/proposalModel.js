@@ -1,7 +1,7 @@
 module.exports = (sequelize, DataTypes) => {
    const Proposal = sequelize.define("proposal", {
       description: {
-         type: DataTypes.STRING,
+         type: DataTypes.TEXT,
          allowNull: true,
       },
       fileAttach: {
