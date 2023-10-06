@@ -30,4 +30,7 @@ router
    .route("/subCategory/:subCategoryId")
    .get(jobController.paginationJobBySubCategoryId);
 
+router.route("/close/:jobId")
+   .post(jobController.closeJob)
+
 module.exports = router;

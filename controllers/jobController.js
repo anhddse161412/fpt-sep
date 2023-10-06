@@ -482,6 +482,20 @@ const compareDates = (date) => {
    return true;
 };
 
+const closeJob = async (req, res) => {
+   const job = await Job.findOne({
+      where: { id: req.params.jobId }
+   });
+
+   let dateTime = new Date();
+   dateTime.setHours(dateTime.getHours() - 1);
+
+   job.setDataValue("proposalSubmitDeadline", dateTime.toISOString())
+   job.save();
+
+   res.status(200).send(job)
+}
+
 module.exports = {
    createJob,
    getJobById,
@@ -497,4 +511,5 @@ module.exports = {
    getJobByClientId,
    inactiveJob,
    checkJobEndDate,
+   closeJob,
 };
