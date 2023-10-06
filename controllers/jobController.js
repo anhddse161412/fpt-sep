@@ -488,7 +488,6 @@ const closeJob = async (req, res) => {
    });
 
    let dateTime = new Date();
-   dateTime.setHours(dateTime.getHours() - 1);
 
    job.setDataValue("proposalSubmitDeadline", dateTime.toISOString())
    job.save();
