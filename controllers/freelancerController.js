@@ -168,7 +168,7 @@ const updateSkillSet = async (req, res) => {
 
 
       // difference between old skill and new skill
-      difference = freelancerSkills.filter(x => !skills.includes(x));
+      let difference = freelancerSkills.filter(x => !skills.includes(x));
       difference.forEach(async item => {
          const skill = await Skill.findOne({
             where: {
@@ -181,7 +181,7 @@ const updateSkillSet = async (req, res) => {
       })
 
       // difference between new skill and old skill
-      let difference = skills.filter(x => !freelancerSkills.includes(x));
+      difference = skills.filter(x => !freelancerSkills.includes(x));
       difference.forEach(async item => {
          const skill = await Skill.findOne({
             where: {
