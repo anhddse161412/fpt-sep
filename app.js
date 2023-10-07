@@ -34,7 +34,7 @@ app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(swaggerFile));
 
 //
 
-cron.schedule("0 0 0 * * *", function () {
+cron.schedule("0 0 * * *", function () {
    console.log("---------------------");
    //will run every day at 00:00 AM
    jobController.checkJobEndDate();
