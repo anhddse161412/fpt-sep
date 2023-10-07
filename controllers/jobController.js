@@ -94,6 +94,11 @@ const getJobById = async (req, res) => {
          let job = await Job.findOne({
             include: [
                {
+                  model: SubCategory,
+                  as: "subcategories",
+                  attributes: ["name"],
+               },
+               {
                   model: Skill,
                   as: "skills",
                   attributes: { exclude: ["createdAt", "updatedAt"] },
@@ -108,6 +113,10 @@ const getJobById = async (req, res) => {
                      },
                   ],
                },
+               {
+                  model: Proposal,
+                  as: "proposals"
+               }
             ],
             where: { id: req.params.jobID },
          });
