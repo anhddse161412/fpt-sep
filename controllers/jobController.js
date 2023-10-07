@@ -484,10 +484,35 @@ const compareDates = (date) => {
 
 const closeJob = async (req, res) => {
    const job = await Job.findOne({
+      include: [
+         {
+            model: Skill,
+            as: "skills",
+            attributes: { exclude: ["createdAt", "updatedAt"] },
+         },
+         {
+            model: Proposal,
+            as: "proposals",
+         },
+      ],
       where: { id: req.params.jobId }
    });
 
    let dateTime = new Date();
+
+   job.setDataValue("proposalSubmitDeadline", dateTime.toISOString())
+   job.save();
+
+   res.status(200).send(job)
+}
+
+const extendJob = async (req, res) => {
+   const job = await Job.findOne({
+      where: { id: req.params.jobId }
+   });
+
+   let dateTime = new Date();
+   dateTime.setDate(dateTime.getDate() + 3)
 
    job.setDataValue("proposalSubmitDeadline", dateTime.toISOString())
    job.save();
@@ -511,4 +536,5 @@ module.exports = {
    inactiveJob,
    checkJobEndDate,
    closeJob,
+   extendJob,
 };

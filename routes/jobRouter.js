@@ -33,4 +33,7 @@ router
 router.route("/close/:jobId")
    .post(jobController.closeJob)
 
+router.route("/extend/:jobId")
+   .post(jobController.extendJob)
+
 module.exports = router;
