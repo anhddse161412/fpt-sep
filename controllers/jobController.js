@@ -484,17 +484,6 @@ const compareDates = (date) => {
 
 const closeJob = async (req, res) => {
    const job = await Job.findOne({
-      include: [
-         {
-            model: Skill,
-            as: "skills",
-            attributes: { exclude: ["createdAt", "updatedAt"] },
-         },
-         {
-            model: Proposal,
-            as: "proposals",
-         },
-      ],
       where: { id: req.params.jobId }
    });
 
