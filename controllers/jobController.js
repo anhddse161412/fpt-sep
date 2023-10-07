@@ -33,18 +33,22 @@ const createJob = async (req, res) => {
 
       if (subCategoryList) {
          subCategoryList.forEach(async (item) => {
-            const subCategory = await SubCategory.findOne({ name: item });
+            const subCategory = await SubCategory.findOne({ where: { name: item } });
             subCategory.addJobs(job);
          });
       }
       if (skillList) {
          skillList.forEach(async (item) => {
-            const skill = await Skill.findOne({ name: item });
-            skill.addJobs(job);
+            let skill = await Skill.findOne({ where: { name: item } });
+            if (!skill) {
+               skill = await Skill.create({ name: item.charAt(0).toUpperCase() + item.slice(1) });
+               skill.addJobs(job);
+            } else {
+               skill.addJobs(job);
+            }
          });
       }
 
-      console.log(Job);
       res.status(200).send("job Created");
    } catch (error) {
       console.log(error);
