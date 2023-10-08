@@ -5,7 +5,7 @@ const certificateController = require("../controllers/certificateController");
 const router = require("express").Router();
 
 // use routers
-router.post("/create", certificateController.createCertificate);
+router.post("/", certificateController.createCertificate);
 // router.route("/").get(certificateController.getAllCertificate);
 
 router
@@ -15,7 +15,7 @@ router
 router
    .route("/detail/:certificateId")
    .get(certificateController.getCertificateById)
-   .post(certificateController.updateCertificate)
+   .put(certificateController.updateCertificate)
    .delete(certificateController.removeCertificate);
 
 module.exports = router;

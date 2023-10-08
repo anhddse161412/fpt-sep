@@ -3,19 +3,26 @@ const AppointmentController = require("../controllers/appointmentController");
 
 // router
 const router = require("express").Router();
-router.post("/create", AppointmentController.createAppointment);
+// router.post("/create", AppointmentController.createAppointment);
 
-router.route("/").get(AppointmentController.getAllAppointment);
+router
+   .route("/")
+   .get(AppointmentController.getAllAppointment)
+   .post(AppointmentController.createAppointment);
 
 router
    .route("/detail/:appointmentId")
    .get(AppointmentController.getAppointmentById)
-   .post(AppointmentController.updateAppointment);
-router.route("/job/:jobId").get(AppointmentController.getAppointmentByJobId);
+   .put(AppointmentController.updateAppointment);
+
+router
+   .route("/job/:jobId")
+   .get(AppointmentController.getAppointmentByJobId);
 router
    .route("/freelancer/:freelancerId")
    .get(AppointmentController.getAppointmentByFreelancerId);
 router
    .route("/client/:clientId")
    .get(AppointmentController.getAppointmentByClientId);
+
 module.exports = router;

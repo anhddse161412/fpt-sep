@@ -57,7 +57,8 @@ router
 router
    .route("/profile/:accountId")
    .get(accountController.getAccountById)
-   .post(accountController.updateAccount);
+   .put(accountController.updateAccount);
 
 router.route("/job/:accountId").get(accountController.getAccountWithJobId);
+
 module.exports = router;

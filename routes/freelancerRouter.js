@@ -9,33 +9,33 @@ router.route("/").get(freelancerController.getAllFreelancer);
 router
    .route("/profile/:accountId")
    .get(freelancerController.getFreelancerById)
-   .post(freelancerController.updateFreelancerAccount);
+   .put(freelancerController.updateFreelancerAccount);
 
 // update specific field
 // introduction
 router
    .route("/introduction/:freelancerId")
-   .post(freelancerController.updateIntroduction);
+   .put(freelancerController.updateIntroduction);
 
 // hoursPerWeek
 router.route("/hoursPerWeek/:freelancerId")
-   .post(freelancerController.updateHoursPerWeek)
+   .put(freelancerController.updateHoursPerWeek)
 
 // major
 router.route("/major/:freelancerId")
-   .post(freelancerController.updateMajor)
+   .put(freelancerController.updateMajor)
 
 // basic info
 router.route("/basicInfo/:freelancerId")
-   .post(freelancerController.updateBasicInfo)
+   .put(freelancerController.updateBasicInfo)
 
 // image and name
 router.route("/nameImage/:freelancerId")
-   .post(freelancerController.updateNameAndImage)
+   .put(freelancerController.updateNameAndImage)
 
 // skill set
 router.route("/skills/:freelancerId")
-   .post(freelancerController.updateSkillSet)
+   .put(freelancerController.updateSkillSet)
 
 // languages
 router

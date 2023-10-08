@@ -5,8 +5,10 @@ const categoryController = require("../controllers/categoryController");
 const router = require("express").Router();
 
 // use routers
-router.post("/create", categoryController.createCategory);
-router.route("/").get(categoryController.getAllCategory);
+router
+   .route("/")
+   .get(categoryController.getAllCategory)
+   .post(categoryController.createCategory);
 
 router
    .route("/subCategory/:categoryID")
@@ -15,5 +17,6 @@ router
 router
    .route("/detail/:categoryID")
    .get(categoryController.getCategoryById)
-   .post(categoryController.updateCategory);
+   .put(categoryController.updateCategory);
+
 module.exports = router;

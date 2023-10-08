@@ -15,5 +15,6 @@ router
 router
    .route("/detail/:subCategoryID")
    .get(subCategoryController.getSubCategoryById)
-   .post(subCategoryController.updateSubCategory);
+   .put(subCategoryController.updateSubCategory);
+
 module.exports = router;

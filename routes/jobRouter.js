@@ -4,9 +4,11 @@ const jobController = require("../controllers/jobController");
 const router = require("express").Router();
 
 // use routers
-router.post("/create", jobController.createJob);
+// router.post("/create", jobController.createJob);
 
-router.route("/").get(jobController.paginationJob);
+router.route("/")
+   .get(jobController.paginationJob)
+   .post(jobController.createJob);
 
 // router.route("/page/job").get(jobController.paginationJob);
 
@@ -17,13 +19,13 @@ router.route("/").get(jobController.paginationJob);
 router.route("/client/:clientId").get(jobController.getJobByClientId);
 
 router.route("/favorite/add").post(jobController.addFavoriteJob);
-router.route("/favorite/remove").post(jobController.removeFavoriteJob);
+router.route("/favorite/remove").delete(jobController.removeFavoriteJob);
 
 router.route("/apply").post(jobController.applyJob);
 router
    .route("/detail/:jobID")
    .get(jobController.getJobById)
-   .post(jobController.updateJob)
+   .put(jobController.updateJob)
    .delete(jobController.inactiveJob);
 
 router
@@ -31,9 +33,9 @@ router
    .get(jobController.paginationJobBySubCategoryId);
 
 router.route("/close/:jobId")
-   .post(jobController.closeJob)
+   .put(jobController.closeJob)
 
 router.route("/extend/:jobId")
-   .post(jobController.extendJob)
+   .put(jobController.extendJob)
 
 module.exports = router;
