@@ -1,27 +1,48 @@
-const { Model } = require("sequelize");
-const config = require("../config/vnpayConfig");
 const db = require("../models");
+const config = require("../config/vnpayConfig");
+
 const moment = require("moment");
-const { create } = require("domain");
 const Payment = db.payments;
 const Client = db.clients;
+
+const getAllPayment = async (req, res) => {
+   try {
+      let payments = await Payment.findAll({});
+      res.status(200).send(payments);
+   } catch (error) {
+      console.log(error);
+   }
+};
+
+const getPaymentByClientId = async (req, res) => {
+   try {
+      let payments = await Payment.findAll({
+         where: { clientId: req.params.clientId },
+      });
+      res.status(200).send(payments);
+   } catch (error) {
+      console.log(error);
+   }
+};
 
 const createPayment = async (req, res) => {
    try {
       let info = {
-         amount: req.session.amount,
-         name: req.session.name,
-         description: req.session.description,
+         amount: req.body.amount,
+         name: req.body.name,
+         description: req.body.description,
+         status: true,
          type: "deposit",
       };
-      let clientId = req.session.clientId;
-      console.log(clientId);
-      createPayment(info, clientId);
-      const payment = Payment.create(info);
+      let clientId = req.body.clientId;
+
+      const payment = await Payment.create(info);
       const client = await Client.findOne({
          where: { id: clientId },
       });
+      console.log(client);
       client.addPayment(payment);
+      res.status(200).send({ message: "Luu giao dich thanh cong" });
    } catch (error) {
       console.log(error);
    }
@@ -114,12 +135,15 @@ const vnpayReturn = async (req, res) => {
          //Kiem tra xem du lieu trong db co hop le hay khong va thong bao ket qua
 
          // get info to create payment
-         req.session.name = vnp_Params["vnp_BankTranNo"];
-         req.session.description = vnp_Params["vnp_OrderInfo"];
-         req.session.amount = vnp_Params["vnp_Amount"];
+         let name = vnp_Params["vnp_BankTranNo"];
+         let description = vnp_Params["vnp_OrderInfo"];
+         let amount = vnp_Params["vnp_Amount"];
 
          res.status(200).send({
             status: "success",
+            name: name,
+            description: description,
+            amount: amount,
             code: vnp_Params["vnp_ResponseCode"],
          });
       } else {
@@ -150,6 +174,9 @@ const sortObject = (obj) => {
 };
 
 module.exports = {
+   getPaymentByClientId,
+   createPayment,
    createVnpayUrl,
    vnpayReturn,
+   getAllPayment,
 };
