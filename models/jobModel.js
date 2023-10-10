@@ -12,7 +12,7 @@ module.exports = (sequelize, DataTypes) => {
          allowNull: true,
       },
       proposalSubmitDeadline: {
-         type: DataTypes.STRING,
+         type: DataTypes.DATE,
          allowNull: true,
       },
       lowestIncome: {

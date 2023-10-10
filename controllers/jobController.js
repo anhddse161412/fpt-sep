@@ -33,7 +33,9 @@ const createJob = async (req, res) => {
 
       if (subCategoryList) {
          subCategoryList.forEach(async (item) => {
-            const subCategory = await SubCategory.findOne({ where: { name: item } });
+            const subCategory = await SubCategory.findOne({
+               where: { name: item },
+            });
             subCategory.addJobs(job);
          });
       }
@@ -41,7 +43,9 @@ const createJob = async (req, res) => {
          skillList.forEach(async (item) => {
             let skill = await Skill.findOne({ where: { name: item } });
             if (!skill) {
-               skill = await Skill.create({ name: item.charAt(0).toUpperCase() + item.slice(1) });
+               skill = await Skill.create({
+                  name: item.charAt(0).toUpperCase() + item.slice(1),
+               });
                skill.addJobs(job);
             } else {
                skill.addJobs(job);
@@ -115,8 +119,8 @@ const getJobById = async (req, res) => {
                },
                {
                   model: Proposal,
-                  as: "proposals"
-               }
+                  as: "proposals",
+               },
             ],
             where: { id: req.params.jobID },
          });
@@ -497,30 +501,30 @@ const compareDates = (date) => {
 
 const closeJob = async (req, res) => {
    const job = await Job.findOne({
-      where: { id: req.params.jobId }
+      where: { id: req.params.jobId },
    });
 
    let dateTime = new Date();
 
-   job.setDataValue("proposalSubmitDeadline", dateTime.toISOString())
+   job.setDataValue("proposalSubmitDeadline", dateTime);
    job.save();
 
-   res.status(200).send(job)
-}
+   res.status(200).send(job);
+};
 
 const extendJob = async (req, res) => {
    const job = await Job.findOne({
-      where: { id: req.params.jobId }
+      where: { id: req.params.jobId },
    });
 
    let dateTime = new Date();
-   dateTime.setDate(dateTime.getDate() + 3)
+   dateTime.setDate(dateTime.getDate() + 3);
 
-   job.setDataValue("proposalSubmitDeadline", dateTime.toISOString())
+   job.setDataValue("proposalSubmitDeadline", dateTime);
    job.save();
 
-   res.status(200).send(job)
-}
+   res.status(200).send(job);
+};
 
 module.exports = {
    createJob,
