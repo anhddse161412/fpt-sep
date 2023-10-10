@@ -12,6 +12,7 @@ var proposalRouter = require("./proposalRouter");
 var AppointmentRouter = require("./appointmentRouter");
 var CertificateRouter = require("./certificateRouter");
 var PaymentRouter = require("./paymentRouter");
+var NotificationRouter = require("./notificationRouter");
 
 router.use("/accounts", accountsRouter);
 router.use("/category", categoryRouter);
@@ -24,4 +25,5 @@ router.use("/proposal", proposalRouter);
 router.use("/appointment", AppointmentRouter);
 router.use("/certificate", CertificateRouter);
 router.use("/payment", PaymentRouter);
+router.use("/notification", NotificationRouter);
 module.exports = router;

@@ -40,7 +40,12 @@ const createPayment = async (req, res) => {
       const client = await Client.findOne({
          where: { id: clientId },
       });
-      console.log(client);
+
+      // update client's currency
+      let newCurrencyValue = client.currency + parseInt(info.amount);
+      client.setDataValue("currency", newCurrencyValue);
+      client.save();
+      //
       client.addPayment(payment);
       res.status(200).send({ message: "Luu giao dich thanh cong" });
    } catch (error) {

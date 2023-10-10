@@ -45,6 +45,7 @@ db.certificates = require("./certificateModel")(sequelize, DataTypes);
 db.recommendPoints = require("./recommendPoint.js")(sequelize, DataTypes);
 db.payments = require("./paymentModel")(sequelize, DataTypes);
 db.transactions = require("./transactionModel")(sequelize, DataTypes);
+db.notifications = require("./notificationModel")(sequelize, DataTypes);
 db.languages = require("./languageModel.js")(sequelize, DataTypes);
 
 // many many model
@@ -226,6 +227,17 @@ db.languages.belongsTo(db.freelancers, {
    as: "freelancers",
 });
 
+// account - notification
+db.accounts.hasMany(db.notifications, {
+   foreignKey: "accountId",
+   as: "notifications",
+});
+
+db.notifications.belongsTo(db.accounts, {
+   foreignKey: "accountId",
+   as: "accounts",
+});
+
 // Many to Many relation
 db.jobs.belongsToMany(db.accounts, { through: db.favorite });
 db.accounts.belongsToMany(db.jobs, { through: db.favorite });
@@ -239,7 +251,7 @@ db.skills.belongsToMany(db.jobs, { through: db.jobSkill });
 db.freelancers.belongsToMany(db.skills, { through: db.freelancerSkill });
 db.skills.belongsToMany(db.freelancers, { through: db.freelancerSkill });
 
-db.freelancers.belongsToMany(db.jobs, { through: db.freelancerJob })
-db.jobs.belongsToMany(db.freelancers, { through: db.freelancerJob })
+db.freelancers.belongsToMany(db.jobs, { through: db.freelancerJob });
+db.jobs.belongsToMany(db.freelancers, { through: db.freelancerJob });
 
 module.exports = db;

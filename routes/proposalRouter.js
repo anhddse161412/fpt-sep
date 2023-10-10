@@ -10,21 +10,18 @@ router
    .get(proposalController.getAllProposal)
    .post(proposalController.createProposal);
 
-router.route("/approve/:proposalId")
-   .put(proposalController.approveProposal);
-router.route("/decline/:proposalId")
-   .put(proposalController.declineProposal);
+router.route("/approve/:proposalId").put(proposalController.approveProposal);
+router.route("/decline/:proposalId").put(proposalController.declineProposal);
 
 router
    .route("/detail/:proposalId")
    .get(proposalController.getProposalById)
    .put(proposalController.updateProposal);
 
-router.route("/job/:jobId")
-   .get(proposalController.getProposalByJobId);
-router.route("/freelancer/:freelancerId")
+router.route("/job/:jobId").get(proposalController.getProposalByJobId);
+router
+   .route("/freelancer/:freelancerId")
    .get(proposalController.getProposalByFreelancerId);
-router.route("/client/:clientId")
-   .get(proposalController.getProposalByClientId);
+router.route("/client/:clientId").get(proposalController.getProposalByClientId);
 
 module.exports = router;
