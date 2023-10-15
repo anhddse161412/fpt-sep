@@ -1,7 +1,7 @@
 const db = require("../models");
 const { genSaltSync, hashSync, compareSync } = require("bcrypt");
-const { sign } = require("jsonwebtoken");
-
+const { sign, verify } = require("jsonwebtoken");
+const nodemailer = require("nodemailer");
 // image Upload
 
 // create main Model
@@ -183,6 +183,63 @@ const getFavoriteJobOfAccount = async (req, res) => {
    });
    res.status(200).send(favoriteJobList);
 };
+
+const forgorPassword = async (req, res) => {
+   const { email } = req.body;
+   await Account.findOne({ where: { email: email } }).then((account) => {
+      if (!account) {
+         return res.send({ Status: "User not existed" });
+      }
+      const token = sign({ account: account.id }, process.env.JWT_KEY, {
+         expiresIn: "1d",
+      });
+      var transporter = nodemailer.createTransport({
+         service: "gmail",
+         auth: {
+            user: "anhddse161412@fpt.edu.vn",
+            pass: "uxqo fytd eaps tkkz",
+         },
+      });
+
+      var mailOptions = {
+         from: "anhddse161412@fpt.edu.vn",
+         to: `${email}`,
+         subject: "Reset Password Link",
+         text: `https://fpt-sep.onrender.com/accounts/reset_password/${account.id}/${token}`,
+      };
+
+      transporter.sendMail(mailOptions, function (error, info) {
+         if (error) {
+            console.log(error);
+         } else {
+            return res.send({ Status: "Success" });
+         }
+      });
+   });
+   // res.status(200).send({
+   //    message: "da gui toi gmail cua ban link reset password",
+   // });
+};
+
+const resetPassword = async (req, res) => {
+   const { id, token } = req.params;
+   const { password } = req.body;
+
+   verify(token, process.env.JWT_KEY, async (err, decoded) => {
+      if (err) {
+         return res.json({ Status: "Error with token" });
+      } else {
+         const salt = genSaltSync(10);
+         newPassword = hashSync(password, salt);
+         let account = await Account.findOne({ where: { id: id } });
+         account.setDataValue("password", newPassword);
+         account
+            .save()
+            .then((u) => res.send({ Status: "Success" }))
+            .catch((err) => res.send({ Status: err }));
+      }
+   });
+};
 module.exports = {
    register,
    getAccountById,
@@ -193,4 +250,6 @@ module.exports = {
    isLoggedIn,
    loginGoogle,
    getFavoriteJobOfAccount,
+   forgorPassword,
+   resetPassword,
 };

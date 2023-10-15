@@ -186,7 +186,7 @@
           }
         }
       },
-      "post": {
+      "put": {
         "description": "",
         "parameters": [
           {
@@ -228,7 +228,15 @@
         }
       }
     },
-    "/category/create": {
+    "/category/": {
+      "get": {
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
       "post": {
         "description": "",
         "responses": {
@@ -254,16 +262,6 @@
                 }
               }
             }
-          }
-        }
-      }
-    },
-    "/category/": {
-      "get": {
-        "description": "",
-        "responses": {
-          "200": {
-            "description": "OK"
           }
         }
       }
@@ -307,7 +305,7 @@
           }
         }
       },
-      "post": {
+      "put": {
         "description": "",
         "parameters": [
           {
@@ -408,7 +406,7 @@
           }
         }
       },
-      "post": {
+      "put": {
         "description": "",
         "parameters": [
           {
@@ -427,7 +425,37 @@
         }
       }
     },
-    "/job/create": {
+    "/job/": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      },
       "post": {
         "description": "",
         "responses": {
@@ -478,44 +506,12 @@
         }
       }
     },
-    "/job/": {
+    "/job/client/{clientId}": {
       "get": {
         "description": "",
         "parameters": [
           {
-            "name": "limit",
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "page",
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "400": {
-            "description": "Bad Request"
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        }
-      }
-    },
-    "/job/client/{jobID}": {
-      "get": {
-        "description": "",
-        "parameters": [
-          {
-            "name": "jobID",
+            "name": "clientId",
             "in": "path",
             "required": true,
             "schema": {
@@ -558,7 +554,7 @@
       }
     },
     "/job/favorite/remove": {
-      "post": {
+      "delete": {
         "description": "",
         "responses": {
           "200": {
@@ -622,6 +618,13 @@
             "schema": {
               "type": "string"
             }
+          },
+          {
+            "name": "freelancerId",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {
@@ -630,7 +633,25 @@
           }
         }
       },
-      "post": {
+      "put": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "jobID",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "delete": {
         "description": "",
         "parameters": [
           {
@@ -689,6 +710,46 @@
         }
       }
     },
+    "/job/close/{jobId}": {
+      "put": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "jobId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/job/extend/{jobId}": {
+      "put": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "jobId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
     "/skill/": {
       "get": {
         "description": "",
@@ -709,7 +770,272 @@
         }
       }
     },
-    "/freelancer/profile/{freelancerId}": {
+    "/freelancer/profile/{accountId}": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "accountId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "put": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "accountId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "account": {
+                    "example": "any"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/freelancer/introduction/{freelancerId}": {
+      "put": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "freelancerId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "title": {
+                    "example": "any"
+                  },
+                  "introduction": {
+                    "example": "any"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/freelancer/hoursPerWeek/{freelancerId}": {
+      "put": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "freelancerId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "hoursPerWeek": {
+                    "example": "any"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/freelancer/major/{freelancerId}": {
+      "put": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "freelancerId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "major": {
+                    "example": "any"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/freelancer/basicInfo/{freelancerId}": {
+      "put": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "freelancerId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "phone": {
+                    "example": "any"
+                  },
+                  "address": {
+                    "example": "any"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/freelancer/nameImage/{freelancerId}": {
+      "put": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "freelancerId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "example": "any"
+                  },
+                  "image": {
+                    "example": "any"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/freelancer/skills/{freelancerId}": {
+      "put": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "freelancerId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "skill": {
+                    "example": "any"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/freelancer/languages/{freelancerId}": {
       "get": {
         "description": "",
         "parameters": [
@@ -733,6 +1059,75 @@
         "parameters": [
           {
             "name": "freelancerId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "example": "any"
+                  },
+                  "level": {
+                    "example": "any"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "freelancerId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "languages": {
+                    "example": "any"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/freelancer./language/{languageId}": {
+      "delete": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "languageId",
             "in": "path",
             "required": true,
             "schema": {
@@ -757,12 +1152,12 @@
         }
       }
     },
-    "/client/profile/{clientId}": {
+    "/client/profile/{accountId}": {
       "get": {
         "description": "",
         "parameters": [
           {
-            "name": "clientId",
+            "name": "accountId",
             "in": "path",
             "required": true,
             "schema": {
@@ -776,11 +1171,11 @@
           }
         }
       },
-      "post": {
+      "put": {
         "description": "",
         "parameters": [
           {
-            "name": "clientId",
+            "name": "accountId",
             "in": "path",
             "required": true,
             "schema": {
@@ -792,10 +1187,32 @@
           "200": {
             "description": "OK"
           }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "account": {
+                    "example": "any"
+                  }
+                }
+              }
+            }
+          }
         }
       }
     },
-    "/proposal/create": {
+    "/proposal/": {
+      "get": {
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
       "post": {
         "description": "",
         "responses": {
@@ -834,18 +1251,8 @@
         }
       }
     },
-    "/proposal/": {
-      "get": {
-        "description": "",
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
     "/proposal/approve/{proposalId}": {
-      "post": {
+      "put": {
         "description": "",
         "parameters": [
           {
@@ -865,7 +1272,7 @@
       }
     },
     "/proposal/decline/{proposalId}": {
-      "post": {
+      "put": {
         "description": "",
         "parameters": [
           {
@@ -903,7 +1310,7 @@
           }
         }
       },
-      "post": {
+      "put": {
         "description": "",
         "parameters": [
           {
@@ -982,7 +1389,15 @@
         }
       }
     },
-    "/appointment/create": {
+    "/appointment/": {
+      "get": {
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
       "post": {
         "description": "",
         "responses": {
@@ -1024,16 +1439,6 @@
         }
       }
     },
-    "/appointment/": {
-      "get": {
-        "description": "",
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
     "/appointment/detail/{appointmentId}": {
       "get": {
         "description": "",
@@ -1053,7 +1458,7 @@
           }
         }
       },
-      "post": {
+      "put": {
         "description": "",
         "parameters": [
           {
@@ -1132,7 +1537,7 @@
         }
       }
     },
-    "/certificate/create": {
+    "/certificate/": {
       "post": {
         "description": "",
         "responses": {
@@ -1167,7 +1572,7 @@
                   "status": {
                     "example": "any"
                   },
-                  "freelancerId": {
+                  "accountId": {
                     "example": "any"
                   }
                 }
@@ -1216,11 +1621,230 @@
           }
         }
       },
-      "post": {
+      "put": {
         "description": "",
         "parameters": [
           {
             "name": "certificateId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "delete": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "certificateId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/payment/": {
+      "get": {
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "post": {
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "amount": {
+                    "example": "any"
+                  },
+                  "name": {
+                    "example": "any"
+                  },
+                  "description": {
+                    "example": "any"
+                  },
+                  "clientId": {
+                    "example": "any"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/payment/client/{clientId}": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "clientId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/payment/vnpay": {
+      "post": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "x-forwarded-for",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "amount": {
+                    "example": "any"
+                  },
+                  "bankCode": {
+                    "example": "any"
+                  },
+                  "language": {
+                    "example": "any"
+                  },
+                  "clientId": {
+                    "example": "any"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/payment/vnpay_test": {
+      "get": {
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/payment/vnpay_return": {
+      "get": {
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/notification/": {
+      "get": {
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "post": {
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "example": "any"
+                  },
+                  "description": {
+                    "example": "any"
+                  },
+                  "accountId": {
+                    "example": "any"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/notification/account/{accountId}": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "accountId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/notification/delete/{id}": {
+      "delete": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
             "in": "path",
             "required": true,
             "schema": {
