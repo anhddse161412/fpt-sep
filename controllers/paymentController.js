@@ -19,7 +19,13 @@ const getPaymentByClientId = async (req, res) => {
       let payments = await Payment.findAll({
          where: { clientId: req.params.clientId },
       });
-      res.status(200).send(payments);
+      let client = await Client.findOne({
+         where: { id: req.params.clientId },
+      });
+      res.status(200).send({
+         payment: payments,
+         clientCurrency: client.currency,
+      });
    } catch (error) {
       console.log(error);
    }
