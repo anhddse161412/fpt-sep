@@ -240,6 +240,33 @@ const resetPassword = async (req, res) => {
       }
    });
 };
+
+const changePassword = async (req, res) => {
+   let account = await Account.findOne({
+      where: { id: req.params.accountId }
+   });
+
+   // decode password
+   const salt = genSaltSync(10);
+   let newPassword = hashSync(req.body.password, salt);
+
+   account.setDataValue("password", newPassword);
+   account.save();
+
+   res.status(200).send("Doi mat khau thanh cong!");
+}
+
+const deleteAccount = async (req, res) => {
+   let account = await Account.findOne({
+      where: { id: req.params.accountId }
+   });
+
+   account.setDataValue("status", false);
+   account.save();
+
+   res.status(200).send("Da dong tai khoan!");
+}
+
 module.exports = {
    register,
    getAccountById,
@@ -252,4 +279,6 @@ module.exports = {
    getFavoriteJobOfAccount,
    forgorPassword,
    resetPassword,
+   changePassword,
+   deleteAccount,
 };
