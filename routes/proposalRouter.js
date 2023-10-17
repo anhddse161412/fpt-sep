@@ -12,6 +12,7 @@ router
 
 router.route("/approve/:proposalId").put(proposalController.approveProposal);
 router.route("/decline/:proposalId").put(proposalController.declineProposal);
+router.route("/interview/:proposalId").put(proposalController.interviewProposal)
 
 router
    .route("/detail/:proposalId")

@@ -248,6 +248,35 @@ const approveProposal = async (req, res) => {
    }
 };
 
+// change proposal to interview
+const interviewProposal = async (req, res) => {
+   try {
+      let proposal = await Proposal.findOne({
+         include: [
+            {
+               model: Freelancer,
+               as: "freelancers",
+
+               include: [
+                  {
+                     model: Account,
+                     as: "accounts",
+                     attributes: ["name", "image"],
+                  },
+               ],
+               attributes: ["id"],
+            },
+         ],
+         where: { id: req.params.proposalId },
+      });
+      proposal.setDataValue("status", "interview");
+      proposal.save();
+      res.status(200).send(proposal);
+   } catch (error) {
+      console.log(error);
+   }
+};
+
 // decline propsal
 const declineProposal = async (req, res) => {
    try {
