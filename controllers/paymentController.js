@@ -112,10 +112,11 @@ const createVnpayUrl = async (req, res) => {
       vnp_Params["vnp_SecureHash"] = signed;
       vnpUrl += "?" + querystring.stringify(vnp_Params, { encode: false });
       req.session.clientId = req.body.clientId;
-      res.status(200).send({
-         vnpUrl: vnpUrl,
-         clientId: req.session.clientId,
-      });
+      // res.status(200).send({
+      //    vnpUrl: vnpUrl,
+      //    clientId: req.session.clientId,
+      // });
+      res.redirect(vnpUrl);
    } catch (error) {
       console.log(error);
    }
@@ -159,7 +160,7 @@ const vnpayReturn = async (req, res) => {
          });
       } else {
          res.status(200).send({
-            status: "success",
+            status: "not success",
             code: "97",
          });
       }
