@@ -246,14 +246,21 @@ const changePassword = async (req, res) => {
       where: { id: req.params.accountId }
    });
 
-   // decode password
-   const salt = genSaltSync(10);
-   let newPassword = hashSync(req.body.password, salt);
+   const checkPassword = compareSync(req.body.oldPassword, account.password);
+   if (checkPassword) {
+      // decode password
+      const salt = genSaltSync(10);
+      let newPassword = hashSync(req.body.newPassword, salt);
 
-   account.setDataValue("password", newPassword);
-   account.save();
+      account.setDataValue("password", newPassword);
+      account.save();
 
-   res.status(200).send("Doi mat khau thanh cong!");
+      res.status(200).send("Đổi mật khẩu thành công!");
+   } else {
+      res.status(403).json({
+         message: "Mật khẩu cũ không đúng!",
+      });
+   }
 }
 
 const deleteAccount = async (req, res) => {
