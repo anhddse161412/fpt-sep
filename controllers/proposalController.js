@@ -315,5 +315,6 @@ module.exports = {
    declineProposal,
    getProposalByJobId,
    getProposalByFreelancerId,
-   getProposalByClientId
+   getProposalByClientId,
+   interviewProposal,
 };
