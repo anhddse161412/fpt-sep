@@ -10,6 +10,8 @@ const SubCategory = db.subCategories;
 const Client = db.clients;
 const Proposal = db.proposals;
 const Skill = db.skills;
+const Appointment = db.appointments;
+const Freelancer = db.freelancers;
 // main work
 
 // 1. create Job
@@ -453,6 +455,42 @@ const getJobByClientId = async (req, res) => {
    res.status(200).send(jobs);
 };
 
+// get job by Client Id that have appointment
+const getJobHasAppointmentByClientId = async (req, res) => {
+   const jobs = await Job.findAll({
+      include: [
+         {
+            model: Proposal,
+            as: "proposals",
+            include: [
+               {
+                  model: Appointment,
+                  as: "appointments",
+                  attributes: { exclude: ["createdAt", "updateAt"] },
+               },
+               {
+                  model: Freelancer,
+                  as: "freelancers",
+                  include: [
+                     {
+                        model: Account,
+                        as: "accounts",
+                        attributes: ["name", "email"],
+                     },
+                  ],
+                  attributes: ["id"],
+               },
+            ],
+            attributes: ["id"],
+            where: { status: "interview" },
+         }
+      ],
+      where: { clientId: req.params.clientId },
+   });
+
+   res.status(200).send(jobs);
+};
+
 // inactive job
 const inactiveJob = async (req, res) => {
    const job = await Job.findOne({
@@ -539,6 +577,7 @@ module.exports = {
    paginationJobBySubCategoryId,
    removeFavoriteJob,
    getJobByClientId,
+   getJobHasAppointmentByClientId,
    inactiveJob,
    checkJobEndDate,
    closeJob,

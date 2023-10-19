@@ -38,4 +38,7 @@ router.route("/close/:jobId")
 router.route("/extend/:jobId")
    .put(jobController.extendJob)
 
+router.route("/appointment/:clientId")
+   .get(jobController.getJobHasAppointmentByClientId);
+
 module.exports = router;
