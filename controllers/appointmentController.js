@@ -8,6 +8,7 @@ const Appointment = db.appointments;
 const Freelancer = db.freelancers;
 const Client = db.clients;
 const Job = db.jobs;
+const Proposal = db.proposals;
 // main work
 
 // 1. create Appointment
@@ -18,24 +19,19 @@ const createAppointment = async (req, res) => {
          link: req.body.link,
          time: req.body.time,
          clientId: req.body.clientId,
-         freelancerId: req.body.freelancerId,
-         jobId: req.body.jobId,
+         proposalId: req.body.proposalId,
          status: req.body.status ? req.body.status : "Sent",
       };
-      const job = await Job.findOne({
-         where: { id: req.body.jobId },
-      });
+
       const client = await Client.findOne({
          where: { id: req.body.clientId },
       });
-      const freelancer = await Freelancer.findOne({
-         where: { id: req.body.freelancerId },
+      const proposal = await Proposal.findOne({
+         where: { id: req.body.proposalId },
       });
 
       const appointment = await Appointment.create(info);
-      job.setAppointments(appointment);
-      client.setAppointments(appointment);
-      freelancer.setAppointments(appointment);
+      proposal.setAppointments(appointment);
       res.status(200).json({ messsage: "Tạo Appointment thành công" });
    } catch (error) {
       console.log(error);
@@ -158,20 +154,26 @@ const getAppointmentByFreelancerId = async (req, res) => {
       let appointment = await Appointment.findAll({
          include: [
             {
-               model: Freelancer,
-               as: "freelancers",
-
+               model: Proposal,
+               as: "proposals",
                include: [
                   {
-                     model: Account,
-                     as: "accounts",
-                     attributes: ["name", "email"],
+                     model: Freelancer,
+                     as: "freelancers",
+
+                     include: [
+                        {
+                           model: Account,
+                           as: "accounts",
+                           attributes: ["name", "email"],
+                        },
+                     ],
+                     attributes: ["id"],
                   },
                ],
-               attributes: ["id"],
-            },
+               where: { freelancerId: req.params.freelancerId },
+            }
          ],
-         where: { freelancerId: req.params.freelancerId },
       });
       res.status(200).send(appointment);
    } catch (error) {
@@ -184,11 +186,17 @@ const getAppointmentByJobId = async (req, res) => {
       let appointment = await Appointment.findAll({
          include: [
             {
-               model: Job,
-               as: "jobs",
-            },
+               model: Proposal,
+               as: "proposals",
+               include: [
+                  {
+                     model: Job,
+                     as: "jobs",
+                  },
+               ],
+               where: { jobId: req.params.jobId },
+            }
          ],
-         where: { jobId: req.params.jobId },
       });
       res.status(200).send(appointment);
    } catch (error) {
