@@ -17,6 +17,21 @@ const swaggerFile = require("./swagger_output.json");
 const connection = require("./config/db");
 var app = express();
 
+app.use(cors());
+app.use(logger("dev"));
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+app.use(cookieParser());
+app.use(express.static(path.join(__dirname, "public")));
+app.use(function (req, res, next) {
+   res.header("Access-Control-Allow-Origin", "*");
+   res.header(
+      "Access-Control-Allow-Headers",
+      "Origin, X-Requested-With, Content-Type, Accept"
+   );
+   next();
+});
+
 app.use(
    session({
       secret: "mysecret",
@@ -39,13 +54,6 @@ cron.schedule("0 0 * * *", function () {
    //will run every day at 00:00 AM
    jobController.checkJobEndDate();
 });
-
-app.use(cors());
-app.use(logger("dev"));
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser());
-app.use(express.static(path.join(__dirname, "public")));
 
 // router
 app.use("/", route);
