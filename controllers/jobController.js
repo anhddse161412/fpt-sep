@@ -475,7 +475,7 @@ const getJobHasAppointmentByClientId = async (req, res) => {
                      {
                         model: Account,
                         as: "accounts",
-                        attributes: ["name", "email"],
+                        attributes: ["name", "email", "image"],
                      },
                   ],
                   attributes: ["id"],
@@ -485,7 +485,7 @@ const getJobHasAppointmentByClientId = async (req, res) => {
             where: { status: "interview" },
          }
       ],
-      where: { clientId: req.params.clientId },
+      where: { clientId: req.params.clientId, status: true },
    });
 
    res.status(200).send(jobs);
