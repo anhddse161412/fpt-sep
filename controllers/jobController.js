@@ -467,6 +467,7 @@ const getJobHasAppointmentByClientId = async (req, res) => {
                   model: Appointment,
                   as: "appointments",
                   attributes: { exclude: ["createdAt", "updateAt"] },
+                  where: { status: "Sent" },
                },
                {
                   model: Freelancer,
