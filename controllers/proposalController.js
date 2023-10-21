@@ -242,6 +242,9 @@ const approveProposal = async (req, res) => {
       });
       proposal.setDataValue("status", "approved");
       proposal.save();
+
+      await FreelacnerJob.create({ freelancerId: proposal.freelancerId, jobId: proposal.jobId })
+
       res.status(200).send(proposal);
    } catch (error) {
       console.log(error);
