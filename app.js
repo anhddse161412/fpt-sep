@@ -10,6 +10,7 @@ var session = require("express-session");
 
 // job controller
 var jobController = require("./controllers/jobController");
+var recommendPointController = require("./controllers/recommendPointController")
 
 const swaggerUI = require("swagger-ui-express");
 const swaggerFile = require("./swagger_output.json");
@@ -55,6 +56,24 @@ cron.schedule("0 0 * * *", function () {
    jobController.checkJobEndDate();
 });
 
+cron.schedule("0 * * * *", function () {
+   console.log("---------------------");
+   //will run every hour
+   recommendPointController.createDataForFreelancer();
+});
+
+cron.schedule("1 * * * *", function () {
+   console.log("---------------------");
+   //will run every hour
+   recommendPointController.createProposalDataRecommend();
+});
+
+cron.schedule("2 * * * *", function () {
+   console.log("---------------------");
+   //will run every hour
+   recommendPointController.recommendationProposalForJob();
+   recommendPointController.recommendationForFreelancer();
+});
 // router
 app.use("/", route);
 

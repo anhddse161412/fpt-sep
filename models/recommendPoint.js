@@ -3,7 +3,13 @@ module.exports = (sequelize, DataTypes) => {
       point: {
          type: DataTypes.INTEGER,
          allowNull: true,
+         defaultValue: 0,
       },
+      type: {
+         type: DataTypes.STRING,
+         allowNull: true,
+         defaultValue: "forFreelancers"
+      }
    });
 
    return RecommendPoint;
