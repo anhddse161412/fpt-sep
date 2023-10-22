@@ -12,6 +12,7 @@ const Proposal = db.proposals;
 const Freelancer = db.freelancers;
 const Job = db.jobs;
 const Client = db.clients;
+const RecommendPoint = db.recommendPoints;
 const FreelancerJob = db.freelancerJob;
 // main work
 
@@ -143,6 +144,40 @@ const getProposalByJobId = async (req, res) => {
       console.log(error);
    }
 };
+
+const getRecommendProposalByJobId = async (req, res) => {
+   try {
+      let recommended = await RecommendPoint.findAll({
+         include: [
+            {
+               model: Freelancer,
+               as: "freelancers",
+               attributes: ["id"],
+               include: [
+                  {
+                     model: Account,
+                     as: "accounts",
+                     attributes: ["name", "email", "image"],
+                  },
+                  {
+                     model: Proposal,
+                     as: "proposals",
+                     attributes: { exclude: ["createdAt", "updatedAt"] },
+                     where: { jobId: req.params.jobId }
+                  },
+               ],
+            },
+         ],
+         attributes: ["point"],
+         where: { jobId: req.params.jobId, type: "forProposals" },
+         order: [["point", "DESC"]],
+      });
+
+      res.status(200).send(recommended);
+   } catch (error) {
+      console.log(error);
+   }
+}
 
 // Get Proposal by freelancer ID
 const getProposalByFreelancerId = async (req, res) => {
@@ -320,5 +355,6 @@ module.exports = {
    getProposalByJobId,
    getProposalByFreelancerId,
    getProposalByClientId,
+   getRecommendProposalByJobId,
    interviewProposal,
 };

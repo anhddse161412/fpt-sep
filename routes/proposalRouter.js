@@ -24,5 +24,7 @@ router
    .route("/freelancer/:freelancerId")
    .get(proposalController.getProposalByFreelancerId);
 router.route("/client/:clientId").get(proposalController.getProposalByClientId);
+router.route("/recommended/:jobId")
+   .get(proposalController.getRecommendProposalByJobId)
 
 module.exports = router;
