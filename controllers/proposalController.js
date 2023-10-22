@@ -11,7 +11,8 @@ const Account = db.accounts;
 const Proposal = db.proposals;
 const Freelancer = db.freelancers;
 const Job = db.jobs;
-const Client = db.clients
+const Client = db.clients;
+const FreelancerJob = db.freelancerJob;
 // main work
 
 // 1. create proposal
@@ -243,7 +244,7 @@ const approveProposal = async (req, res) => {
       proposal.setDataValue("status", "approved");
       proposal.save();
 
-      await FreelacnerJob.create({ freelancerId: proposal.freelancerId, jobId: proposal.jobId })
+      await FreelancerJob.create({ freelancerId: proposal.freelancerId, jobId: proposal.jobId })
 
       res.status(200).send(proposal);
    } catch (error) {
