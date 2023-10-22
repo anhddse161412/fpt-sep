@@ -41,4 +41,7 @@ router.route("/extend/:jobId")
 router.route("/appointment/:clientId")
    .get(jobController.getJobHasAppointmentByClientId);
 
+router.route("/recommended/:freelancerId")
+   .get(jobController.recommendedJobForFreelancer);
+
 module.exports = router;

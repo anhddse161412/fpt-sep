@@ -12,6 +12,7 @@ const Proposal = db.proposals;
 const Skill = db.skills;
 const Appointment = db.appointments;
 const Freelancer = db.freelancers;
+const RecommendPoint = db.recommendPoints;
 // main work
 
 // 1. create Job
@@ -565,6 +566,48 @@ const extendJob = async (req, res) => {
    res.status(200).send(job);
 };
 
+const recommendedJobForFreelancer = async (req, res) => {
+   try {
+
+      let limit = 10;
+
+      let recommended = await RecommendPoint.findAll({
+         include: [
+            {
+               model: Job,
+               as: "jobs",
+               include: [
+                  {
+                     model: Client,
+                     as: "clients",
+                     include: [
+                        {
+                           model: Account,
+                           as: "accounts",
+                           attributes: ["name", "image"],
+                        },
+                     ],
+                     attributes: ["id"],
+                  },
+                  {
+                     model: Skill,
+                     as: "skills",
+                     attributes: { exclude: ["createdAt", "updatedAt"] },
+                  },
+               ]
+            }
+         ],
+         attributes: ["point"],
+         where: { freelancerId: req.params.freelancerId, type: "forFreelancers" },
+         order: [["point", "DESC"]],
+         limit,
+      })
+      res.status(200).send(recommended);
+   } catch (error) {
+      console.log(error)
+   }
+}
+
 module.exports = {
    createJob,
    getJobById,
@@ -583,4 +626,5 @@ module.exports = {
    checkJobEndDate,
    closeJob,
    extendJob,
+   recommendedJobForFreelancer,
 };
