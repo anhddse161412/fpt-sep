@@ -20,6 +20,18 @@ module.exports = (sequelize, DataTypes) => {
          type: DataTypes.STRING,
          allowNull: false,
       },
+      orderId: {
+         type: DataTypes.STRING,
+         allowNull: false,
+      },
+      transDate: {
+         type: DataTypes.STRING,
+         allowNull: false,
+      },
+      transType: {
+         type: DataTypes.STRING,
+         allowNull: false,
+      },
    });
 
    return Payment;

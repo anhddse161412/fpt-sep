@@ -2,6 +2,9 @@ const db = require("../models");
 const config = require("../config/vnpayConfig");
 
 const moment = require("moment");
+const axios = require("axios");
+const request = require("request");
+
 const Payment = db.payments;
 const Client = db.clients;
 
@@ -37,8 +40,11 @@ const createPayment = async (req, res) => {
          amount: req.body.amount,
          name: req.body.name,
          description: req.body.description,
+         orderId: req.body.orderId,
+         transDate: req.body.transDate,
+         transType: req.body.transType,
          status: true,
-         type: "deposit",
+         type: req.body.type,
       };
       let clientId = req.body.clientId;
 
@@ -46,11 +52,17 @@ const createPayment = async (req, res) => {
       const client = await Client.findOne({
          where: { id: clientId },
       });
-
       // update client's currency
-      let newCurrencyValue = client.currency + parseInt(info.amount);
-      client.setDataValue("currency", newCurrencyValue);
-      client.save();
+      if (info.type == "+") {
+         let newCurrencyValue = client.currency + parseInt(info.amount);
+         client.setDataValue("currency", newCurrencyValue);
+         client.save();
+      } else if (info.type == "-") {
+         let newCurrencyValue = client.currency - parseInt(info.amount);
+         client.setDataValue("currency", newCurrencyValue);
+         client.save();
+      }
+
       //
       client.addPayment(payment);
       res.status(200).send({ message: "Luu giao dich thanh cong" });
@@ -127,6 +139,8 @@ const receivePaymentResult = async (req, res) => {
 
    let orderId = vnp_Params["vnp_TxnRef"];
    let rspCode = vnp_Params["vnp_ResponseCode"];
+   let transDate = vnp_Params["vnp_PayDate"];
+   let amount = vnp_Params["vnp_Amount"];
 
    delete vnp_Params["vnp_SecureHash"];
    delete vnp_Params["vnp_SecureHashType"];
@@ -160,9 +174,15 @@ const receivePaymentResult = async (req, res) => {
                   //thanh cong
                   //paymentStatus = '1'
                   // Ở đây cập nhật trạng thái giao dịch thanh toán thành công vào CSDL của bạn
-                  res.status(20).json({
+                  res.status(200).json({
                      RspCode: "00",
                      Message: "Giao dịch thành công",
+                     info: {
+                        orderId: orderId,
+                        transDate: transDate,
+                        transType: "02",
+                        amount: amount,
+                     },
                   });
                } else {
                   //that bai
@@ -238,6 +258,107 @@ const vnpayReturn = async (req, res) => {
    }
 };
 
+const refundPayment = async (req, res) => {
+   process.env.TZ = "Asia/Ho_Chi_Minh";
+   let date = new Date();
+
+   let crypto = require("crypto");
+
+   let vnp_TmnCode = config.vnp_TmnCode;
+   let secretKey = config.vnp_HashSecret;
+   let vnp_Api = config.vnp_Api;
+
+   let vnp_TxnRef = req.body.orderId;
+   let vnp_TransactionDate = req.body.transDate;
+   let vnp_Amount = req.body.amount;
+   let vnp_TransactionType = req.body.transType;
+   let vnp_CreateBy = req.body.user;
+
+   let currCode = "VND";
+
+   let vnp_RequestId = moment(date).format("HHmmss");
+   let vnp_Version = "2.1.0";
+   let vnp_Command = "refund";
+   let vnp_OrderInfo = "Hoan tien GD ma:" + vnp_TxnRef;
+
+   let vnp_IpAddr =
+      req.headers["x-forwarded-for"] ||
+      req.connection.remoteAddress ||
+      req.socket.remoteAddress ||
+      req.connection.socket.remoteAddress;
+
+   let vnp_CreateDate = moment(date).format("YYYYMMDDHHmmss");
+
+   let vnp_TransactionNo = "0";
+
+   let data =
+      vnp_RequestId +
+      "|" +
+      vnp_Version +
+      "|" +
+      vnp_Command +
+      "|" +
+      vnp_TmnCode +
+      "|" +
+      vnp_TransactionType +
+      "|" +
+      vnp_TxnRef +
+      "|" +
+      vnp_Amount +
+      "|" +
+      vnp_TransactionNo +
+      "|" +
+      vnp_TransactionDate +
+      "|" +
+      vnp_CreateBy +
+      "|" +
+      vnp_CreateDate +
+      "|" +
+      vnp_IpAddr +
+      "|" +
+      vnp_OrderInfo;
+   let hmac = crypto.createHmac("sha512", secretKey);
+   let vnp_SecureHash = hmac.update(new Buffer(data, "utf-8")).digest("hex");
+
+   let dataObj = {
+      vnp_RequestId: vnp_RequestId,
+      vnp_Version: vnp_Version,
+      vnp_Command: vnp_Command,
+      vnp_TmnCode: vnp_TmnCode,
+      vnp_TransactionType: vnp_TransactionType,
+      vnp_TxnRef: vnp_TxnRef,
+      vnp_Amount: vnp_Amount,
+      vnp_TransactionNo: vnp_TransactionNo,
+      vnp_CreateBy: vnp_CreateBy,
+      vnp_OrderInfo: vnp_OrderInfo,
+      vnp_TransactionDate: vnp_TransactionDate,
+      vnp_CreateDate: vnp_CreateDate,
+      vnp_IpAddr: vnp_IpAddr,
+      vnp_SecureHash: vnp_SecureHash,
+   };
+
+   // await axios.post(vnp_Api, JSON.stringify(dataObj)).then((response) => {
+   //    res.status(200).send({
+   //       response: response,
+   //    });
+   // });
+
+   request(
+      {
+         url: vnp_Api,
+         method: "POST",
+         json: true,
+         body: dataObj,
+      },
+      function (error, response, body) {
+         console.log(response);
+         res.status(200).send({
+            body: body,
+         });
+      }
+   );
+};
+
 const sortObject = (obj) => {
    let sorted = {};
    let str = [];
@@ -261,4 +382,5 @@ module.exports = {
    vnpayReturn,
    getAllPayment,
    receivePaymentResult,
+   refundPayment,
 };
