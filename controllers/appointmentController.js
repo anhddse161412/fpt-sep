@@ -43,17 +43,28 @@ const getAllAppointment = async (req, res) => {
       let appointment = await Appointment.findAndCountAll({
          include: [
             {
-               model: Freelancer,
-               as: "freelancers",
-
+               model: Proposal,
+               as: "proposals",
                include: [
                   {
-                     model: Account,
-                     as: "accounts",
-                     attributes: ["name", "image"],
+                     model: Freelancer,
+                     as: "freelancers",
+
+                     include: [
+                        {
+                           model: Account,
+                           as: "accounts",
+                           attributes: ["name", "email", "image"],
+                        },
+                     ],
+                     attributes: ["id"],
+                  },
+                  {
+                     model: Job,
+                     as: "jobs",
+                     attributes: ["id", "title"],
                   },
                ],
-               attributes: ["id"],
             },
             {
                model: Client,
@@ -67,10 +78,6 @@ const getAllAppointment = async (req, res) => {
                   },
                ],
                attributes: ["id"],
-            },
-            {
-               model: Job,
-               as: "jobs",
             },
          ],
       });
