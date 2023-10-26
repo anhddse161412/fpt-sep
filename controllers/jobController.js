@@ -59,6 +59,7 @@ const createJob = async (req, res) => {
       res.status(200).send("job Created");
    } catch (error) {
       console.log(error);
+      res.status(500).send(`Lỗi server: ${error}`);
    }
 };
 
@@ -92,6 +93,7 @@ const getAllJob = async (req, res) => {
       res.status(200).send(job);
    } catch (error) {
       console.log(error);
+      res.status(500).send(`Lỗi server: ${error}`);
    }
 };
 
@@ -181,6 +183,7 @@ const getJobById = async (req, res) => {
       }
    } catch (error) {
       console.log(error);
+      res.status(500).send(`Lỗi server: ${error}`);
    }
 };
 
@@ -192,64 +195,85 @@ const updateJob = async (req, res) => {
       res.status(200).send(job);
    } catch (error) {
       console.log(error);
+      res.status(500).send(`Lỗi server: ${error}`);
    }
 };
 
 const getJobWithClientId = async (req, res) => {
-   const data = await Job.findOne({
-      include: [
-         {
-            model: Account,
-            as: "accounts",
-         },
-      ],
-      where: { id: req.params.jobID },
-   });
+   try {
+      const data = await Job.findOne({
+         include: [
+            {
+               model: Account,
+               as: "accounts",
+            },
+         ],
+         where: { id: req.params.jobID },
+      });
 
-   res.status(200).send(data);
+      res.status(200).send(data);
+   } catch (error) {
+      console.log(error);
+      res.status(500).send(`Lỗi server: ${error}`);
+   }
 };
 
 // Add job to favorite
 const addFavoriteJob = async (req, res) => {
-   const job = await Job.findOne({
-      where: { id: req.body.jobId },
-   });
-   const account = await Account.findOne({
-      where: { id: req.body.accountId },
-   });
-   job.addAccount(account);
+   try {
+      const job = await Job.findOne({
+         where: { id: req.body.jobId },
+      });
+      const account = await Account.findOne({
+         where: { id: req.body.accountId },
+      });
+      job.addAccount(account);
 
-   res.status(200).send("job favorite added");
+      res.status(200).send("job favorite added");
+   } catch (error) {
+      console.log(error);
+      res.status(500).send(`Lỗi server: ${error}`);
+   }
 };
 
 const removeFavoriteJob = async (req, res) => {
-   const job = await Job.findOne({
-      where: { id: req.body.jobId },
-   });
-   const account = await Account.findOne({
-      where: { id: req.body.accountId },
-   });
-   job.removeAccount(account);
+   try {
+      const job = await Job.findOne({
+         where: { id: req.body.jobId },
+      });
+      const account = await Account.findOne({
+         where: { id: req.body.accountId },
+      });
+      job.removeAccount(account);
 
-   res.status(200).send("job favorite removed");
+      res.status(200).send("job favorite removed");
+   } catch (error) {
+      console.log(error);
+      res.status(500).send(`Lỗi server: ${error}`);
+   }
 };
 
 // apply for job by proposal
 const applyJob = async (req, res) => {
-   const job = await Job.findOne({
-      where: { id: req.body.jobId },
-   });
-   const proposal = await Proposal.findOne({
-      where: { id: req.body.proposalId },
-   });
+   try {
+      const job = await Job.findOne({
+         where: { id: req.body.jobId },
+      });
+      const proposal = await Proposal.findOne({
+         where: { id: req.body.proposalId },
+      });
 
-   await job.addProposal(proposal).then(async (res) => {
-      let proposalCounter = await job.countProposals();
-      job.setDataValue("applied", proposalCounter.toString());
-      job.save();
-   });
+      await job.addProposal(proposal).then(async (res) => {
+         let proposalCounter = await job.countProposals();
+         job.setDataValue("applied", proposalCounter.toString());
+         job.save();
+      });
 
-   res.status(200).send("applied");
+      res.status(200).send("applied");
+   } catch (error) {
+      console.log(error);
+      res.status(500).send(`Lỗi server: ${error}`);
+   }
 };
 // get job pagination
 const paginationJob = async (req, res) => {
@@ -422,87 +446,107 @@ const paginationJobBySubCategoryId = async (req, res) => {
 
 // get job by category
 const getJobBySubCategory = async (req, res) => {
-   const data = await Job.findAll({
-      include: [
-         {
-            model: SubCategory,
-            as: "subcategories",
-            where: {
-               name: {
-                  [db.Op.like]: `%${req.params.subCategory}`,
+   try {
+      const data = await Job.findAll({
+         include: [
+            {
+               model: SubCategory,
+               as: "subcategories",
+               where: {
+                  name: {
+                     [db.Op.like]: `%${req.params.subCategory}`,
+                  },
                },
+               include: [
+                  {
+                     model: Category,
+                     as: "categories",
+                     attributes: ["name"],
+                  },
+               ],
+               attributes: ["name"],
             },
-            include: [
-               {
-                  model: Category,
-                  as: "categories",
-                  attributes: ["name"],
-               },
-            ],
-            attributes: ["name"],
-         },
-      ],
-   });
+         ],
+      });
 
-   res.status(200).send(data);
+      res.status(200).send(data);
+   } catch (error) {
+      console.log(error);
+      res.status(500).send(`Lỗi server: ${error}`);
+   }
 };
 
 // get job by Client Id
 const getJobByClientId = async (req, res) => {
-   const jobs = await Job.findAll({
-      where: { clientId: req.params.clientId },
-   });
+   try {
+      const jobs = await Job.findAll({
+         where: { clientId: req.params.clientId },
+      });
 
-   res.status(200).send(jobs);
+      res.status(200).send(jobs);
+   } catch (error) {
+      console.log(error);
+      res.status(500).send(`Lỗi server: ${error}`);
+   }
 };
 
 // get job by Client Id that have appointment
 const getJobHasAppointmentByClientId = async (req, res) => {
-   const jobs = await Job.findAll({
-      include: [
-         {
-            model: Proposal,
-            as: "proposals",
-            include: [
-               {
-                  model: Appointment,
-                  as: "appointments",
-                  attributes: { exclude: ["createdAt", "updateAt"] },
-                  where: { status: "Sent" },
-               },
-               {
-                  model: Freelancer,
-                  as: "freelancers",
-                  include: [
-                     {
-                        model: Account,
-                        as: "accounts",
-                        attributes: ["name", "email", "image"],
-                     },
-                  ],
-                  attributes: ["id"],
-               },
-            ],
-            attributes: ["id"],
-            where: { status: "interview" },
-         }
-      ],
-      where: { clientId: req.params.clientId, status: true },
-   });
+   try {
+      const jobs = await Job.findAll({
+         include: [
+            {
+               model: Proposal,
+               as: "proposals",
+               include: [
+                  {
+                     model: Appointment,
+                     as: "appointments",
+                     attributes: { exclude: ["createdAt", "updateAt"] },
+                     where: { status: "Sent" },
+                  },
+                  {
+                     model: Freelancer,
+                     as: "freelancers",
+                     include: [
+                        {
+                           model: Account,
+                           as: "accounts",
+                           attributes: ["name", "email", "image"],
+                        },
+                     ],
+                     attributes: ["id"],
+                  },
+               ],
+               attributes: ["id"],
+               where: { status: "interview" },
+            }
+         ],
+         where: { clientId: req.params.clientId, status: true },
+      });
 
-   res.status(200).send(jobs);
+      res.status(200).send(jobs);
+   } catch (error) {
+      console.log(error);
+      res.status(500).send(`Lỗi server: ${error}`);
+   }
 };
 
 // inactive job
 const inactiveJob = async (req, res) => {
-   const job = await Job.findOne({
-      where: { id: req.params.jobID },
-   });
+   try {
+      const job = await Job.findOne({
+         where: { id: req.params.jobID },
+      });
 
-   job.setDataValue("status", false);
-   job.save();
+      job.setDataValue("status", false);
+      job.save();
 
-   res.status(200).send("Xoa cong viec thanh cong!");
+      res.status(200).send("Xoa cong viec thanh cong!");
+   } catch (error) {
+      console.log(error)
+      res.status(500).send(`Lỗi server: ${error}`);
+   }
 };
 
 const checkJobEndDate = async (req, res) => {
@@ -527,6 +571,7 @@ const checkJobEndDate = async (req, res) => {
       message = [];
    } catch (error) {
       console.log(error);
+      res.status(500).send(`Lỗi server: ${error}`);
    }
 };
 
@@ -540,35 +585,44 @@ const compareDates = (date) => {
 };
 
 const closeJob = async (req, res) => {
-   const job = await Job.findOne({
-      where: { id: req.params.jobId },
-   });
+   try {
+      const job = await Job.findOne({
+         where: { id: req.params.jobId },
+      });
 
-   let dateTime = new Date();
+      let dateTime = new Date();
 
-   job.setDataValue("proposalSubmitDeadline", dateTime);
-   job.save();
+      job.setDataValue("proposalSubmitDeadline", dateTime);
+      job.save();
 
-   res.status(200).send(job);
+      res.status(200).send(job);
+   } catch (error) {
+      console.log(error);
+      res.status(500).send(`Lỗi server: ${error}`);
+   }
 };
 
 const extendJob = async (req, res) => {
-   const job = await Job.findOne({
-      where: { id: req.params.jobId },
-   });
+   try {
+      const job = await Job.findOne({
+         where: { id: req.params.jobId },
+      });
 
-   let dateTime = new Date();
-   dateTime.setDate(dateTime.getDate() + 3);
+      let dateTime = new Date();
+      dateTime.setDate(dateTime.getDate() + 3);
 
-   job.setDataValue("proposalSubmitDeadline", dateTime);
-   job.save();
+      job.setDataValue("proposalSubmitDeadline", dateTime);
+      job.save();
 
-   res.status(200).send(job);
+      res.status(200).send(job);
+   } catch (error) {
+      console.log(error);
+      res.status(500).send(`Lỗi server: ${error}`);
+   }
 };
 
 const recommendedJobForFreelancer = async (req, res) => {
    try {
-
       let limit = 10;
 
       let recommended = await RecommendPoint.findAll({
@@ -598,13 +652,16 @@ const recommendedJobForFreelancer = async (req, res) => {
             }
          ],
          attributes: ["point"],
-         where: { freelancerId: req.params.freelancerId, type: "forFreelancers" },
+         where: {
+            freelancerId: req.params.freelancerId, type: "forFreelancers", point: { [Op.gt]: 0, }
+         },
          order: [["point", "DESC"]],
          limit,
       })
       res.status(200).send(recommended);
    } catch (error) {
       console.log(error)
+      res.status(500).send(`Lỗi server: ${error}`);
    }
 }
 

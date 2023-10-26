@@ -29,6 +29,7 @@ const createCertificate = async (req, res) => {
       res.status(200).send(certificate);
    } catch (error) {
       console.log(error);
+      res.status(500).send(`Lỗi server: ${error}`);
    }
 };
 
@@ -46,6 +47,7 @@ const getAllCertificate = async (req, res) => {
       res.status(200).send(certificate);
    } catch (error) {
       console.log(error);
+      res.status(500).send(`Lỗi server: ${error}`);
    }
 };
 
@@ -68,31 +70,42 @@ const updateCertificate = async (req, res) => {
       res.status(200).json({ messsage: "Update certificate thành công" });
    } catch (error) {
       console.log(error);
+      res.status(500).send(`Lỗi server: ${error}`);
    }
 };
 
 // 7. connect one to many relation
 
 const getCertificateByFreelancerId = async (req, res) => {
-   const data = await Certificate.findAll({
-      include: [
-         {
-            model: Freelancer,
-            as: "freelancers",
-         },
-      ],
-      where: { freelancerId: req.params.freelancerId },
-   });
+   try {
+      const data = await Certificate.findAll({
+         include: [
+            {
+               model: Freelancer,
+               as: "freelancers",
+            },
+         ],
+         where: { freelancerId: req.params.freelancerId },
+      });
 
-   res.status(200).send(data);
+      res.status(200).send(data);
+   } catch (error) {
+      console.log(error);
+      res.status(500).send(`Lỗi server: ${error}`);
+   }
 };
 
 // 6. remove certificate
 const removeCertificate = async (req, res) => {
-   const certificate = await Certificate.destroy({
-      where: { id: req.params.certificateId }
-   })
-   res.status(200).send("Xóa thành công!")
+   try {
+      const certificate = await Certificate.destroy({
+         where: { id: req.params.certificateId }
+      })
+      res.status(200).send("Xóa thành công!")
+   } catch (error) {
+      console.log(error);
+      res.status(500).send(`Lỗi server: ${error}`);
+   }
 }
 
 module.exports = {

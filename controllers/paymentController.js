@@ -14,6 +14,7 @@ const getAllPayment = async (req, res) => {
       res.status(200).send(payments);
    } catch (error) {
       console.log(error);
+      res.status(500).send(`Lỗi server: ${error}`);
    }
 };
 
@@ -31,6 +32,7 @@ const getPaymentByClientId = async (req, res) => {
       });
    } catch (error) {
       console.log(error);
+      res.status(500).send(`Lỗi server: ${error}`);
    }
 };
 
@@ -68,6 +70,7 @@ const createPayment = async (req, res) => {
       res.status(200).send({ message: "Luu giao dich thanh cong" });
    } catch (error) {
       console.log(error);
+      res.status(500).send(`Lỗi server: ${error}`);
    }
 };
 
@@ -130,6 +133,7 @@ const createVnpayUrl = async (req, res) => {
       });
    } catch (error) {
       console.log(error);
+      res.status(500).send(`Lỗi server: ${error}`);
    }
 };
 
@@ -255,6 +259,7 @@ const vnpayReturn = async (req, res) => {
       }
    } catch (error) {
       console.log(error);
+      res.status(500).send(`Lỗi server: ${error}`);
    }
 };
 

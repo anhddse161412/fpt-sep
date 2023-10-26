@@ -35,6 +35,7 @@ const createAppointment = async (req, res) => {
       res.status(200).json({ messsage: "Tạo Appointment thành công" });
    } catch (error) {
       console.log(error);
+      res.status(500).send(`Lỗi server: ${error}`);
    }
 };
 
@@ -84,6 +85,7 @@ const getAllAppointment = async (req, res) => {
       res.status(200).send(appointment);
    } catch (error) {
       console.log(error);
+      res.status(500).send(`Lỗi server: ${error}`);
    }
 };
 
@@ -127,6 +129,7 @@ const getAppointmentById = async (req, res) => {
       res.status(200).send(appointment);
    } catch (error) {
       console.log(error);
+      res.status(500).send(`Lỗi server: ${error}`);
    }
 };
 
@@ -153,6 +156,7 @@ const getAppointmentByClientId = async (req, res) => {
       res.status(200).send(appointment);
    } catch (error) {
       console.log(error);
+      res.status(500).send(`Lỗi server: ${error}`);
    }
 };
 
@@ -185,6 +189,7 @@ const getAppointmentByFreelancerId = async (req, res) => {
       res.status(200).send(appointment);
    } catch (error) {
       console.log(error);
+      res.status(500).send(`Lỗi server: ${error}`);
    }
 };
 
@@ -208,6 +213,7 @@ const getAppointmentByJobId = async (req, res) => {
       res.status(200).send(appointment);
    } catch (error) {
       console.log(error);
+      res.status(500).send(`Lỗi server: ${error}`);
    }
 };
 
@@ -219,6 +225,7 @@ const updateAppointment = async (req, res) => {
       res.status(200).send(appointment);
    } catch (error) {
       console.log(error);
+      res.status(500).send(`Lỗi server: ${error}`);
    }
 };
 

@@ -39,6 +39,7 @@ const createProposal = async (req, res) => {
       res.status(200).json({ messsage: "Tạo proposal thành công" });
    } catch (error) {
       console.log(error);
+      res.status(500).send(`Lỗi server: ${error}`);
    }
 };
 // 2. get all proposal
@@ -64,6 +65,7 @@ const getAllProposal = async (req, res) => {
       res.status(200).send(propsals);
    } catch (error) {
       console.log(error);
+      res.status(500).send(`Lỗi server: ${error}`);
    }
 };
 
@@ -90,6 +92,7 @@ const getProposalById = async (req, res) => {
       res.status(200).send(proposal);
    } catch (error) {
       console.log(error);
+      res.status(500).send(`Lỗi server: ${error}`);
    }
 };
 
@@ -100,7 +103,6 @@ const updateProposal = async (req, res) => {
             {
                model: Freelancer,
                as: "freelancers",
-
                include: [
                   {
                      model: Account,
@@ -116,6 +118,7 @@ const updateProposal = async (req, res) => {
       res.status(200).send(proposal);
    } catch (error) {
       console.log(error);
+      res.status(500).send(`Lỗi server: ${error}`);
    }
 };
 
@@ -142,6 +145,7 @@ const getProposalByJobId = async (req, res) => {
       res.status(200).send(proposal);
    } catch (error) {
       console.log(error);
+      res.status(500).send(`Lỗi server: ${error}`);
    }
 };
 
@@ -169,13 +173,16 @@ const getRecommendProposalByJobId = async (req, res) => {
             },
          ],
          attributes: ["point"],
-         where: { jobId: req.params.jobId, type: "forProposals" },
+         where: {
+            jobId: req.params.jobId, type: "forProposals", point: { [Op.gt]: 0, },
+         },
          order: [["point", "DESC"]],
       });
 
       res.status(200).send(recommended);
    } catch (error) {
       console.log(error);
+      res.status(500).send(`Lỗi server: ${error}`);
    }
 }
 
@@ -210,13 +217,13 @@ const getProposalByFreelancerId = async (req, res) => {
       res.status(200).send(proposal);
    } catch (error) {
       console.log(error);
+      res.status(500).send(`Lỗi server: ${error}`);
    }
 };
 
 // Get Proposal by Client ID
 const getProposalByClientId = async (req, res) => {
    try {
-
       let jobs = await Job.findAll({
          attributes: ["id"],
          where: { clientId: req.params.clientId, applied: { [Op.not]: null } },
@@ -251,6 +258,7 @@ const getProposalByClientId = async (req, res) => {
       res.status(200).send(proposals);
    } catch (error) {
       console.log(error);
+      res.status(500).send(`Lỗi server: ${error}`);
    }
 }
 
@@ -279,11 +287,13 @@ const approveProposal = async (req, res) => {
       proposal.setDataValue("status", "approved");
       proposal.save();
 
+      res.status(200).send(proposal);
+
       await FreelancerJob.create({ freelancerId: proposal.freelancerId, jobId: proposal.jobId })
 
-      res.status(200).send(proposal);
    } catch (error) {
       console.log(error);
+      res.status(500).send(`Lỗi server: ${error}`);
    }
 };
 
@@ -313,6 +323,7 @@ const interviewProposal = async (req, res) => {
       res.status(200).send(proposal);
    } catch (error) {
       console.log(error);
+      res.status(500).send(`Lỗi server: ${error}`);
    }
 };
 
@@ -342,6 +353,7 @@ const declineProposal = async (req, res) => {
       res.status(200).send(proposal);
    } catch (error) {
       console.log(error);
+      res.status(500).send(`Lỗi server: ${error}`);
    }
 };
 

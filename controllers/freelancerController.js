@@ -25,6 +25,7 @@ const getAllFreelancer = async (req, res) => {
       res.status(200).send(freelancers);
    } catch (error) {
       console.log(error);
+      res.status(500).send(`Lỗi server: ${error}`);
    }
 };
 
@@ -55,6 +56,7 @@ const getFreelancerById = async (req, res) => {
       res.status(200).send(freelancer);
    } catch (error) {
       console.log(error);
+      res.status(500).send(`Lỗi server: ${error}`);
    }
 };
 
@@ -70,79 +72,105 @@ const updateFreelancerAccount = async (req, res) => {
       res.status(200).send(freelancer);
    } catch (error) {
       console.log(error);
+      res.status(500).send(`Lỗi server: ${error}`);
    }
 };
 
 // update introduction
 const updateIntroduction = async (req, res) => {
-   const freelancer = await Freelancer.findOne({
-      where: { id: req.params.freelancerId }
-   });
+   try {
+      const freelancer = await Freelancer.findOne({
+         where: { id: req.params.freelancerId }
+      });
 
-   freelancer.setDataValue("title", req.body.title);
-   freelancer.setDataValue("introduction", req.body.introduction);
-   freelancer.save();
+      freelancer.setDataValue("title", req.body.title);
+      freelancer.setDataValue("introduction", req.body.introduction);
+      freelancer.save();
 
-   res.status(200).send(freelancer);
-}
+      res.status(200).send(freelancer);
+   } catch (error) {
+      console.log(error);
+      res.status(500).send(`Lỗi server: ${error}`);
+   }
+};
 
 // update major
 const updateMajor = async (req, res) => {
-   const freelancer = await Freelancer.findOne({
-      where: { id: req.params.freelancerId }
-   });
+   try {
+      const freelancer = await Freelancer.findOne({
+         where: { id: req.params.freelancerId }
+      });
 
-   freelancer.setDataValue("major", req.body.major);
-   freelancer.save();
+      freelancer.setDataValue("major", req.body.major);
+      freelancer.save();
 
-   res.status(200).send(freelancer);
-}
+      res.status(200).send(freelancer);
+   } catch (error) {
+      console.log(error);
+      res.status(500).send(`Lỗi server: ${error}`);
+   }
+};
 
 // update hours per week
 const updateHoursPerWeek = async (req, res) => {
-   const freelancer = await Freelancer.findOne({
-      where: { id: req.params.freelancerId }
-   });
+   try {
+      const freelancer = await Freelancer.findOne({
+         where: { id: req.params.freelancerId }
+      });
 
-   freelancer.setDataValue("hoursPerWeek", req.body.hoursPerWeek);
-   freelancer.save();
+      freelancer.setDataValue("hoursPerWeek", req.body.hoursPerWeek);
+      freelancer.save();
 
-   res.status(200).send(freelancer);
-}
+      res.status(200).send(freelancer);
+   } catch (error) {
+      console.log(error);
+      res.status(500).send(`Lỗi server: ${error}`);
+   }
+};
 
 // update hours per week
 const updateBasicInfo = async (req, res) => {
-   const freelancer = await Freelancer.findOne({
-      where: { id: req.params.freelancerId }
-   });
+   try {
+      const freelancer = await Freelancer.findOne({
+         where: { id: req.params.freelancerId }
+      });
 
-   const account = await Account.findOne({
-      where: { id: freelancer.accountId }
-   });
+      const account = await Account.findOne({
+         where: { id: freelancer.accountId }
+      });
 
-   account.setDataValue("phone", req.body.phone);
-   account.setDataValue("address", req.body.address);
-   account.save();
+      account.setDataValue("phone", req.body.phone);
+      account.setDataValue("address", req.body.address);
+      account.save();
 
-   res.status(200).send(account);
-}
+      res.status(200).send(account);
+   } catch (error) {
+      console.log(error);
+      res.status(500).send(`Lỗi server: ${error}`);
+   }
+};
 
 // update image & name
 const updateNameAndImage = async (req, res) => {
-   const freelancer = await Freelancer.findOne({
-      where: { id: req.params.freelancerId }
-   });
+   try {
+      const freelancer = await Freelancer.findOne({
+         where: { id: req.params.freelancerId }
+      });
 
-   const account = await Account.findOne({
-      where: { id: freelancer.accountId }
-   });
+      const account = await Account.findOne({
+         where: { id: freelancer.accountId }
+      });
 
-   account.setDataValue("name", req.body.name);
-   account.setDataValue("image", req.body.image);
-   account.save();
+      account.setDataValue("name", req.body.name);
+      account.setDataValue("image", req.body.image);
+      account.save();
 
-   res.status(200).send(account);
-}
+      res.status(200).send(account);
+   } catch (error) {
+      console.log(error);
+      res.status(500).send(`Lỗi server: ${error}`);
+   }
+};
 
 // update skill set
 const updateSkillSet = async (req, res) => {
@@ -197,29 +225,39 @@ const updateSkillSet = async (req, res) => {
    } catch (error) {
       console.log(error);
    }
-}
+};
 
 // get Freelancer's languages
 const getLanguagesByFreelancer = async (req, res) => {
-   const languages = await Language.findAll({
-      attributes: { exclude: ["createdAt", "updatedAt"] },
-      where: { freelancerId: req.params.freelancerId }
-   });
+   try {
+      const languages = await Language.findAll({
+         attributes: { exclude: ["createdAt", "updatedAt"] },
+         where: { freelancerId: req.params.freelancerId }
+      });
 
-   res.status(200).send(languages);
-}
+      res.status(200).send(languages);
+   } catch (error) {
+      console.log(error);
+      res.status(500).send(`Lỗi server: ${error}`);
+   }
+};
 
 // add languages to freelancer
 const addLanguages = async (req, res) => {
-   const info = {
-      name: req.body.name,
-      level: req.body.level,
-      freelancerId: req.params.freelancerId,
-   }
+   try {
+      const info = {
+         name: req.body.name,
+         level: req.body.level,
+         freelancerId: req.params.freelancerId,
+      }
 
-   const language = await Language.create(info);
-   res.status(200).send(language);
-}
+      const language = await Language.create(info);
+      res.status(200).send(language);
+   } catch (error) {
+      console.log(error);
+      res.status(500).send(`Lỗi server: ${error}`);
+   }
+};
 
 // edit languages
 const updateLanguages = async (req, res) => {
@@ -235,8 +273,9 @@ const updateLanguages = async (req, res) => {
       res.status(200).send("Update Thanh Cong!")
    } catch (error) {
       console.log(error);
+      res.status(500).send(`Lỗi server: ${error}`);
    }
-}
+};
 
 // delete language
 const deleteLanguages = async (req, res) => {
@@ -248,8 +287,9 @@ const deleteLanguages = async (req, res) => {
       res.status(200).send("Xoa Thanh Cong!")
    } catch (error) {
       console.log(error);
+      res.status(500).send(`Lỗi server: ${error}`);
    }
-}
+};
 
 module.exports = {
    getAllFreelancer,

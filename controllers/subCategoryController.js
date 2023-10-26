@@ -22,6 +22,7 @@ const createSubCategory = async (req, res) => {
       console.log(subCategory);
    } catch (error) {
       console.log(error);
+      res.status(500).send(`Lỗi server: ${error}`);
    }
 };
 
@@ -39,6 +40,7 @@ const getAllSubCategory = async (req, res) => {
       res.status(200).send(subCategories);
    } catch (error) {
       console.log(error);
+      res.status(500).send(`Lỗi server: ${error}`);
    }
 };
 
@@ -50,6 +52,7 @@ const getSubCategoryById = async (req, res) => {
       res.status(200).send(subCategory);
    } catch (error) {
       console.log(error);
+      res.status(500).send(`Lỗi server: ${error}`);
    }
 };
 
@@ -61,6 +64,7 @@ const updateSubCategory = async (req, res) => {
       res.status(200).send(subCategory);
    } catch (error) {
       console.log(error);
+      res.status(500).send(`Lỗi server: ${error}`);
    }
 };
 

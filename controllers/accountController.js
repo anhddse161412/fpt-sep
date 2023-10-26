@@ -316,37 +316,47 @@ const resetPassword = async (req, res) => {
 };
 
 const changePassword = async (req, res) => {
-   let account = await Account.findOne({
-      where: { id: req.params.accountId },
-   });
-
-   const checkPassword = compareSync(req.body.oldPassword, account.password);
-   if (checkPassword) {
-      // decode password
-      const salt = genSaltSync(10);
-      let newPassword = hashSync(req.body.newPassword, salt);
-
-      account.setDataValue("password", newPassword);
-      account.save();
-
-      res.status(200).send("Đổi mật khẩu thành công!");
-   } else {
-      res.status(403).json({
-         message: "Mật khẩu cũ không đúng!",
+   try {
+      let account = await Account.findOne({
+         where: { id: req.params.accountId }
       });
+
+      const checkPassword = compareSync(req.body.oldPassword, account.password);
+      if (checkPassword) {
+         // decode password
+         const salt = genSaltSync(10);
+         let newPassword = hashSync(req.body.newPassword, salt);
+
+         account.setDataValue("password", newPassword);
+         account.save();
+
+         res.status(200).send("Đổi mật khẩu thành công!");
+      } else {
+         res.status(403).json({
+            message: "Mật khẩu cũ không đúng!",
+         });
+      }
+   } catch (error) {
+      console.log(error);
+      res.status(500).send(`Lỗi server: ${error}`);
    }
 };
 
 const deleteAccount = async (req, res) => {
-   let account = await Account.findOne({
-      where: { id: req.params.accountId },
-   });
+   try {
+      let account = await Account.findOne({
+         where: { id: req.params.accountId }
+      });
 
-   account.setDataValue("status", false);
-   account.save();
+      account.setDataValue("status", false);
+      account.save();
 
-   res.status(200).send("Da dong tai khoan!");
-};
+      res.status(200).send("Da dong tai khoan!");
+   } catch (error) {
+      console.log(error);
+      res.status(500).send(`Lỗi server: ${error}`);
+   }
+}
 
 module.exports = {
    register,

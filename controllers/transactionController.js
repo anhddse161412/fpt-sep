@@ -16,6 +16,7 @@ const getAllTransaction = async (req, res) => {
       res.status(200).send(transaction);
    } catch (error) {
       console.log(error);
+      res.status(500).send(`Lỗi server: ${error}`);
    }
 };
 
@@ -27,6 +28,7 @@ const getTransactionByClientId = async (req, res) => {
       res.status(200).send(transaction);
    } catch (error) {
       console.log(error);
+      res.status(500).send(`Lỗi server: ${error}`);
    }
 };
 
