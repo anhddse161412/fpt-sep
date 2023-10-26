@@ -219,10 +219,31 @@ const getAppointmentByJobId = async (req, res) => {
 
 const updateAppointment = async (req, res) => {
    try {
-      let appointment = await Appointment.update(req.body, {
+      let appointment = await Appointment.findOne({
          where: { appointmentId: req.params.appointmentId },
-      });
-      res.status(200).send(appointment);
+      })
+
+      const newTime = new Date(req.body.time);
+
+      if (appointment.time.getTime() == newTime.getTime()) {
+         const updatedAppointment = await Appointment.update(req.body, {
+            where: { appointmentId: req.params.appointmentId },
+         });
+         res.status(200).send(updatedAppointment);
+      } else {
+         let currentTime = new Date();
+         let unchangeableTime = appointment.time
+         unchangeableTime.setDate(unchangeableTime.getDate() - 1);
+
+         if (currentTime > unchangeableTime) {
+            return res.status(406).json({ message: "Không thể thay đổi thời gian của Appointment!" })
+         } else {
+            const updatedAppointment = await Appointment.update(req.body, {
+               where: { appointmentId: req.params.appointmentId },
+            });
+            res.status(200).send(updatedAppointment);
+         }
+      }
    } catch (error) {
       console.log(error);
       res.status(500).send(`Lỗi server: ${error}`);
