@@ -2,6 +2,7 @@ const db = require("../models");
 const { genSaltSync, hashSync, compareSync } = require("bcrypt");
 const { sign, verify } = require("jsonwebtoken");
 const nodemailer = require("nodemailer");
+const { favorite } = require("../models");
 // image Upload
 
 // create main Model
@@ -10,6 +11,9 @@ const Job = db.jobs;
 const Freelancer = db.freelancers;
 const Client = db.clients;
 const Favorite = db.favorite;
+const SubCategory = db.subCategories;
+const Skill = db.skills;
+const Category = db.categories;
 // main work
 
 // 1. register account
@@ -177,11 +181,81 @@ const getAccountWithJobId = async (req, res) => {
 };
 
 const getFavoriteJobOfAccount = async (req, res) => {
-   let favoriteJobList = await Favorite.findAll({
-      where: { accountId: req.params.accountId },
-      attributes: { exclude: ["createdAt", "updatedAt"] },
-   });
-   res.status(200).send(favoriteJobList);
+   try {
+      let limit = Number(req.query.limit) || null;
+      let page = Number(req.query.page) || null;
+
+      if (!limit && page) {
+         limit = 10;
+      } else if (limit && !page) {
+         page = 1;
+      }
+
+      if (limit && page && (limit <= 0 || page <= 0)) {
+         return res.status(400).json({ error: "Invalid limit or page number" });
+      }
+
+      let offset = (page - 1) * limit;
+
+      const { count, rows: jobs } = await Job.findAndCountAll({
+         include: [
+            {
+               model: Account,
+               as: "accounts",
+               where: { id: req.params.accountId },
+            },
+            {
+               model: SubCategory,
+               as: "subcategories",
+               include: [
+                  {
+                     model: Category,
+                     as: "categories",
+                     attributes: ["name"],
+                  },
+               ],
+               attributes: ["name"],
+            },
+            {
+               model: Client,
+               as: "clients",
+               include: [
+                  {
+                     model: Account,
+                     as: "accounts",
+                     attributes: ["name", "image"],
+                  },
+               ],
+               attributes: ["id"],
+            },
+            {
+               model: Skill,
+               as: "skills",
+               attributes: { exclude: ["createdAt", "updatedAt"] },
+            },
+         ],
+         distinct: true,
+         limit,
+         where: { status: true },
+         offset,
+         order: [["updatedAt", "DESC"]],
+      });
+
+      const totalPages = Math.ceil(count / limit);
+
+      res.status(200).json({
+         jobs,
+         pagination: {
+            totalItems: count,
+            totalPages,
+            currentPage: page,
+            itemsPerPage: limit,
+         },
+      });
+   } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: "Internal Server Error" });
+   }
 };
 
 const forgorPassword = async (req, res) => {
@@ -243,7 +317,7 @@ const resetPassword = async (req, res) => {
 
 const changePassword = async (req, res) => {
    let account = await Account.findOne({
-      where: { id: req.params.accountId }
+      where: { id: req.params.accountId },
    });
 
    const checkPassword = compareSync(req.body.oldPassword, account.password);
@@ -261,18 +335,18 @@ const changePassword = async (req, res) => {
          message: "Mật khẩu cũ không đúng!",
       });
    }
-}
+};
 
 const deleteAccount = async (req, res) => {
    let account = await Account.findOne({
-      where: { id: req.params.accountId }
+      where: { id: req.params.accountId },
    });
 
    account.setDataValue("status", false);
    account.save();
 
    res.status(200).send("Da dong tai khoan!");
-}
+};
 
 module.exports = {
    register,
