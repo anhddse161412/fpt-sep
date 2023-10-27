@@ -35,8 +35,10 @@ const getClientById = async (req, res) => {
             {
                model: Account,
                as: "accounts",
+               attributes: { exclude: ["createdAt", "updatedAt"] },
             },
          ],
+         attributes: { exclude: ["createdAt", "updatedAt"] },
          where: { accountId: req.params.accountId },
       });
       res.status(200).send(client);
@@ -52,8 +54,33 @@ const updateClientAccount = async (req, res) => {
          where: { accountId: req.params.accountId },
       });
       let account = await Account.update(req.body.account, {
-         where: { id: req.params.accountId }
-      })
+         where: { id: req.params.accountId },
+      });
+      res.status(200).send(client);
+   } catch (error) {
+      console.log(error);
+      res.status(500).send(`Lỗi server: ${error}`);
+   }
+};
+
+const getClientByName = async (req, res) => {
+   try {
+      let client = await Client.findOne({
+         include: [
+            {
+               model: Account,
+               as: "accounts",
+               where: {
+                  status: true,
+                  name: {
+                     [db.Op.like]: `%${req.params.clientName}%`,
+                  },
+               },
+               attributes: { exclude: ["createdAt", "updatedAt"] },
+            },
+         ],
+         attributes: { exclude: ["createdAt", "updatedAt"] },
+      });
       res.status(200).send(client);
    } catch (error) {
       console.log(error);
@@ -65,4 +92,5 @@ module.exports = {
    getAllClient,
    getClientById,
    updateClientAccount,
+   getClientByName,
 };
