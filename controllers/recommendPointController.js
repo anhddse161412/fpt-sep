@@ -93,7 +93,7 @@ const createProposalDataRecommend = async () => {
          }
       ],
       attributes: ["id"],
-      where: { status: true }
+      where: { status: "open" }
    });
 
    jobs.forEach(async job => {
@@ -223,7 +223,7 @@ const updateRecommendationWhenFreelancerUpdate = async (freelanacerId) => {
          },
       ],
       attributes: ["id"],
-      where: { status: true }
+      where: { status: "open" }
    });
 
    jobs.forEach(async job => {
@@ -268,7 +268,7 @@ const deleteRecommendPointWhenJobRemoved = async (job) => {
 const createDataForFreelancer = async () => {
    const jobs = await Job.findAll({
       attributes: ["id"],
-      where: { status: true }
+      where: { status: "open" }
    });
 
    const freelancers = await Freelancer.findAll({
@@ -296,7 +296,7 @@ const recommendationForFreelancer = async () => {
          },
       ],
       attributes: ["id"],
-      where: { status: true }
+      where: { status: "open" }
    });
 
    const freelancers = await Freelancer.findAll({

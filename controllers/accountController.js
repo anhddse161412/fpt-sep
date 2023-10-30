@@ -236,7 +236,7 @@ const getFavoriteJobOfAccount = async (req, res) => {
          ],
          distinct: true,
          limit,
-         where: { status: true },
+         where: { status: "open" },
          offset,
          order: [["updatedAt", "DESC"]],
       });
