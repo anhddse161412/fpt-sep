@@ -13,7 +13,6 @@ const Freelancer = db.freelancers;
 const Job = db.jobs;
 const Client = db.clients;
 const RecommendPoint = db.recommendPoints;
-const FreelancerJob = db.freelancerJob;
 // main work
 
 // 1. create proposal
@@ -288,9 +287,6 @@ const approveProposal = async (req, res) => {
       proposal.save();
 
       res.status(200).send(proposal);
-
-      await FreelancerJob.create({ freelancerId: proposal.freelancerId, jobId: proposal.jobId })
-
    } catch (error) {
       console.log(error);
       res.status(500).send(`Lỗi server: ${error}`);

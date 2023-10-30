@@ -53,7 +53,6 @@ db.jobSubCategory = require("./jobSubCategoryModel")(sequelize, DataTypes);
 db.favorite = require("./favoriteModel")(sequelize, DataTypes);
 db.jobSkill = require("./jobSkillModel")(sequelize, DataTypes);
 db.freelancerSkill = require("./freelancerSkillModel")(sequelize, DataTypes);
-db.freelancerJob = require("./freelancerJobModel.js")(sequelize, DataTypes);
 
 // creation
 
@@ -206,14 +205,14 @@ db.transactions.belongsTo(db.payments, {
 });
 
 // transaction - proposals
-db.freelancerJob.hasOne(db.transactions, {
-   foreignKey: "freelancerJobId",
+db.proposals.hasOne(db.transactions, {
+   foreignKey: "proposalId",
    as: "transactions",
 });
 
-db.transactions.belongsTo(db.freelancerJob, {
-   foreignKey: "freelancerJobId",
-   as: "freelancerJob",
+db.transactions.belongsTo(db.proposals, {
+   foreignKey: "proposalId",
+   as: "proposal",
 });
 
 // freelancer - language
@@ -251,7 +250,5 @@ db.skills.belongsToMany(db.jobs, { through: db.jobSkill });
 db.freelancers.belongsToMany(db.skills, { through: db.freelancerSkill });
 db.skills.belongsToMany(db.freelancers, { through: db.freelancerSkill });
 
-db.freelancers.belongsToMany(db.jobs, { through: db.freelancerJob });
-db.jobs.belongsToMany(db.freelancers, { through: db.freelancerJob });
 
 module.exports = db;
