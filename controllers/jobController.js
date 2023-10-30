@@ -503,7 +503,7 @@ const getJobHasAppointmentByClientId = async (req, res) => {
                ],
                attributes: ["id"],
                where: { status: "interview" },
-            }
+            },
          ],
          where: { clientId: req.params.clientId, status: { [Op.ne]: "delete" } },
       });
@@ -527,7 +527,7 @@ const inactiveJob = async (req, res) => {
 
       res.status(200).send("Xoa cong viec thanh cong!");
    } catch (error) {
-      console.log(error)
+      console.log(error);
       res.status(500).send(`Lỗi server: ${error}`);
    }
 };
@@ -639,17 +639,97 @@ const recommendedJobForFreelancer = async (req, res) => {
          ],
          attributes: ["point"],
          where: {
-            freelancerId: req.params.freelancerId, type: "forFreelancers", point: { [Op.gt]: 0, }
+            freelancerId: req.params.freelancerId,
+            type: "forFreelancers",
+            point: { [Op.gt]: 0 },
          },
          order: [["point", "DESC"]],
          limit,
-      })
+      });
       res.status(200).send(recommended);
    } catch (error) {
-      console.log(error)
+      console.log(error);
       res.status(500).send(`Lỗi server: ${error}`);
    }
-}
+};
+
+const paginationJobByName = async (req, res) => {
+   try {
+      let limit = Number(req.query.limit) || null;
+      let page = Number(req.query.page) || null;
+
+      if (!limit && page) {
+         limit = 10;
+      } else if (limit && !page) {
+         page = 1;
+      }
+
+      if (limit && page && (limit <= 0 || page <= 0)) {
+         return res.status(400).json({ error: "Invalid limit or page number" });
+      }
+
+      let offset = (page - 1) * limit;
+
+      const { count, rows: jobs } = await Job.findAndCountAll({
+         include: [
+            {
+               model: SubCategory,
+               as: "subcategories",
+               include: [
+                  {
+                     model: Category,
+                     as: "categories",
+                     attributes: ["name"],
+                  },
+               ],
+               attributes: ["name"],
+            },
+            {
+               model: Client,
+               as: "clients",
+               include: [
+                  {
+                     model: Account,
+                     as: "accounts",
+                     attributes: ["name", "image"],
+                  },
+               ],
+               attributes: ["id"],
+            },
+            {
+               model: Skill,
+               as: "skills",
+               attributes: { exclude: ["createdAt", "updatedAt"] },
+            },
+         ],
+         distinct: true,
+         where: {
+            status: true,
+            title: {
+               [db.Op.like]: `%${req.params.jobName}%`,
+            },
+         },
+         limit,
+         offset,
+         order: [["updatedAt", "DESC"]],
+      });
+
+      const totalPages = Math.ceil(count / limit);
+
+      res.status(200).json({
+         jobs,
+         pagination: {
+            totalItems: count,
+            totalPages,
+            currentPage: page,
+            itemsPerPage: limit,
+         },
+      });
+   } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: "Internal Server Error" });
+   }
+};
 
 module.exports = {
    createJob,
@@ -670,4 +750,5 @@ module.exports = {
    closeJob,
    extendJob,
    recommendedJobForFreelancer,
+   paginationJobByName,
 };

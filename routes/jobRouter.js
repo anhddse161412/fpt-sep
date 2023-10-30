@@ -6,7 +6,8 @@ const router = require("express").Router();
 // use routers
 // router.post("/create", jobController.createJob);
 
-router.route("/")
+router
+   .route("/")
    .get(jobController.paginationJob)
    .post(jobController.createJob);
 
@@ -32,16 +33,17 @@ router
    .route("/subCategory/:subCategoryId")
    .get(jobController.paginationJobBySubCategoryId);
 
-router.route("/close/:jobId")
-   .put(jobController.closeJob)
+router.route("/close/:jobId").put(jobController.closeJob);
 
-router.route("/extend/:jobId")
-   .put(jobController.extendJob)
+router.route("/extend/:jobId").put(jobController.extendJob);
 
-router.route("/appointment/:clientId")
+router
+   .route("/appointment/:clientId")
    .get(jobController.getJobHasAppointmentByClientId);
 
-router.route("/recommended/:freelancerId")
+router
+   .route("/recommended/:freelancerId")
    .get(jobController.recommendedJobForFreelancer);
 
+router.route("/:jobName").get(jobController.paginationJobByName);
 module.exports = router;

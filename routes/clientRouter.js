@@ -7,6 +7,8 @@ const router = require("express").Router();
 // use routers
 router.route("/").get(clientController.getAllClient);
 
+router.route("/:clientName").get(clientController.getClientByName);
+
 router
    .route("/profile/:accountId")
    .get(clientController.getClientById)
