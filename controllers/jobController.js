@@ -1,6 +1,8 @@
 const db = require("../models");
+const { Sequelize } = require("sequelize");
 
-// image Upload
+// Sequelize operation
+const Op = Sequelize.Op;
 
 // create main Model
 const Job = db.jobs;
@@ -27,7 +29,7 @@ const createJob = async (req, res) => {
          lowestIncome: req.body.lowestIncome,
          highestIncome: req.body.highestIncome,
          clientId: req.body.clientId,
-         status: req.body.status ? req.body.status : false,
+         status: req.body.status ? req.body.status : "open",
       };
       let subCategoryList = req.body.subCategory;
       let skillList = req.body.skill;
@@ -326,7 +328,7 @@ const paginationJob = async (req, res) => {
             },
          ],
          distinct: true,
-         where: { status: true },
+         where: { status: "open" },
          limit,
          offset,
          order: [["updatedAt", "DESC"]],
@@ -402,7 +404,7 @@ const paginationJobBySubCategoryId = async (req, res) => {
             },
          ],
          distinct: true,
-         where: { status: true },
+         where: { status: "open" },
          limit,
          offset,
          order: [["updatedAt", "ASC"]],
@@ -424,25 +426,6 @@ const paginationJobBySubCategoryId = async (req, res) => {
       res.status(500).json({ error: "Internal Server Error" });
    }
 };
-
-// get job by category
-// const getJobByCategory = async (req, res) => {
-//    const data = await Job.findAll({
-//       include: [
-//          {
-//             model: Category,
-//             as: "categorys",
-//             where: {
-//                name: {
-//                   [db.Op.like]: `%${req.body.categoryName}`,
-//                },
-//             },
-//          },
-//       ],
-//    });
-
-//    res.status(200).send(data);
-// };
 
 // get job by category
 const getJobBySubCategory = async (req, res) => {
@@ -480,7 +463,7 @@ const getJobBySubCategory = async (req, res) => {
 const getJobByClientId = async (req, res) => {
    try {
       const jobs = await Job.findAll({
-         where: { clientId: req.params.clientId },
+         where: { clientId: req.params.clientId, status: { [Op.ne]: "delete" } },
       });
 
       res.status(200).send(jobs);
@@ -522,7 +505,7 @@ const getJobHasAppointmentByClientId = async (req, res) => {
                where: { status: "interview" },
             }
          ],
-         where: { clientId: req.params.clientId, status: true },
+         where: { clientId: req.params.clientId, status: { [Op.ne]: "delete" } },
       });
 
       res.status(200).send(jobs);
@@ -539,7 +522,7 @@ const inactiveJob = async (req, res) => {
          where: { id: req.params.jobID },
       });
 
-      job.setDataValue("status", false);
+      job.setDataValue("status", "delete");
       job.save();
 
       res.status(200).send("Xoa cong viec thanh cong!");
@@ -554,12 +537,12 @@ const checkJobEndDate = async (req, res) => {
       let message = [];
       let jobs = await Job.findAll({
          attributes: ["proposalSubmitDeadline", "id"],
-         where: { status: true },
+         where: { status: "open" },
       }).then((res) => {
          res.forEach((item) => {
             if (!compareDates(item.proposalSubmitDeadline)) {
                message.push(`Job id : ${item.id} is expired`);
-               item.setDataValue("status", false);
+               item.setDataValue("status", "close");
                item.save();
             }
          });
@@ -593,6 +576,7 @@ const closeJob = async (req, res) => {
       let dateTime = new Date();
 
       job.setDataValue("proposalSubmitDeadline", dateTime);
+      job.setDataValue("status", "close");
       job.save();
 
       res.status(200).send(job);
@@ -612,6 +596,7 @@ const extendJob = async (req, res) => {
       dateTime.setDate(dateTime.getDate() + 3);
 
       job.setDataValue("proposalSubmitDeadline", dateTime);
+      job.setDataValue("status", "open");
       job.save();
 
       res.status(200).send(job);
@@ -648,7 +633,8 @@ const recommendedJobForFreelancer = async (req, res) => {
                      as: "skills",
                      attributes: { exclude: ["createdAt", "updatedAt"] },
                   },
-               ]
+               ],
+               where: { status: "open" },
             }
          ],
          attributes: ["point"],
