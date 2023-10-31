@@ -1,6 +1,7 @@
 const db = require("../models");
 
-// image Upload
+// controller
+const notificaitonController = require("./notificationController");
 
 // create main Model
 const Account = db.accounts;
@@ -8,7 +9,8 @@ const Appointment = db.appointments;
 const Freelancer = db.freelancers;
 const Client = db.clients;
 const Job = db.jobs;
-const Proposal = db.proposals;
+const Application = db.applications;
+const Notification = db.notifications;
 // main work
 
 // 1. create Appointment
@@ -19,20 +21,37 @@ const createAppointment = async (req, res) => {
          link: req.body.link,
          time: req.body.time,
          clientId: req.body.clientId,
-         proposalId: req.body.proposalId,
+         applicationId: req.body.applicationId,
          status: req.body.status ? req.body.status : "Sent",
       };
 
       const client = await Client.findOne({
          where: { id: req.body.clientId },
       });
-      const proposal = await Proposal.findOne({
-         where: { id: req.body.proposalId },
+      const application = await Application.findOne({
+         include: [
+            {
+               model: Job,
+               as: "jobs",
+            },
+         ],
+         where: { id: req.body.applicationId },
       });
+      console.log(application);
 
       const appointment = await Appointment.create(info);
-      proposal.setAppointments(appointment);
-      res.status(200).json({ messsage: "Tạo Appointment thành công" });
+      application.setAppointments(appointment);
+
+      const notification = await notificaitonController.createNotificationInfo(
+         client.accountId,
+         `New appointment created`,
+         `You just got a new appointment for Job ${application.jobs.title}`
+      );
+
+      res.status(200).json({
+         notification: notification,
+         messsage: "Tạo Appointment thành công",
+      });
    } catch (error) {
       console.log(error);
       res.status(500).send(`Lỗi server: ${error}`);
@@ -44,8 +63,8 @@ const getAllAppointment = async (req, res) => {
       let appointment = await Appointment.findAndCountAll({
          include: [
             {
-               model: Proposal,
-               as: "proposals",
+               model: Application,
+               as: "applications",
                include: [
                   {
                      model: Freelancer,
@@ -124,7 +143,7 @@ const getAppointmentById = async (req, res) => {
                as: "jobs",
             },
          ],
-         where: { appointmentId: req.params.appointmentId }
+         where: { appointmentId: req.params.appointmentId },
       });
       res.status(200).send(appointment);
    } catch (error) {
@@ -165,8 +184,8 @@ const getAppointmentByFreelancerId = async (req, res) => {
       let appointment = await Appointment.findAll({
          include: [
             {
-               model: Proposal,
-               as: "proposals",
+               model: Application,
+               as: "applications",
                include: [
                   {
                      model: Freelancer,
@@ -183,7 +202,7 @@ const getAppointmentByFreelancerId = async (req, res) => {
                   },
                ],
                where: { freelancerId: req.params.freelancerId },
-            }
+            },
          ],
       });
       res.status(200).send(appointment);
@@ -198,8 +217,8 @@ const getAppointmentByJobId = async (req, res) => {
       let appointment = await Appointment.findAll({
          include: [
             {
-               model: Proposal,
-               as: "proposals",
+               model: Application,
+               as: "applications",
                include: [
                   {
                      model: Job,
@@ -207,7 +226,7 @@ const getAppointmentByJobId = async (req, res) => {
                   },
                ],
                where: { jobId: req.params.jobId },
-            }
+            },
          ],
       });
       res.status(200).send(appointment);
@@ -221,7 +240,7 @@ const updateAppointment = async (req, res) => {
    try {
       let appointment = await Appointment.findOne({
          where: { appointmentId: req.params.appointmentId },
-      })
+      });
 
       const newTime = new Date(req.body.time);
 
@@ -232,11 +251,13 @@ const updateAppointment = async (req, res) => {
          res.status(200).send(updatedAppointment);
       } else {
          let currentTime = new Date();
-         let unchangeableTime = appointment.time
+         let unchangeableTime = appointment.time;
          unchangeableTime.setDate(unchangeableTime.getDate() - 1);
 
          if (currentTime > unchangeableTime) {
-            return res.status(406).json({ message: "Không thể thay đổi thời gian của Appointment!" })
+            return res.status(406).json({
+               message: "Không thể thay đổi thời gian của Appointment!",
+            });
          } else {
             const updatedAppointment = await Appointment.update(req.body, {
                where: { appointmentId: req.params.appointmentId },

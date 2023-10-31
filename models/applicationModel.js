@@ -1,5 +1,5 @@
 module.exports = (sequelize, DataTypes) => {
-   const Proposal = sequelize.define("proposal", {
+   const Application = sequelize.define("application", {
       description: {
          type: DataTypes.TEXT,
          allowNull: true,
@@ -17,5 +17,5 @@ module.exports = (sequelize, DataTypes) => {
       },
    });
 
-   return Proposal;
+   return Application;
 };

@@ -38,7 +38,7 @@ db.subCategories = require("./subCategoryModel")(sequelize, DataTypes);
 db.jobs = require("./jobModel")(sequelize, DataTypes);
 db.clients = require("./clientModel")(sequelize, DataTypes);
 db.freelancers = require("./freelancerModel")(sequelize, DataTypes);
-db.proposals = require("./proposalModel")(sequelize, DataTypes);
+db.applications = require("./applicationModel")(sequelize, DataTypes);
 db.skills = require("./skillModel")(sequelize, DataTypes);
 db.appointments = require("./AppointmentModel")(sequelize, DataTypes);
 db.certificates = require("./certificateModel")(sequelize, DataTypes);
@@ -116,24 +116,24 @@ db.certificates.belongsTo(db.freelancers, {
    as: "freelancers",
 });
 
-// freelancer - proposal
-db.freelancers.hasMany(db.proposals, {
+// freelancer - application
+db.freelancers.hasMany(db.applications, {
    foreignKey: "freelancerId",
-   as: "proposals",
+   as: "applications",
 });
 
-db.proposals.belongsTo(db.freelancers, {
+db.applications.belongsTo(db.freelancers, {
    foreignKey: "freelancerId",
    as: "freelancers",
 });
 
-// job - proposal
-db.jobs.hasMany(db.proposals, {
+// job - application
+db.jobs.hasMany(db.applications, {
    foreignKey: "jobId",
-   as: "proposals",
+   as: "applications",
 });
 
-db.proposals.belongsTo(db.jobs, {
+db.applications.belongsTo(db.jobs, {
    foreignKey: "jobId",
    as: "jobs",
 });
@@ -149,15 +149,15 @@ db.appointments.belongsTo(db.clients, {
    as: "clients",
 });
 
-// proposals - appointment
-db.proposals.hasMany(db.appointments, {
-   foreignKey: "proposalId",
+// applications - appointment
+db.applications.hasMany(db.appointments, {
+   foreignKey: "applicationId",
    as: "appointments",
 });
 
-db.appointments.belongsTo(db.proposals, {
-   foreignKey: "proposalId",
-   as: "proposals",
+db.appointments.belongsTo(db.applications, {
+   foreignKey: "applicationId",
+   as: "applications",
 });
 
 // freelancer - recommendPoint
@@ -204,15 +204,15 @@ db.transactions.belongsTo(db.payments, {
    as: "payments",
 });
 
-// transaction - proposals
-db.proposals.hasOne(db.transactions, {
-   foreignKey: "proposalId",
+// transaction - applications
+db.applications.hasOne(db.transactions, {
+   foreignKey: "applicationId",
    as: "transactions",
 });
 
-db.transactions.belongsTo(db.proposals, {
-   foreignKey: "proposalId",
-   as: "proposal",
+db.transactions.belongsTo(db.applications, {
+   foreignKey: "applicationId",
+   as: "application",
 });
 
 // freelancer - language
@@ -249,6 +249,5 @@ db.skills.belongsToMany(db.jobs, { through: db.jobSkill });
 
 db.freelancers.belongsToMany(db.skills, { through: db.freelancerSkill });
 db.skills.belongsToMany(db.freelancers, { through: db.freelancerSkill });
-
 
 module.exports = db;

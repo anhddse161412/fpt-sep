@@ -1,11 +1,11 @@
 module.exports = (sequelize, DataTypes) => {
-   const JobProposal = sequelize.define("jobproposal", {
-      jobProposalId: {
+   const JobApplication = sequelize.define("jobapplication", {
+      jobApplicationId: {
          type: DataTypes.INTEGER,
          primaryKey: true,
          autoIncrement: true,
       },
    });
 
-   return JobProposal;
+   return JobApplication;
 };

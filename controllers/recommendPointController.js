@@ -4,7 +4,7 @@ const db = require("../models");
 const Job = db.jobs;
 const Account = db.accounts;
 const Freelancer = db.freelancers;
-const Proposal = db.proposals;
+const Application = db.applications;
 const Skill = db.skills;
 const FreelancerSkill = db.freelancerSkill;
 const JobSkill = db.jobSkill;
@@ -13,7 +13,7 @@ const RecommendPoint = db.recommendPoints;
 // main work
 
 // Rate Point for every Jobs And Freelancers
-const recommendationProposalForJob = async () => {
+const recommendationApplicationForJob = async () => {
    const jobs = await Job.findAll({
       include: [
          {
@@ -23,8 +23,8 @@ const recommendationProposalForJob = async () => {
             through: { attributes: [] },
          },
          {
-            model: Proposal,
-            as: "proposals",
+            model: Application,
+            as: "applications",
             attributes: ["id"],
             include: [
                {
@@ -37,51 +37,56 @@ const recommendationProposalForJob = async () => {
                         as: "skills",
                         attributes: ["id"],
                         through: { attributes: [] },
-                     }
-                  ]
+                     },
+                  ],
                },
-            ]
-         }
+            ],
+         },
       ],
       attributes: ["id"],
-      where: { status: true }
+      where: { status: true },
    });
 
-   jobs.forEach(async job => {
+   jobs.forEach(async (job) => {
       let jobSkillList = [];
-      job.skills.forEach(skill => {
-         jobSkillList.push(skill.id)
+      job.skills.forEach((skill) => {
+         jobSkillList.push(skill.id);
       });
 
-      job.proposals.forEach(async proposal => {
+      job.applications.forEach(async (application) => {
          let freelancerSkillList = [];
-         proposal.freelancers.skills.forEach(skill => {
-            freelancerSkillList.push(skill.id)
+         application.freelancers.skills.forEach((skill) => {
+            freelancerSkillList.push(skill.id);
          });
 
-         let intersection = jobSkillList.filter(x => freelancerSkillList.includes(x));
+         let intersection = jobSkillList.filter((x) =>
+            freelancerSkillList.includes(x)
+         );
          let point = intersection.length;
 
          if (point) {
             let recommendPoint = await RecommendPoint.findOne({
-               where: { jobId: job.id, freelancerId: proposal.freelancers.id, },
-            })
+               where: {
+                  jobId: job.id,
+                  freelancerId: application.freelancers.id,
+               },
+            });
 
-            await recommendPoint.setDataValue("type", "forProposals")
+            await recommendPoint.setDataValue("type", "forApplications");
             await recommendPoint.setDataValue("point", point);
             await recommendPoint.save();
          }
-      })
+      });
    });
 };
 
-// create recommend data for Proposal
-const createProposalDataRecommend = async () => {
+// create recommend data for Application
+const createApplicationDataRecommend = async () => {
    const jobs = await Job.findAll({
       include: [
          {
-            model: Proposal,
-            as: "proposals",
+            model: Application,
+            as: "applications",
             attributes: ["id"],
             include: [
                {
@@ -89,60 +94,62 @@ const createProposalDataRecommend = async () => {
                   as: "freelancers",
                   attributes: ["id"],
                },
-            ]
-         }
+            ],
+         },
       ],
       attributes: ["id"],
-      where: { status: "open" }
+      where: { status: "open" },
    });
 
-   jobs.forEach(async job => {
-      job.proposals.forEach(async proposal => {
+   jobs.forEach(async (job) => {
+      job.applications.forEach(async (application) => {
          const recommendPoint = await RecommendPoint.findOne({
             where: {
                jobId: job.id,
-               freelancerId: proposal.freelancers.id,
+               freelancerId: application.freelancers.id,
             },
          });
-         recommendPoint.setDataValue("type", "forProposals")
-         recommendPoint.save()
-      })
-   })
-}
+         recommendPoint.setDataValue("type", "forApplications");
+         recommendPoint.save();
+      });
+   });
+};
 
-// rate proposal after create
-const rateProposalAfterCreate = async (freelancerId, jobId) => {
+// rate application after create
+const rateApplicationAfterCreate = async (freelancerId, jobId) => {
    const freelancerSkills = await FreelancerSkill.findAll({
       attributes: ["skillId"],
-      where: { freelancerId: freelancerId }
-   })
+      where: { freelancerId: freelancerId },
+   });
 
    const jobSkills = await JobSkill.findAll({
       attributes: ["skillId"],
-      where: { jobId: jobId }
-   })
+      where: { jobId: jobId },
+   });
 
    let freelancerSkillList = [];
    let jobSkillList = [];
 
-   freelancerSkills.forEach(item => {
+   freelancerSkills.forEach((item) => {
       freelancerSkillList.push(item.skillId);
-   })
+   });
 
-   jobSkills.forEach(item => {
+   jobSkills.forEach((item) => {
       jobSkillList.push(item.skillId);
-   })
+   });
 
-   let intersection = jobSkillList.filter(x => freelancerSkillList.includes(x));
+   let intersection = jobSkillList.filter((x) =>
+      freelancerSkillList.includes(x)
+   );
    let point = intersection.length;
 
    await RecommendPoint.create({
       freelancerId: freelancerId,
       jobId: jobId,
       point: point,
-      type: "forProposals"
+      type: "forApplications",
    });
-}
+};
 
 // change recommend after update job
 const updateRecommendationWhenJobUpdate = async (jobId) => {
@@ -167,29 +174,30 @@ const updateRecommendationWhenJobUpdate = async (jobId) => {
          },
       ],
       attributes: ["id"],
-      where: { id: jobId }
+      where: { id: jobId },
    });
 
-   freelancers.forEach(async freelancer => {
+   freelancers.forEach(async (freelancer) => {
       let jobSkillList = [];
       let freelancerSkillList = [];
 
-      job.skills.forEach(skill => {
-         jobSkillList.push(skill.id)
+      job.skills.forEach((skill) => {
+         jobSkillList.push(skill.id);
       });
 
-      freelancer.skills.forEach(skill => {
-         freelancerSkillList.push(skill.id)
+      freelancer.skills.forEach((skill) => {
+         freelancerSkillList.push(skill.id);
       });
 
-
-      let intersection = jobSkillList.filter(x => freelancerSkillList.includes(x));
+      let intersection = jobSkillList.filter((x) =>
+         freelancerSkillList.includes(x)
+      );
       let point = intersection.length;
 
       if (point) {
          let recommendPoint = await RecommendPoint.findOne({
-            where: { jobId: job.id, freelancerId: freelancer.id, },
-         })
+            where: { jobId: job.id, freelancerId: freelancer.id },
+         });
 
          if (recommendPoint) {
             await recommendPoint.setDataValue("point", point);
@@ -197,7 +205,7 @@ const updateRecommendationWhenJobUpdate = async (jobId) => {
          }
       }
    });
-}
+};
 
 // change recommend after update freelancer skill
 const updateRecommendationWhenFreelancerUpdate = async (freelanacerId) => {
@@ -210,7 +218,7 @@ const updateRecommendationWhenFreelancerUpdate = async (freelanacerId) => {
             through: { attributes: [] },
          },
       ],
-      where: { id: freelanacerId }
+      where: { id: freelanacerId },
    });
 
    const jobs = await Job.findAll({
@@ -223,29 +231,30 @@ const updateRecommendationWhenFreelancerUpdate = async (freelanacerId) => {
          },
       ],
       attributes: ["id"],
-      where: { status: "open" }
+      where: { status: "open" },
    });
 
-   jobs.forEach(async job => {
+   jobs.forEach(async (job) => {
       let jobSkillList = [];
       let freelancerSkillList = [];
 
-      job.skills.forEach(skill => {
-         jobSkillList.push(skill.id)
+      job.skills.forEach((skill) => {
+         jobSkillList.push(skill.id);
       });
 
-      freelancers.skills.forEach(skill => {
-         freelancerSkillList.push(skill.id)
+      freelancers.skills.forEach((skill) => {
+         freelancerSkillList.push(skill.id);
       });
 
-
-      let intersection = jobSkillList.filter(x => freelancerSkillList.includes(x));
+      let intersection = jobSkillList.filter((x) =>
+         freelancerSkillList.includes(x)
+      );
       let point = intersection.length;
 
       if (point) {
          let recommendPoint = await RecommendPoint.findOne({
-            where: { jobId: job.id, freelancerId: proposal.freelancers.id, },
-         })
+            where: { jobId: job.id, freelancerId: application.freelancers.id },
+         });
 
          if (recommendPoint) {
             await recommendPoint.setDataValue("point", point);
@@ -253,36 +262,36 @@ const updateRecommendationWhenFreelancerUpdate = async (freelanacerId) => {
          }
       }
    });
-}
+};
 
 // remove recommendPoint when job is removed
 const deleteRecommendPointWhenJobRemoved = async (job) => {
    let jobId = job.id;
 
    await RecommendPoint.destroy({
-      where: { jobId: jobId }
+      where: { jobId: jobId },
    });
-}
+};
 
 // create recommend data for Freelancer
 const createDataForFreelancer = async () => {
    const jobs = await Job.findAll({
       attributes: ["id"],
-      where: { status: "open" }
+      where: { status: "open" },
    });
 
    const freelancers = await Freelancer.findAll({
       attributes: ["id"],
-   })
+   });
 
-   jobs.forEach(async job => {
-      freelancers.forEach(async freelancer => {
+   jobs.forEach(async (job) => {
+      freelancers.forEach(async (freelancer) => {
          await RecommendPoint.findOrCreate({
             where: { jobId: job.id, freelancerId: freelancer.id },
-         })
-      })
+         });
+      });
    });
-}
+};
 
 //  Job recommendation for freelancer
 const recommendationForFreelancer = async () => {
@@ -296,7 +305,7 @@ const recommendationForFreelancer = async () => {
          },
       ],
       attributes: ["id"],
-      where: { status: "open" }
+      where: { status: "open" },
    });
 
    const freelancers = await Freelancer.findAll({
@@ -309,46 +318,50 @@ const recommendationForFreelancer = async () => {
          },
       ],
       attributes: ["id"],
-   })
+   });
 
-   jobs.forEach(async job => {
+   jobs.forEach(async (job) => {
       let jobSkillList = [];
-      job.skills.forEach(skill => {
-         jobSkillList.push(skill.id)
+      job.skills.forEach((skill) => {
+         jobSkillList.push(skill.id);
       });
 
-      freelancers.forEach(async freelancer => {
+      freelancers.forEach(async (freelancer) => {
          let freelancerSkillList = [];
 
-         freelancer.skills.forEach(skill => {
-            freelancerSkillList.push(skill.id)
+         freelancer.skills.forEach((skill) => {
+            freelancerSkillList.push(skill.id);
          });
 
-         let intersection = jobSkillList.filter(x => freelancerSkillList.includes(x));
+         let intersection = jobSkillList.filter((x) =>
+            freelancerSkillList.includes(x)
+         );
          let point = intersection.length;
 
          if (point) {
             let recommendPoint = await RecommendPoint.findOne({
-               where: { jobId: job.id, freelancerId: freelancer.id, type: "forFreelancers" },
-            })
+               where: {
+                  jobId: job.id,
+                  freelancerId: freelancer.id,
+                  type: "forFreelancers",
+               },
+            });
 
             if (recommendPoint) {
                await recommendPoint.setDataValue("point", point);
                await recommendPoint.save();
             }
          }
-      })
+      });
    });
 };
 
-
-
 module.exports = {
-   createProposalDataRecommend,
-   recommendationProposalForJob,
+   createApplicationDataRecommend,
+   recommendationApplicationForJob,
    updateRecommendationWhenFreelancerUpdate,
    updateRecommendationWhenJobUpdate,
-   rateProposalAfterCreate,
+   rateApplicationAfterCreate,
    createDataForFreelancer,
    recommendationForFreelancer,
 };

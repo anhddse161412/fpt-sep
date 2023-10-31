@@ -10,7 +10,7 @@ const Account = db.accounts;
 const Category = db.categories;
 const SubCategory = db.subCategories;
 const Client = db.clients;
-const Proposal = db.proposals;
+const Application = db.applications;
 const Skill = db.skills;
 const Appointment = db.appointments;
 const Freelancer = db.freelancers;
@@ -25,7 +25,7 @@ const createJob = async (req, res) => {
          title: req.body.title,
          description: req.body.description,
          fileAttachment: req.body.fileAttachment,
-         proposalSubmitDeadline: req.body.proposalSubmitDeadline,
+         applicationSubmitDeadline: req.body.applicationSubmitDeadline,
          lowestIncome: req.body.lowestIncome,
          highestIncome: req.body.highestIncome,
          clientId: req.body.clientId,
@@ -125,8 +125,8 @@ const getJobById = async (req, res) => {
                   ],
                },
                {
-                  model: Proposal,
-                  as: "proposals",
+                  model: Application,
+                  as: "applications",
                },
             ],
             where: { id: req.params.jobID },
@@ -141,8 +141,8 @@ const getJobById = async (req, res) => {
                   attributes: { exclude: ["createdAt", "updatedAt"] },
                },
                {
-                  model: Proposal,
-                  as: "proposals",
+                  model: Application,
+                  as: "applications",
                   where: { freelancerId: req.query.freelancerId },
                },
                {
@@ -255,19 +255,19 @@ const removeFavoriteJob = async (req, res) => {
    }
 };
 
-// apply for job by proposal
+// apply for job by application
 const applyJob = async (req, res) => {
    try {
       const job = await Job.findOne({
          where: { id: req.body.jobId },
       });
-      const proposal = await Proposal.findOne({
-         where: { id: req.body.proposalId },
+      const application = await Application.findOne({
+         where: { id: req.body.applicationId },
       });
 
-      await job.addProposal(proposal).then(async (res) => {
-         let proposalCounter = await job.countProposals();
-         job.setDataValue("applied", proposalCounter.toString());
+      await job.addApplication(application).then(async (res) => {
+         let applicationCounter = await job.countApplications();
+         job.setDataValue("applied", applicationCounter.toString());
          job.save();
       });
 
@@ -463,7 +463,10 @@ const getJobBySubCategory = async (req, res) => {
 const getJobByClientId = async (req, res) => {
    try {
       const jobs = await Job.findAll({
-         where: { clientId: req.params.clientId, status: { [Op.ne]: "delete" } },
+         where: {
+            clientId: req.params.clientId,
+            status: { [Op.ne]: "delete" },
+         },
       });
 
       res.status(200).send(jobs);
@@ -479,8 +482,8 @@ const getJobHasAppointmentByClientId = async (req, res) => {
       const jobs = await Job.findAll({
          include: [
             {
-               model: Proposal,
-               as: "proposals",
+               model: Application,
+               as: "applications",
                include: [
                   {
                      model: Appointment,
@@ -505,7 +508,10 @@ const getJobHasAppointmentByClientId = async (req, res) => {
                where: { status: "interview" },
             },
          ],
-         where: { clientId: req.params.clientId, status: { [Op.ne]: "delete" } },
+         where: {
+            clientId: req.params.clientId,
+            status: { [Op.ne]: "delete" },
+         },
       });
 
       res.status(200).send(jobs);
@@ -536,11 +542,11 @@ const checkJobEndDate = async (req, res) => {
    try {
       let message = [];
       let jobs = await Job.findAll({
-         attributes: ["proposalSubmitDeadline", "id"],
+         attributes: ["applicationSubmitDeadline", "id"],
          where: { status: "open" },
       }).then((res) => {
          res.forEach((item) => {
-            if (!compareDates(item.proposalSubmitDeadline)) {
+            if (!compareDates(item.applicationSubmitDeadline)) {
                message.push(`Job id : ${item.id} is expired`);
                item.setDataValue("status", "close");
                item.save();
@@ -575,7 +581,7 @@ const closeJob = async (req, res) => {
 
       let dateTime = new Date();
 
-      job.setDataValue("proposalSubmitDeadline", dateTime);
+      job.setDataValue("applicationSubmitDeadline", dateTime);
       job.setDataValue("status", "close");
       job.save();
 
@@ -595,7 +601,7 @@ const extendJob = async (req, res) => {
       let dateTime = new Date();
       dateTime.setDate(dateTime.getDate() + 3);
 
-      job.setDataValue("proposalSubmitDeadline", dateTime);
+      job.setDataValue("applicationSubmitDeadline", dateTime);
       job.setDataValue("status", "open");
       job.save();
 
@@ -635,7 +641,7 @@ const recommendedJobForFreelancer = async (req, res) => {
                   },
                ],
                where: { status: "open" },
-            }
+            },
          ],
          attributes: ["point"],
          where: {

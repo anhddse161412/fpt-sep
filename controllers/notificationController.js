@@ -21,8 +21,39 @@ const createNotification = async (req, res) => {
          account.addNotification(notification);
       }
       res.status(200).send({
+         notification: notification,
          message: "Tao thong bao thanh cong",
       });
+   } catch (error) {
+      console.log(error);
+   }
+};
+
+const createNotificationInfo = async (
+   accountId,
+   notificationName,
+   notificationDescription
+) => {
+   try {
+      let info = {
+         name: notificationName,
+         description: notificationDescription,
+         status: "unread",
+      };
+
+      const notification = await Notification.create(info);
+      const account = await Account.findOne({
+         where: { id: accountId },
+      });
+
+      if (account) {
+         account.addNotification(notification);
+      }
+      console.log(
+         `Tao thanh cong thong bao ${notificationName} cho User ${accountId}`
+      );
+      console.log(notification.dataValues);
+      return notification.dataValues;
    } catch (error) {
       console.log(error);
    }
@@ -80,4 +111,5 @@ module.exports = {
    getNotificationByAccountId,
    deleteNotification,
    markAsReadNotification,
+   createNotificationInfo,
 };
