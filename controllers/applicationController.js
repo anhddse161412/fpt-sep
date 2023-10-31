@@ -1,7 +1,8 @@
 const { Sequelize } = require("sequelize");
 const db = require("../models");
 
-// image Upload
+// controller
+const notificaitonController = require("./notificationController");
 
 // Sequelize operation
 const Op = Sequelize.Op;
@@ -279,7 +280,7 @@ const approveApplication = async (req, res) => {
                   {
                      model: Account,
                      as: "accounts",
-                     attributes: ["name", "image"],
+                     attributes: ["name", "image", "id"],
                   },
                ],
                attributes: ["id"],
@@ -289,7 +290,11 @@ const approveApplication = async (req, res) => {
       });
       application.setDataValue("status", "approved");
       application.save();
-
+      const notification = await notificaitonController.createNotificationInfo(
+         application.freelancers.accounts.id,
+         `Application status has changed`,
+         `Your application has been approved, ${application.freelancers.accounts.name}`
+      );
       res.status(200).send(application);
    } catch (error) {
       console.log(error);
@@ -310,7 +315,7 @@ const interviewApplication = async (req, res) => {
                   {
                      model: Account,
                      as: "accounts",
-                     attributes: ["name", "image"],
+                     attributes: ["name", "image", "id"],
                   },
                ],
                attributes: ["id"],
@@ -320,6 +325,11 @@ const interviewApplication = async (req, res) => {
       });
       application.setDataValue("status", "interview");
       application.save();
+      const notification = await notificaitonController.createNotificationInfo(
+         application.freelancers.accounts.id,
+         `Application status has changed`,
+         `You have a interview invitation ,${application.freelancers.accounts.name}`
+      );
       res.status(200).send(application);
    } catch (error) {
       console.log(error);
@@ -340,7 +350,7 @@ const declineApplication = async (req, res) => {
                   {
                      model: Account,
                      as: "accounts",
-                     attributes: ["name", "image"],
+                     attributes: ["name", "image", "id"],
                   },
                ],
                attributes: ["id"],
@@ -350,6 +360,11 @@ const declineApplication = async (req, res) => {
       });
       application.setDataValue("status", "declined");
       application.save();
+      const notification = await notificaitonController.createNotificationInfo(
+         application.freelancers.accounts.id,
+         `Application status has changed`,
+         `Your application has been declined ,${application.freelancers.accounts.name}`
+      );
       res.status(200).send(application);
    } catch (error) {
       console.log(error);

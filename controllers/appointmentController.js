@@ -49,7 +49,6 @@ const createAppointment = async (req, res) => {
       );
 
       res.status(200).json({
-         notification: notification,
          messsage: "Tạo Appointment thành công",
       });
    } catch (error) {
