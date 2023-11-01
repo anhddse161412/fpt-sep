@@ -44,7 +44,7 @@ const recommendationApplicationForJob = async () => {
          },
       ],
       attributes: ["id"],
-      where: { status: true },
+      where: { status: "open" },
    });
 
    jobs.forEach(async (job) => {
