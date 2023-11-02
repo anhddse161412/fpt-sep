@@ -5,6 +5,11 @@ module.exports = (sequelize, DataTypes) => {
          primaryKey: true,
          autoIncrement: true,
       },
+      level: {
+         type: DataTypes.STRING(20),
+         allowNull: false,
+         defaultValue: "Basic",
+      },
    });
 
    return JobSkill;
