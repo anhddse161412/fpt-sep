@@ -42,11 +42,11 @@ const createAppointment = async (req, res) => {
       const appointment = await Appointment.create(info);
       application.setAppointments(appointment);
 
-      const notification = await notificaitonController.createNotificationInfo(
-         client.accountId,
-         `New appointment created`,
-         `You just got a new appointment for Job ${application.jobs.title}`
-      );
+      // const notification = await notificaitonController.createNotificationInfo(
+      //    client.accountId,
+      //    `New appointment created`,
+      //    `You just got a new appointment for Job ${application.jobs.title}`
+      // );
 
       res.status(200).json({
          messsage: "Tạo Appointment thành công",

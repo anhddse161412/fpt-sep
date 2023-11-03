@@ -4,6 +4,9 @@ const { Sequelize } = require("sequelize");
 // Sequelize operation
 const Op = Sequelize.Op;
 
+// controller
+const notificaitonController = require("./notificationController");
+
 // create main Model
 const Job = db.jobs;
 const Account = db.accounts;
@@ -259,9 +262,36 @@ const removeFavoriteJob = async (req, res) => {
 const applyJob = async (req, res) => {
    try {
       const job = await Job.findOne({
+         include: [
+            {
+               model: Client,
+               as: "clients",
+               include: [
+                  {
+                     model: Account,
+                     as: "accounts",
+                  },
+               ],
+            },
+         ],
          where: { id: req.body.jobId },
       });
       const application = await Application.findOne({
+         include: [
+            {
+               model: Freelancer,
+               as: "freelancers",
+
+               include: [
+                  {
+                     model: Account,
+                     as: "accounts",
+                     attributes: ["name", "image", "id"],
+                  },
+               ],
+               attributes: ["id"],
+            },
+         ],
          where: { id: req.body.applicationId },
       });
 
@@ -270,7 +300,11 @@ const applyJob = async (req, res) => {
          job.setDataValue("applied", applicationCounter.toString());
          job.save();
       });
-
+      // let notification = await notificaitonController.createNotificationInfo(
+      //    job.clients.accounts.id,
+      //    `Your job has a new application`,
+      //    `Your job has new application from ${application.freelancers.accounts.name}`
+      // );
       res.status(200).send("applied");
    } catch (error) {
       console.log(error);

@@ -50,30 +50,39 @@ const io = new Server(httpServer, {
    },
 });
 
+let onlineUsers = [];
+
+const addNewUser = (email, socketId) => {
+   !onlineUsers.some((user) => user.email === email) &&
+      onlineUsers.push({ email, socketId });
+};
+
+const removeUser = (socketId) => {
+   onlineUsers = onlineUsers.filter((user) => user.socketId !== socketId);
+};
+
+const getUser = (email) => {
+   return onlineUsers.find((user) => user.email === email);
+};
+
 io.on("connection", (socket) => {
    console.log(`user id ${socket.id} connected`);
 
-   io.on("applicationStatusChange", async (data) => {
+   socket.on("newUser", (email) => {
+      addNewUser(email, socket.id);
+   });
+
+   io.on("sendNotification", async (data, email) => {
       try {
-         // let notificaitonInfo = {
-         //    name: data.name,
-         //    description: data.description,
-         //    status: "unread",
-         // };
-
-         // const notification = await Notification.create(notificaitonInfo);
-         // const account = await Account.findOne({
-         //    where: { id: data.accountId },
-         // });
-
-         // if (account) {
-         //    account.addNotification(notification);
-         // }
-         let notification = notificaitonController.createNotificationInfo(
+         let notification = await notificaitonController.createNotificationInfo(
             data.accountId,
             data.notificationName,
             data.notificationDescription
          );
+         const freelancer = getUser(email);
+         io.to(freelancer.socketId).emit("getNotification", {
+            notification: notification,
+         });
       } catch (error) {
          console.log(error);
       }
@@ -81,6 +90,7 @@ io.on("connection", (socket) => {
 
    socket.on("disconnect", () => {
       console.log(`user id ${socket.id} disconnected`);
+      removeUser(socket.id);
    });
 });
 
