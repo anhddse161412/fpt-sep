@@ -46,7 +46,7 @@ router
 
 // delete language
 router
-   .route("./language/:languageId")
+   .route("/language/:languageId")
    .delete(freelancerController.deleteLanguages);
 
 
