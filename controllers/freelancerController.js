@@ -246,14 +246,25 @@ const getLanguagesByFreelancer = async (req, res) => {
 // add languages to freelancer
 const addLanguages = async (req, res) => {
    try {
-      const info = {
-         name: req.body.name,
-         level: req.body.level,
-         freelancerId: req.params.freelancerId,
-      }
+      let checkLanguage = await Language.findOne({
+         where: {
+            name: req.body.name,
+            freelancerId: req.params.freelancerId
+         }
+      })
 
-      const language = await Language.create(info);
+      if (!checkLanguage) {
+         const info = {
+            name: req.body.name,
+            level: req.body.level,
+            freelancerId: req.params.freelancerId,
+         }
+
+         const language = await Language.create(info);
          res.status(200).send("Thêm thành công!");
+      } else {
+         res.status(400).send('Ngoại ngữ này bạn đã có!');
+      }
    } catch (error) {
       console.log(error);
       res.status(500).send(`Lỗi server: ${error}`);
