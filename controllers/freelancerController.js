@@ -69,7 +69,7 @@ const updateFreelancerAccount = async (req, res) => {
       let account = await Account.update(req.body.account, {
          where: { id: req.params.accountId }
       })
-      res.status(200).send(freelancer);
+      res.status(200).send("Cập nhật thành công!");
    } catch (error) {
       console.log(error);
       res.status(500).send(`Lỗi server: ${error}`);
@@ -87,7 +87,7 @@ const updateIntroduction = async (req, res) => {
       freelancer.setDataValue("introduction", req.body.introduction);
       freelancer.save();
 
-      res.status(200).send(freelancer);
+      res.status(200).send("Cập nhật thành công!");
    } catch (error) {
       console.log(error);
       res.status(500).send(`Lỗi server: ${error}`);
@@ -104,7 +104,7 @@ const updateMajor = async (req, res) => {
       freelancer.setDataValue("major", req.body.major);
       freelancer.save();
 
-      res.status(200).send(freelancer);
+      res.status(200).send("Cập nhật thành công!");
    } catch (error) {
       console.log(error);
       res.status(500).send(`Lỗi server: ${error}`);
@@ -121,7 +121,7 @@ const updateHoursPerWeek = async (req, res) => {
       freelancer.setDataValue("hoursPerWeek", req.body.hoursPerWeek);
       freelancer.save();
 
-      res.status(200).send(freelancer);
+      res.status(200).send("Cập nhật thành công!");
    } catch (error) {
       console.log(error);
       res.status(500).send(`Lỗi server: ${error}`);
@@ -143,7 +143,7 @@ const updateBasicInfo = async (req, res) => {
       account.setDataValue("address", req.body.address);
       account.save();
 
-      res.status(200).send(account);
+      res.status(200).send("Cập nhật thành công!");
    } catch (error) {
       console.log(error);
       res.status(500).send(`Lỗi server: ${error}`);
@@ -165,7 +165,7 @@ const updateNameAndImage = async (req, res) => {
       account.setDataValue("image", req.body.image);
       account.save();
 
-      res.status(200).send(account);
+      res.status(200).send("Cập nhật thành công!");
    } catch (error) {
       console.log(error);
       res.status(500).send(`Lỗi server: ${error}`);
@@ -221,9 +221,10 @@ const updateSkillSet = async (req, res) => {
          skill.addFreelancers(freelancer);
       })
 
-      res.status(200).send("Cap nhat thanh cong!")
+      res.status(200).send("Cập nhật thành công!")
    } catch (error) {
       console.log(error);
+      res.status(500).send(`Lỗi server: ${error}`);
    }
 };
 
@@ -252,7 +253,7 @@ const addLanguages = async (req, res) => {
       }
 
       const language = await Language.create(info);
-      res.status(200).send(language);
+         res.status(200).send("Thêm thành công!");
    } catch (error) {
       console.log(error);
       res.status(500).send(`Lỗi server: ${error}`);
@@ -270,7 +271,7 @@ const updateLanguages = async (req, res) => {
          })
       });
 
-      res.status(200).send("Update Thanh Cong!")
+      res.status(200).send("Cập nhật thành công!")
    } catch (error) {
       console.log(error);
       res.status(500).send(`Lỗi server: ${error}`);
@@ -284,7 +285,7 @@ const deleteLanguages = async (req, res) => {
          where: { id: req.params.languageId }
       })
 
-      res.status(200).send("Xoa Thanh Cong!")
+      res.status(200).send("Xóa thành công!")
    } catch (error) {
       console.log(error);
       res.status(500).send(`Lỗi server: ${error}`);
