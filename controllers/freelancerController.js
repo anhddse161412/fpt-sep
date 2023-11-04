@@ -172,6 +172,23 @@ const updateNameAndImage = async (req, res) => {
    }
 };
 
+// update CVFile
+const updateCVFile = async (req, res) => {
+   try {
+      const freelancer = await Freelancer.findOne({
+         where: { id: req.params.freelancerId }
+      });
+
+      freelancer.setDataValue("cvFile", req.body.cvFile);
+      freelancer.save();
+
+      res.status(200).send("Cập nhật thành công!");
+   } catch (error) {
+      console.log(error);
+      res.status(500).send(`Lỗi server: ${error}`);
+   }
+}
+
 // update skill set
 const updateSkillSet = async (req, res) => {
    try {
@@ -317,4 +334,5 @@ module.exports = {
    deleteLanguages,
    updateSkillSet,
    updateNameAndImage,
+   updateCVFile,
 };

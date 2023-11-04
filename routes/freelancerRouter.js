@@ -37,6 +37,10 @@ router.route("/nameImage/:freelancerId")
 router.route("/skills/:freelancerId")
    .put(freelancerController.updateSkillSet)
 
+// cvFile
+router.route("/cvFile/:freelancerId")
+   .put(freelancerController.updateCVFile);
+
 // languages
 router
    .route("/languages/:freelancerId")
