@@ -178,7 +178,7 @@ const receivePaymentResult = async (req, res) => {
             //thanh cong
             //paymentStatus = '1'
             // Ở đây cập nhật trạng thái giao dịch thanh toán thành công vào CSDL của bạn
-            res.redirect('/payment-success?type=success');
+            res.redirect('http://localhost:3000/client/billing');
             res.status(200).json({
               RspCode: '00',
               Message: 'Giao dịch thành công',
@@ -193,7 +193,7 @@ const receivePaymentResult = async (req, res) => {
             //that bai
             //paymentStatus = '2'
             // Ở đây cập nhật trạng thái giao dịch thanh toán thất bại vào CSDL của bạn
-            res.redirect('/payment-failure?type=failure');
+            res.redirect('http://localhost:3000/client/billing');
             res.status(200).json({
               RspCode: '24',
               Message:
