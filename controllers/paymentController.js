@@ -179,20 +179,21 @@ const receivePaymentResult = async (req, res) => {
             //thanh cong
             //paymentStatus = '1'
             // Ở đây cập nhật trạng thái giao dịch thanh toán thành công vào CSDL của bạn
-            res.status(200).json({
-              RspCode: '00',
-              Message: 'Giao dịch thành công',
-              info: {
-                orderId: orderId,
-                transDate: transDate,
-                transType: '02',
-                amount: amount,
-              },
-            });
-            console.log(vnp_Params);
-            res.redirect(
-              'http://localhost:3000/client/billing' + '?orderId=' + orderId
-            );
+            const queryParameters = Object.keys(vnp_Params)
+              .map((key) => `${key}=${vnp_Params[key]}`)
+              .join('&');
+            const redirectURL = `http://localhost:3000/client/billing?${queryParameters}`;
+            res.redirect(redirectURL);
+            // res.status(200).json({
+            //   RspCode: '00',
+            //   Message: 'Giao dịch thành công',
+            //   info: {
+            //     orderId: orderId,
+            //     transDate: transDate,
+            //     transType: '02',
+            //     amount: amount,
+            //   },
+            // });
           } else {
             //that bai
             //paymentStatus = '2'
