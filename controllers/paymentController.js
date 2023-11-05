@@ -172,13 +172,13 @@ const receivePaymentResult = async (req, res) => {
         if (paymentStatus == '0') {
           //kiểm tra tình trạng giao dịch trước khi cập nhật tình trạng thanh toán
           console.log(rspCode);
+
           if (rspCode == '00') {
             console.log('checking');
             console.log(rspCode);
             //thanh cong
             //paymentStatus = '1'
             // Ở đây cập nhật trạng thái giao dịch thanh toán thành công vào CSDL của bạn
-            res.redirect('http://localhost:3000/client/billing');
             res.status(200).json({
               RspCode: '00',
               Message: 'Giao dịch thành công',
@@ -189,6 +189,10 @@ const receivePaymentResult = async (req, res) => {
                 amount: amount,
               },
             });
+            console.log(vnp_Params);
+            res.redirect(
+              'http://localhost:3000/client/billing' + '?orderId=' + orderId
+            );
           } else {
             //that bai
             //paymentStatus = '2'
