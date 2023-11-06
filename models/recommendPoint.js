@@ -1,7 +1,7 @@
 module.exports = (sequelize, DataTypes) => {
    const RecommendPoint = sequelize.define("recommendPoint", {
       point: {
-         type: DataTypes.INTEGER,
+         type: DataTypes.FLOAT,
          allowNull: true,
          defaultValue: 0,
       },

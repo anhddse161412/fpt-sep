@@ -10,6 +10,14 @@ const FreelancerSkill = db.freelancerSkill;
 const JobSkill = db.jobSkill;
 const RecommendPoint = db.recommendPoints;
 
+
+// level
+const levelPoint = {
+   basic: 1,
+   intermediate: 2,
+   advance: 3,
+};
+
 // main work
 
 // Rate Point for every Jobs And Freelancers
@@ -19,8 +27,8 @@ const recommendationApplicationForJob = async () => {
          {
             model: Skill,
             as: "skills",
-            attributes: ["id"],
-            through: { attributes: [] },
+            attributes: ["id", "name"],
+            through: { attributes: ["level"] },
          },
          {
             model: Application,
@@ -35,8 +43,8 @@ const recommendationApplicationForJob = async () => {
                      {
                         model: Skill,
                         as: "skills",
-                        attributes: ["id"],
-                        through: { attributes: [] },
+                        attributes: ["id", "name"],
+                        through: { attributes: ["level"] },
                      },
                   ],
                },
@@ -48,23 +56,23 @@ const recommendationApplicationForJob = async () => {
    });
 
    jobs.forEach(async (job) => {
-      let jobSkillList = [];
-      job.skills.forEach((skill) => {
-         jobSkillList.push(skill.id);
-      });
-
       job.applications.forEach(async (application) => {
-         let freelancerSkillList = [];
-         application.freelancers.skills.forEach((skill) => {
-            freelancerSkillList.push(skill.id);
+         let point = 0;
+
+         job.skills.forEach((jobSkills) => {
+            application.freelancers.skills.forEach((freelancerSkills) => {
+               if (jobSkills.id == freelancerSkills.id) {
+                  if (levelPoint[freelancerSkills.freelancerskill.level.toLowerCase()] >=
+                     levelPoint[jobSkills.jobskill.level.toLowerCase()]) {
+                     point += 1;
+                  } else {
+                     point += 0.5;
+                  }
+               }
+            });
          });
 
-         let intersection = jobSkillList.filter((x) =>
-            freelancerSkillList.includes(x)
-         );
-         let point = intersection.length;
-
-         if (point) {
+         if (point > 0) {
             let recommendPoint = await RecommendPoint.findOne({
                where: {
                   jobId: job.id,
@@ -215,7 +223,7 @@ const updateRecommendationWhenFreelancerUpdate = async (freelanacerId) => {
             model: Skill,
             as: "skills",
             attributes: ["id"],
-            through: { attributes: [] },
+            through: { attributes: ["level"] },
          },
       ],
       where: { id: freelanacerId },
@@ -227,7 +235,7 @@ const updateRecommendationWhenFreelancerUpdate = async (freelanacerId) => {
             model: Skill,
             as: "skills",
             attributes: ["id"],
-            through: { attributes: [] },
+            through: { attributes: ["level"] },
          },
       ],
       attributes: ["id"],
@@ -253,7 +261,7 @@ const updateRecommendationWhenFreelancerUpdate = async (freelanacerId) => {
 
       if (point) {
          let recommendPoint = await RecommendPoint.findOne({
-            where: { jobId: job.id, freelancerId: application.freelancers.id },
+            where: { jobId: job.id, freelancerId: freelancers.id },
          });
 
          if (recommendPoint) {
@@ -301,7 +309,7 @@ const recommendationForFreelancer = async () => {
             model: Skill,
             as: "skills",
             attributes: ["id"],
-            through: { attributes: [] },
+            through: { attributes: ["level"] },
          },
       ],
       attributes: ["id"],
@@ -314,31 +322,30 @@ const recommendationForFreelancer = async () => {
             model: Skill,
             as: "skills",
             attributes: ["id"],
-            through: { attributes: [] },
+            through: { attributes: ["level"] },
          },
       ],
       attributes: ["id"],
    });
 
    jobs.forEach(async (job) => {
-      let jobSkillList = [];
-      job.skills.forEach((skill) => {
-         jobSkillList.push(skill.id);
-      });
-
       freelancers.forEach(async (freelancer) => {
-         let freelancerSkillList = [];
+         let point = 0;
 
-         freelancer.skills.forEach((skill) => {
-            freelancerSkillList.push(skill.id);
+         job.skills.forEach((jobSkills) => {
+            freelancer.skills.forEach((freelancerSkills) => {
+               if (jobSkills.id == freelancerSkills.id) {
+                  if (levelPoint[freelancerSkills.freelancerskill.level.toLowerCase()] >=
+                     levelPoint[jobSkills.jobskill.level.toLowerCase()]) {
+                     point += 1;
+                  } else {
+                     point += 0.5;
+                  }
+               }
+            });
          });
 
-         let intersection = jobSkillList.filter((x) =>
-            freelancerSkillList.includes(x)
-         );
-         let point = intersection.length;
-
-         if (point) {
+         if (point > 0) {
             let recommendPoint = await RecommendPoint.findOne({
                where: {
                   jobId: job.id,
