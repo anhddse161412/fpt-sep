@@ -112,22 +112,27 @@ const getAppointmentById = async (req, res) => {
       let appointment = await Appointment.findOne({
          include: [
             {
-               model: Freelancer,
-               as: "freelancers",
-
+               model: Application,
+               as: "applications",
                include: [
                   {
-                     model: Account,
-                     as: "accounts",
-                     attributes: ["name", "image"],
+                     model: Freelancer,
+                     as: "freelancers",
+
+                     include: [
+                        {
+                           model: Account,
+                           as: "accounts",
+                           attributes: ["name", "email"],
+                        },
+                     ],
+                     attributes: ["id"],
                   },
                ],
-               attributes: ["id"],
             },
             {
                model: Client,
                as: "clients",
-
                include: [
                   {
                      model: Account,
@@ -136,10 +141,6 @@ const getAppointmentById = async (req, res) => {
                   },
                ],
                attributes: ["id"],
-            },
-            {
-               model: Job,
-               as: "jobs",
             },
          ],
          where: { appointmentId: req.params.appointmentId },
