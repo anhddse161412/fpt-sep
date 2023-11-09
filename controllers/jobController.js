@@ -539,6 +539,7 @@ const getJobHasAppointmentByClientId = async (req, res) => {
                   },
                ],
                attributes: ["id"],
+               where: { status: { [Op.not]: null } },
             },
          ],
          where: {
