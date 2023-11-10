@@ -8,7 +8,7 @@ module.exports = (sequelize, DataTypes) => {
       level: {
          type: DataTypes.STRING(20),
          allowNull: false,
-         defaultValue: "Basic",
+         defaultValue: "Cơ bản",
       },
    });
 

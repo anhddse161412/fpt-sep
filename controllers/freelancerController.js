@@ -192,7 +192,7 @@ const updateCVFile = async (req, res) => {
 // update skill set
 const updateSkillSet = async (req, res) => {
    try {
-      let newSkills = req.body.skill;
+      let skills = req.body.skill;
 
       const freelancer = await Freelancer.findOne({
          include: [
@@ -209,56 +209,58 @@ const updateSkillSet = async (req, res) => {
       let freelancerSkills = [];
 
       freelancer.skills.forEach(async freelancerSkill => {
-         freelancerSkills.push(freelancerSkill)
+         freelancerSkills.push(freelancerSkill.name)
       });
 
-      // update existed skill level
-      newSkills.forEach(async newSkill => {
-         freelancerSkills.forEach(async freelancerSkill => {
-            if (newSkill.name === freelancerSkill.name) {
-               newSkills = newSkills.filter(x => x.name != newSkill.name);
-               freelancerSkills = freelancerSkills.filter(x => x.name != freelancerSkill.name);
-               await freelancerSkill.freelancerskill.update({ level: newSkill.level });
-            }
-         })
-      });
-
-      // create new freelancer's skills and add to db
-      newSkills.forEach(async newSkill => {
-         let skill = await Skill.findOne({ where: { name: newSkill.name } });
-         if (!skill) {
-            skill = await Skill.create({
-               name: newSkill.name.charAt(0).toUpperCase() + newSkill.name.slice(1),
-            });
-            let data = {
-               freelancerId: req.params.freelancerId,
-               skillId: skill.id,
-               level: newSkill.level,
-            }
-            await FreelancerSkill.create(data);
-         } else {
-            let data = {
-               freelancerId: req.params.freelancerId,
-               skillId: skill.id,
-               level: newSkill.level,
-            }
-            await FreelancerSkill.create(data);
-         }
-      })
-
-      // remove old freelancer's skill
-      freelancerSkills.forEach(async freelancerSkill => {
+      // difference between old skill and new skill
+      let difference = freelancerSkills.filter(x => !skills.includes(x));
+      difference.forEach(async item => {
          const skill = await Skill.findOne({
             where: {
                name: {
-                  [db.Op.like]: `%${freelancerSkill.name}`,
+                  [db.Op.like]: `%${item}`,
                }
             }
          });
          skill.removeFreelancers(freelancer);
       })
 
+      // difference between new skill and old skill
+      difference = skills.filter(x => !freelancerSkills.includes(x));
+      difference.forEach(async item => {
+         let skill = await Skill.findOne({
+            where: {
+               name: {
+                  [db.Op.like]: `%${item}`,
+               }
+            }
+         });
+
+         if (!skill) {
+            skill = await Skill.create({ name: item });
+         }
+
+         skill.addFreelancers(freelancer);
+      })
+
       res.status(200).send("Cập nhật thành công!")
+   } catch (error) {
+      console.log(error);
+      res.status(500).send(`Lỗi server: ${error}`);
+   }
+};
+
+// update single skill
+const updateSkillLevel = async (req, res) => {
+   try {
+      await FreelancerSkill.update({ level: req.body.level }, {
+         where: {
+            freelancerSkillId: req.params.freelancerSkillId,
+         }
+      });
+
+      res.status(200).send("Cập nhật thành công!")
+
    } catch (error) {
       console.log(error);
       res.status(500).send(`Lỗi server: ${error}`);
@@ -355,4 +357,5 @@ module.exports = {
    updateSkillSet,
    updateNameAndImage,
    updateCVFile,
+   updateSkillLevel,
 };
