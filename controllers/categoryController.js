@@ -3,7 +3,7 @@ const db = require("../models");
 
 // create main Model
 const Category = db.categories;
-const SubCategory = db.subCategories;
+// const SubCategory = db.subCategories;
 
 // main work
 
@@ -32,7 +32,7 @@ const getAllCategory = async (req, res) => {
       let categories = await Category.findAll({
          include: [
             {
-               model: SubCategory,
+               model: Category,
                as: "subCategories",
             },
          ],
@@ -74,7 +74,7 @@ const getCategoryWithSubCategory = async (req, res) => {
    const data = await Category.findOne({
       include: [
          {
-            model: SubCategory,
+            model: Category,
             as: "subCategories",
          },
       ],

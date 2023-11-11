@@ -1,8 +1,12 @@
 const db = require("../models");
+const { Sequelize } = require("sequelize");
 // image Upload
 
+// Sequelize operation
+const Op = Sequelize.Op;
+
 // create main Model
-const SubCategory = db.subCategories;
+// const SubCategory = db.subCategories;
 const Category = db.categories;
 // main work
 
@@ -17,7 +21,7 @@ const createSubCategory = async (req, res) => {
          status: req.body.status ? req.body.status : false,
       };
 
-      const subCategory = await SubCategory.create(info);
+      const subCategory = await Category.create(info);
       res.status(200).send(subCategory);
       console.log(subCategory);
    } catch (error) {
@@ -29,13 +33,14 @@ const createSubCategory = async (req, res) => {
 // 2. get all SubCategory
 const getAllSubCategory = async (req, res) => {
    try {
-      let subCategories = await SubCategory.findAll({
+      let subCategories = await Category.findAll({
          include: [
             {
                model: Category,
-               as: "categories",
+               as: "subCategories",
             },
          ],
+         where: { categoryId: { [Op.not]: null } },
       });
       res.status(200).send(subCategories);
    } catch (error) {
@@ -46,8 +51,17 @@ const getAllSubCategory = async (req, res) => {
 
 const getSubCategoryById = async (req, res) => {
    try {
-      let subCategory = await SubCategory.findOne({
-         where: { id: req.params.subCategoryID },
+      let subCategory = await Category.findOne({
+         include: [
+            {
+               model: Category,
+               as: "subCategories",
+            },
+         ],
+         where: {
+            id: req.params.subCategoryID,
+            categoryId: { [Op.not]: null },
+         },
       });
       res.status(200).send(subCategory);
    } catch (error) {
@@ -58,7 +72,7 @@ const getSubCategoryById = async (req, res) => {
 
 const updateSubCategory = async (req, res) => {
    try {
-      let subCategory = await SubCategory.update(req.body, {
+      let subCategory = await Category.update(req.body, {
          where: { id: req.params.subCategoryID },
       });
       res.status(200).send(subCategory);
@@ -68,18 +82,22 @@ const updateSubCategory = async (req, res) => {
    }
 };
 
-const getSubCategoryWithCategory = async (req, res) => {
-   const data = await SubCategory.findOne({
-      include: [
-         {
-            model: Category,
-            as: "categories",
-         },
-      ],
-      where: { id: req.params.subCategoryID },
-   });
-
-   res.status(200).send(data);
+const getSubCategoryWithCategoryId = async (req, res) => {
+   try {
+      let subCategories = await Category.findAll({
+         include: [
+            {
+               model: Category,
+               as: "subCategories",
+            },
+         ],
+         where: { categoryId: req.params.categoryID },
+      });
+      res.status(200).send(subCategories);
+   } catch (error) {
+      console.log(error);
+      res.status(500).send(`Lỗi server: ${error}`);
+   }
 };
 
 module.exports = {
@@ -87,5 +105,5 @@ module.exports = {
    getSubCategoryById,
    getAllSubCategory,
    updateSubCategory,
-   getSubCategoryWithCategory,
+   getSubCategoryWithCategoryId,
 };

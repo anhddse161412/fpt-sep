@@ -9,8 +9,8 @@ router.post("/create", subCategoryController.createSubCategory);
 router.route("/").get(subCategoryController.getAllSubCategory);
 
 router
-   .route("/category/:subCategoryID")
-   .get(subCategoryController.getSubCategoryWithCategory);
+   .route("/category/:categoryID")
+   .get(subCategoryController.getSubCategoryWithCategoryId);
 
 router
    .route("/detail/:subCategoryID")
