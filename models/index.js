@@ -49,14 +49,14 @@ db.notifications = require("./notificationModel")(sequelize, DataTypes);
 db.languages = require("./languageModel.js")(sequelize, DataTypes);
 
 // many many model
-db.jobCategory = require("./jobCategoryModel")(sequelize, DataTypes);
-db.favorite = require("./favoriteModel")(sequelize, DataTypes);
-db.jobSkill = require("./jobSkillModel")(sequelize, DataTypes);
-db.freelancerSkill = require("./freelancerSkillModel")(sequelize, DataTypes);
-db.categorySubCategory = require("./categorySubCategoryModel")(
-   sequelize,
-   DataTypes
-);
+db.jobCategory = require('./jobCategoryModel')(sequelize, DataTypes);
+db.favorite = require('./favoriteModel')(sequelize, DataTypes);
+db.jobSkill = require('./jobSkillModel')(sequelize, DataTypes);
+db.freelancerSkill = require('./freelancerSkillModel')(sequelize, DataTypes);
+// db.categorySubCategory = require('./categorySubCategoryModel')(
+//   sequelize,
+//   DataTypes
+// );
 // creation
 
 db.sequelize.sync({ force: false, alter: true }).then(() => {
@@ -66,18 +66,28 @@ db.sequelize.sync({ force: false, alter: true }).then(() => {
 // 1 to Many Relation
 
 // category self-reference relationship
-
-db.categories.belongsToMany(db.categories, {
-   foreignKey: "subCategoryId",
-   as: "subCategories",
-   through: db.categorySubCategory,
+db.categories.belongsTo(db.categories, {
+  as: 'categories',
+  foreignKey: 'parentId',
+  constraints: false,
+});
+db.categories.hasMany(db.categories, {
+  as: 'subCategories',
+  foreignKey: 'parentId',
+  constraints: false,
 });
 
-db.categories.belongsToMany(db.categories, {
-   foreignKey: "categoryId",
-   as: "categories",
-   through: db.categorySubCategory,
-});
+// db.categories.belongsTo(db.categories, {
+//   foreignKey: 'subCategoryId',
+//   as: 'subCategories',
+//   through: db.categorySubCategory,
+// });
+
+// db.categories.belongsToMany(db.categories, {
+//   foreignKey: 'categoryId',
+//   as: 'categories',
+//   through: db.categorySubCategory,
+// });
 
 // account_client
 db.accounts.hasOne(db.clients, {

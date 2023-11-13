@@ -28,20 +28,28 @@ const createCategory = async (req, res) => {
 
 // 2. get all Category
 const getAllCategory = async (req, res) => {
-   try {
-      let categories = await Category.findAll({
-         include: [
-            {
-               model: Category,
-               as: "subCategories",
-            },
-         ],
-      });
-      res.status(200).send(categories);
-   } catch (error) {
-      console.log(error);
-      res.status(500).send(`Lỗi server: ${error}`);
-   }
+  try {
+    const allCategories = await db.categories.findAll({
+      include: [
+        {
+          model: db.categories,
+          as: 'categories',
+        },
+        {
+          model: db.categories,
+          as: 'subCategories',
+        },
+      ],
+      where: {
+        parentId: null, // Chỉ lấy các categories cha (có parentId là null)
+      },
+    });
+
+    res.status(200).json(allCategories);
+  } catch (error) {
+    console.log(error);
+    res.status(500).send(`Lỗi server: ${error}`);
+  }
 };
 
 const getCategoryById = async (req, res) => {
@@ -71,20 +79,18 @@ const updateCategory = async (req, res) => {
 // 7. connect one to many relation
 
 const getCategoryWithSubCategory = async (req, res) => {
-   const data = await Category.findAll({
-      include: [
-         {
-            model: Category,
-            as: "categories",
-            attributes: { exclude: ["createdAt", "updatedAt"] },
-            where: { id: req.params.categoryID },
-         },
-      ],
+  try {
+    const subCategories = await db.categories.findAll({
+      where: {
+        parentId: req.params.categoryID,
+      },
+    });
 
-      attributes: { exclude: ["createdAt", "updatedAt"] },
-   });
-
-   res.status(200).send(data);
+    res.status(200).json(subCategories);
+  } catch (error) {
+    console.error('Error:', error);
+    res.status(500).send(`Lỗi server: ${error}`);
+  }
 };
 
 module.exports = {
