@@ -3,6 +3,9 @@ const db = require("../models");
 // controller
 const notificaitonController = require("./notificationController");
 
+// Util
+const { sendEmail } = require("../util/sendEmail");
+
 // create main Model
 const Account = db.accounts;
 const Appointment = db.appointments;
@@ -27,12 +30,31 @@ const createAppointment = async (req, res) => {
 
       const client = await Client.findOne({
          where: { id: req.body.clientId },
+         include: [
+            {
+               model: Account,
+               as: "accounts",
+               attributes: ["name", "image", "id", "email"],
+            },
+         ],
       });
       const application = await Application.findOne({
          include: [
             {
                model: Job,
                as: "jobs",
+            },
+            {
+               model: Freelancer,
+               as: "freelancers",
+               include: [
+                  {
+                     model: Account,
+                     as: "accounts",
+                     attributes: ["name", "image", "id", "email"],
+                  },
+               ],
+               attributes: ["id"],
             },
          ],
          where: { id: req.body.applicationId },
@@ -47,6 +69,16 @@ const createAppointment = async (req, res) => {
       //    `New appointment created`,
       //    `You just got a new appointment for Job ${application.jobs.title}`
       // );
+
+      let email = application.freelancers.accounts.email;
+      sendEmail(
+         email,
+         `Bạn có lịch hẹn phỏng vấn với công ty: ${client.accounts.name}`,
+         `
+      thời gian: ${info.time}
+      địa điểm: ${info.location}
+      Vui lòng đến đúng giờ để có thể trao đổi `
+      );
 
       res.status(200).json({
          messsage: "Tạo Appointment thành công",

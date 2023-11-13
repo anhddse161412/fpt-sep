@@ -71,14 +71,17 @@ const updateCategory = async (req, res) => {
 // 7. connect one to many relation
 
 const getCategoryWithSubCategory = async (req, res) => {
-   const data = await Category.findOne({
+   const data = await Category.findAll({
       include: [
          {
             model: Category,
-            as: "subCategories",
+            as: "categories",
+            attributes: { exclude: ["createdAt", "updatedAt"] },
+            where: { id: req.params.categoryID },
          },
       ],
-      where: { id: req.params.categoryID },
+
+      attributes: { exclude: ["createdAt", "updatedAt"] },
    });
 
    res.status(200).send(data);

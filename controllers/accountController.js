@@ -14,6 +14,10 @@ const Favorite = db.favorite;
 const SubCategory = db.subCategories;
 const Skill = db.skills;
 const Category = db.categories;
+
+//Util
+const { sendEmail } = require("../util/sendEmail");
+
 // main work
 
 // 1. register account
@@ -259,37 +263,30 @@ const getFavoriteJobOfAccount = async (req, res) => {
 };
 
 const forgorPassword = async (req, res) => {
-   const { email } = req.body;
-   await Account.findOne({ where: { email: email } }).then((account) => {
-      if (!account) {
-         return res.send({ Status: "User not existed" });
-      }
-      const token = sign({ account: account.id }, process.env.JWT_KEY, {
-         expiresIn: "1d",
-      });
-      var transporter = nodemailer.createTransport({
-         service: "gmail",
-         auth: {
-            user: "anhddse161412@fpt.edu.vn",
-            pass: "uxqo fytd eaps tkkz",
-         },
-      });
-
-      var mailOptions = {
-         from: "anhddse161412@fpt.edu.vn",
-         to: `${email}`,
-         subject: "Reset Password Link",
-         text: `https://fpt-sep.onrender.com/accounts/reset_password/${account.id}/${token}`,
-      };
-
-      transporter.sendMail(mailOptions, function (error, info) {
-         if (error) {
-            console.log(error);
-         } else {
-            return res.send({ Status: "Success" });
+   try {
+      const { email } = req.body;
+      await Account.findOne({ where: { email: email } }).then((account) => {
+         if (!account) {
+            return res.send({ Status: "User not existed" });
          }
+         const token = sign({ account: account.id }, process.env.JWT_KEY, {
+            expiresIn: "1d",
+         });
+
+         sendEmail(
+            email,
+            "Đặt lại mật khẩu",
+            `Vui lòng click vào link này để đặt lại mật khẩu
+            https://fpt-sep.onrender.com/accounts/reset_password/${account.id}/${token}`
+         );
+
+         res.status(200).send({ message: "Đã gửi mail thành công" });
       });
-   });
+   } catch (error) {
+      console.log(error);
+      res.status(500).send(`Lỗi server: ${error}`);
+   }
+
    // res.status(200).send({
    //    message: "da gui toi gmail cua ban link reset password",
    // });
@@ -318,7 +315,7 @@ const resetPassword = async (req, res) => {
 const changePassword = async (req, res) => {
    try {
       let account = await Account.findOne({
-         where: { id: req.params.accountId }
+         where: { id: req.params.accountId },
       });
 
       const checkPassword = compareSync(req.body.oldPassword, account.password);
@@ -345,7 +342,7 @@ const changePassword = async (req, res) => {
 const deleteAccount = async (req, res) => {
    try {
       let account = await Account.findOne({
-         where: { id: req.params.accountId }
+         where: { id: req.params.accountId },
       });
 
       account.setDataValue("status", false);
@@ -356,7 +353,7 @@ const deleteAccount = async (req, res) => {
       console.log(error);
       res.status(500).send(`Lỗi server: ${error}`);
    }
-}
+};
 
 module.exports = {
    register,

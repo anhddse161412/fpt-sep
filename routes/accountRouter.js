@@ -67,6 +67,6 @@ router
    .route("/reset_password/:id/:token")
    .post(accountController.resetPassword);
 
-router.route("/password/:accountId").put(accountController.changePassword)
+router.route("/password/:accountId").put(accountController.changePassword);
 
 module.exports = router;

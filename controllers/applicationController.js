@@ -7,6 +7,9 @@ const notificaitonController = require("./notificationController");
 // Sequelize operation
 const Op = Sequelize.Op;
 
+// util
+const { sendEmail } = require("../util/sendEmail");
+
 // create main Model
 const Account = db.accounts;
 const Application = db.applications;
@@ -310,15 +313,32 @@ const interviewApplication = async (req, res) => {
             {
                model: Freelancer,
                as: "freelancers",
-
                include: [
                   {
                      model: Account,
                      as: "accounts",
-                     attributes: ["name", "image", "id"],
+                     attributes: ["name", "image", "id", "email"],
                   },
                ],
                attributes: ["id"],
+            },
+            {
+               model: Job,
+               as: "jobs",
+               include: [
+                  {
+                     model: Client,
+                     as: "clients",
+                     include: [
+                        {
+                           model: Account,
+                           as: "accounts",
+                           attributes: ["name", "image", "id", "email"],
+                        },
+                     ],
+                     attributes: ["id"],
+                  },
+               ],
             },
          ],
          where: { id: req.params.applicationId },
@@ -330,6 +350,7 @@ const interviewApplication = async (req, res) => {
       //    `Application status has changed`,
       //    `You have a interview invitation ,${application.freelancers.accounts.name}`
       // );
+
       res.status(200).send(application);
    } catch (error) {
       console.log(error);

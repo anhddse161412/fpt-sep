@@ -6,6 +6,7 @@ const sequelize = new Sequelize(dbConfig.DB, dbConfig.USER, dbConfig.PASSWORD, {
    host: dbConfig.HOST,
    dialect: dbConfig.dialect,
    operatorsAliases: false,
+   timezone: "+07:00",
    port: 25060,
    pool: {
       max: dbConfig.pool.max,
@@ -39,7 +40,7 @@ db.clients = require("./clientModel")(sequelize, DataTypes);
 db.freelancers = require("./freelancerModel")(sequelize, DataTypes);
 db.applications = require("./applicationModel")(sequelize, DataTypes);
 db.skills = require("./skillModel")(sequelize, DataTypes);
-db.appointments = require("./AppointmentModel")(sequelize, DataTypes);
+db.appointments = require("./appointmentModel")(sequelize, DataTypes);
 db.certificates = require("./certificateModel")(sequelize, DataTypes);
 db.recommendPoints = require("./recommendPoint.js")(sequelize, DataTypes);
 db.payments = require("./paymentModel")(sequelize, DataTypes);
@@ -52,7 +53,10 @@ db.jobCategory = require("./jobCategoryModel")(sequelize, DataTypes);
 db.favorite = require("./favoriteModel")(sequelize, DataTypes);
 db.jobSkill = require("./jobSkillModel")(sequelize, DataTypes);
 db.freelancerSkill = require("./freelancerSkillModel")(sequelize, DataTypes);
-
+db.categorySubCategory = require("./categorySubCategoryModel")(
+   sequelize,
+   DataTypes
+);
 // creation
 
 db.sequelize.sync({ force: false, alter: true }).then(() => {
@@ -60,11 +64,19 @@ db.sequelize.sync({ force: false, alter: true }).then(() => {
 });
 
 // 1 to Many Relation
+
 // category self-reference relationship
 
-db.categories.belongsTo(db.categories, {
-   foreignKey: "categoryId",
+db.categories.belongsToMany(db.categories, {
+   foreignKey: "subCategoryId",
    as: "subCategories",
+   through: db.categorySubCategory,
+});
+
+db.categories.belongsToMany(db.categories, {
+   foreignKey: "categoryId",
+   as: "categories",
+   through: db.categorySubCategory,
 });
 
 // account_client
@@ -239,8 +251,8 @@ db.accounts.belongsToMany(db.jobs, { through: db.favorite });
 // db.jobs.belongsToMany(db.subCategories, { through: db.jobSubCategory });
 // db.subCategories.belongsToMany(db.jobs, { through: db.jobSubCategory });
 
-db.jobs.belongsToMany(db.categories, { through: db.jobCategory });
-db.categories.belongsToMany(db.jobs, { through: db.jobCategory });
+// db.jobs.belongsToMany(db.categories, { through: db.jobCategory });
+// db.categories.belongsToMany(db.jobs, { through: db.jobCategory });
 
 db.jobs.belongsToMany(db.skills, { through: db.jobSkill });
 db.skills.belongsToMany(db.jobs, { through: db.jobSkill });

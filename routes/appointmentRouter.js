@@ -15,9 +15,7 @@ router
    .get(AppointmentController.getAppointmentById)
    .put(AppointmentController.updateAppointment);
 
-router
-   .route("/job/:jobId")
-   .get(AppointmentController.getAppointmentByJobId);
+router.route("/job/:jobId").get(AppointmentController.getAppointmentByJobId);
 router
    .route("/freelancer/:freelancerId")
    .get(AppointmentController.getAppointmentByFreelancerId);
