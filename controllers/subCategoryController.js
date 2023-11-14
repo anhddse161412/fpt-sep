@@ -8,7 +8,7 @@ const Op = Sequelize.Op;
 // create main Model
 // const SubCategory = db.subCategories;
 const Category = db.categories;
-const CategorySubCategory = db.categorySubCategory;
+
 // main work
 
 // 1. create SubCategory
@@ -34,7 +34,7 @@ const createSubCategory = async (req, res) => {
 // 2. get all SubCategory
 const getAllSubCategory = async (req, res) => {
    try {
-      let categories = await CategorySubCategory.findAll({
+      let categories = await Category.findAll({
          include: [
             {
                model: Category,
@@ -42,6 +42,10 @@ const getAllSubCategory = async (req, res) => {
                attributes: { exclude: ["createdAt", "updatedAt"] },
             },
          ],
+         attributes: { exclude: ["createdAt", "updatedAt"] },
+         where: {
+            parentId: { [Op.not]: null },
+         },
       });
 
       res.status(200).send(categories);
@@ -64,7 +68,7 @@ const getSubCategoryById = async (req, res) => {
          attributes: { exclude: ["createdAt", "updatedAt"] },
          where: {
             id: req.params.subCategoryID,
-            categoryId: { [Op.not]: null },
+            parentId: { [Op.not]: null },
          },
       });
       res.status(200).send(subCategory);
@@ -92,12 +96,12 @@ const getSubCategoryWithCategoryId = async (req, res) => {
          include: [
             {
                model: Category,
-               as: "subCategories",
+               as: "categories",
                attributes: { exclude: ["createdAt", "updatedAt"] },
             },
          ],
          attributes: { exclude: ["createdAt", "updatedAt"] },
-         where: { categoryId: req.params.categoryID },
+         where: { parentId: req.params.categoryID },
       });
       res.status(200).send(subCategories);
    } catch (error) {

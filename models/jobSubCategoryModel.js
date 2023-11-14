@@ -1,10 +1,11 @@
 module.exports = (sequelize, DataTypes) => {
-   const CategorySubCategory = sequelize.define("categorysubcategory", {
-      categorySubCategoryId: {
+   const JobSubcategory = sequelize.define("jobsubcategory", {
+      jobSubCategoryId: {
          type: DataTypes.INTEGER,
          primaryKey: true,
          autoIncrement: true,
       },
    });
-   return CategorySubCategory;
+
+   return JobSubcategory;
 };

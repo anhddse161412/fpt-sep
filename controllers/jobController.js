@@ -11,7 +11,7 @@ const notificaitonController = require("./notificationController");
 const Job = db.jobs;
 const Account = db.accounts;
 const Category = db.categories;
-const SubCategory = db.subCategories;
+
 const Client = db.clients;
 const Application = db.applications;
 const Skill = db.skills;
@@ -41,8 +41,8 @@ const createJob = async (req, res) => {
 
       if (subCategoryList) {
          subCategoryList.forEach(async (item) => {
-            const subCategory = await SubCategory.findOne({
-               where: { name: item },
+            const subCategory = await Category.findOne({
+               where: { name: item, parentId: { [Op.not]: null } },
             });
             subCategory.addJobs(job);
          });
@@ -108,7 +108,7 @@ const getJobById = async (req, res) => {
          let job = await Job.findOne({
             include: [
                {
-                  model: SubCategory,
+                  model: Category,
                   as: "subcategories",
                   attributes: ["name"],
                },
@@ -332,7 +332,7 @@ const paginationJob = async (req, res) => {
       const { count, rows: jobs } = await Job.findAndCountAll({
          include: [
             {
-               model: SubCategory,
+               model: Category,
                as: "subcategories",
                include: [
                   {
@@ -405,7 +405,7 @@ const paginationJobBySubCategoryId = async (req, res) => {
       const { count, rows: jobs } = await Job.findAndCountAll({
          include: [
             {
-               model: SubCategory,
+               model: Category,
                as: "subcategories",
                where: {
                   id: req.params.subCategoryId,
@@ -467,7 +467,7 @@ const getJobBySubCategory = async (req, res) => {
       const data = await Job.findAll({
          include: [
             {
-               model: SubCategory,
+               model: Category,
                as: "subcategories",
                where: {
                   name: {
@@ -713,7 +713,7 @@ const paginationJobByName = async (req, res) => {
       const { count, rows: jobs } = await Job.findAndCountAll({
          include: [
             {
-               model: SubCategory,
+               model: Category,
                as: "subcategories",
                include: [
                   {

@@ -49,10 +49,10 @@ db.notifications = require("./notificationModel")(sequelize, DataTypes);
 db.languages = require("./languageModel.js")(sequelize, DataTypes);
 
 // many many model
-db.jobCategory = require('./jobCategoryModel')(sequelize, DataTypes);
-db.favorite = require('./favoriteModel')(sequelize, DataTypes);
-db.jobSkill = require('./jobSkillModel')(sequelize, DataTypes);
-db.freelancerSkill = require('./freelancerSkillModel')(sequelize, DataTypes);
+db.jobSubCategory = require("./jobSubCategoryModel")(sequelize, DataTypes);
+db.favorite = require("./favoriteModel")(sequelize, DataTypes);
+db.jobSkill = require("./jobSkillModel")(sequelize, DataTypes);
+db.freelancerSkill = require("./freelancerSkillModel")(sequelize, DataTypes);
 // db.categorySubCategory = require('./categorySubCategoryModel')(
 //   sequelize,
 //   DataTypes
@@ -67,14 +67,14 @@ db.sequelize.sync({ force: false, alter: true }).then(() => {
 
 // category self-reference relationship
 db.categories.belongsTo(db.categories, {
-  as: 'categories',
-  foreignKey: 'parentId',
-  constraints: false,
+   as: "categories",
+   foreignKey: "parentId",
+   constraints: false,
 });
 db.categories.hasMany(db.categories, {
-  as: 'subCategories',
-  foreignKey: 'parentId',
-  constraints: false,
+   as: "subCategories",
+   foreignKey: "parentId",
+   constraints: false,
 });
 
 // db.categories.belongsTo(db.categories, {
@@ -258,11 +258,14 @@ db.notifications.belongsTo(db.accounts, {
 db.jobs.belongsToMany(db.accounts, { through: db.favorite });
 db.accounts.belongsToMany(db.jobs, { through: db.favorite });
 
-// db.jobs.belongsToMany(db.subCategories, { through: db.jobSubCategory });
-// db.subCategories.belongsToMany(db.jobs, { through: db.jobSubCategory });
-
-// db.jobs.belongsToMany(db.categories, { through: db.jobCategory });
-// db.categories.belongsToMany(db.jobs, { through: db.jobCategory });
+db.jobs.belongsToMany(db.categories, {
+   as: "subcategories",
+   through: db.jobSubCategory,
+});
+db.categories.belongsToMany(db.jobs, {
+   as: "jobs",
+   through: db.jobSubCategory,
+});
 
 db.jobs.belongsToMany(db.skills, { through: db.jobSkill });
 db.skills.belongsToMany(db.jobs, { through: db.jobSkill });
