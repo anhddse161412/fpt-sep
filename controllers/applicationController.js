@@ -273,6 +273,7 @@ const getApplicationByClientId = async (req, res) => {
 // approve application
 const approveApplication = async (req, res) => {
    try {
+      let approveFee = 10000;
       let application = await Application.findOne({
          include: [
             {
@@ -288,6 +289,23 @@ const approveApplication = async (req, res) => {
                ],
                attributes: ["id"],
             },
+            {
+               model: Job,
+               as: "jobs",
+               attributes: ["id", "title"],
+               include: [
+                  {
+                     model: Client,
+                     as: "clients",
+                     include: [
+                        {
+                           model: Account,
+                           as: "accounts",
+                        },
+                     ],
+                  },
+               ],
+            },
          ],
          where: { id: req.params.applicationId },
       });
@@ -298,6 +316,34 @@ const approveApplication = async (req, res) => {
       //    `Application status has changed`,
       //    `Your application has been approved, ${application.freelancers.accounts.name}`
       // );
+      if (parseInt(application.jobs.clients.currency) >= approveFee) {
+         const client = await Client.findOne({
+            where: { id: application.jobs.clients.id },
+         });
+         let newCurrencyValue = client.currency - approveFee;
+         client.setDataValue("currency", newCurrencyValue);
+         client.save();
+         sendEmail(
+            application.jobs.clients.accounts.email,
+            `[FPT-SEP] Công việc bạn đăng đã được thanh toán tự động thành công`,
+            `
+         Công việc "${application.jobs.title}" đã được thanh toán tự động thành công. Vui lòng kiểu tra số dư toàn khoản trên website. 
+         Trân trọng.
+      `
+         );
+      } else {
+         sendEmail(
+            application.jobs.clients.accounts.email,
+            `[FPT-SEP] Công việc bạn đăng đã không được thanh toán tự động thành công`,
+            `
+         Công việc "${application.jobs.title}" đã không được thanh toán tự động thành công do không đủ số dư trong tài khoản.
+         Vui lòng nạp thêm để có thể thanh toán.
+         Lưu ý : Sau 10 ngày. Nếu công việc vẫn chưa được thanh toán, tài khoản của quý khách sẽ bị vô hiệu hóa.
+         Trân trọng.
+      `
+         );
+      }
+
       res.status(200).send(application);
    } catch (error) {
       console.log(error);

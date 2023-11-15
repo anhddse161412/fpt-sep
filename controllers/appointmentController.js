@@ -73,11 +73,14 @@ const createAppointment = async (req, res) => {
       let email = application.freelancers.accounts.email;
       sendEmail(
          email,
-         `Bạn có lịch hẹn phỏng vấn với công ty: ${client.accounts.name}`,
+         `[FPT-SEP] LỜI MỜI PHỎNG VẤN TỪ ${client.accounts.name}`,
          `
-      thời gian: ${info.time}
-      địa điểm: ${info.location}
-      Vui lòng đến đúng giờ để có thể trao đổi `
+         Cảm ơn bạn đã quan tâm đến ${client.accounts.name}. Chúng tôi rất ấn tượng bởi nền tảng của bạn và xin mời bạn đến phỏng vấn với lịch trình như sau:
+          - Thời gian : ${info.time}
+          - Địa điểm : ${info.location}
+         Vui lòng đến đúng giờ để có thể trao đổi thêm thông tin.
+         Cảm ơn và Trân trọng kính chào,
+      `
       );
 
       res.status(200).json({
