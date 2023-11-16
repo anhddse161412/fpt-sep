@@ -209,15 +209,8 @@ const getFavoriteJobOfAccount = async (req, res) => {
                where: { id: req.params.accountId },
             },
             {
-               model: SubCategory,
+               model: Category,
                as: "subcategories",
-               include: [
-                  {
-                     model: Category,
-                     as: "categories",
-                     attributes: ["name"],
-                  },
-               ],
                attributes: ["name"],
             },
             {
