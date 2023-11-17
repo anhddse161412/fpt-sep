@@ -10,7 +10,7 @@ const Client = db.clients;
 
 const getAllPayment = async (req, res) => {
    try {
-      let payments = await Payment.findAll({});
+      let payments = await Payment.findAll({ order: [["createAt", "ASC"]] });
       res.status(200).send(payments);
    } catch (error) {
       console.log(error);
@@ -21,7 +21,10 @@ const getAllPayment = async (req, res) => {
 const getPaymentByClientId = async (req, res) => {
    try {
       let payments = await Payment.findAll({
-         where: { clientId: req.params.clientId },
+         where: {
+            clientId: req.params.clientId,
+            order: [["createAt", "ASC"]],
+         },
       });
       let client = await Client.findOne({
          where: { id: req.params.clientId },
@@ -71,6 +74,31 @@ const createPayment = async (req, res) => {
    } catch (error) {
       console.log(error);
       res.status(500).send(`Lỗi server: ${error}`);
+   }
+};
+
+const createAutoCollectFeePayment = async (info) => {
+   try {
+      const payment = await Payment.create(info);
+      const client = await Client.findOne({
+         where: { id: info.clientId },
+      });
+      // update client's currency
+      if (info.type == "+") {
+         let newCurrencyValue = client.currency + parseInt(info.amount);
+         client.setDataValue("currency", newCurrencyValue);
+         client.save();
+      } else if (info.type == "-") {
+         let newCurrencyValue = client.currency - parseInt(info.amount);
+         client.setDataValue("currency", newCurrencyValue);
+         client.save();
+      }
+
+      //
+      client.addPayment(payment);
+      console.log("Lưu giao dịch thành công");
+   } catch (error) {
+      console.log(error);
    }
 };
 
@@ -395,4 +423,5 @@ module.exports = {
    getAllPayment,
    receivePaymentResult,
    refundPayment,
+   createAutoCollectFeePayment,
 };

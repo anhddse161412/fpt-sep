@@ -3,6 +3,7 @@ const db = require("../models");
 
 // controller
 const notificaitonController = require("./notificationController");
+const paymentController = require("./paymentController");
 
 // Sequelize operation
 const Op = Sequelize.Op;
@@ -284,7 +285,7 @@ const approveApplication = async (req, res) => {
                   {
                      model: Account,
                      as: "accounts",
-                     attributes: ["name", "image", "id"],
+                     attributes: ["name", "image", "id", "email"],
                   },
                ],
                attributes: ["id"],
@@ -319,10 +320,27 @@ const approveApplication = async (req, res) => {
       if (parseInt(application.jobs.clients.currency) >= approveFee) {
          const client = await Client.findOne({
             where: { id: application.jobs.clients.id },
+            include: [
+               {
+                  model: Account,
+                  as: "accounts",
+               },
+            ],
          });
+
+         sendEmail(
+            application.freelancers.accounts.email,
+            `[FPT-SEP] THÔNG BÁO PHỎNG VẤN TỪ ${client.accounts.name}`,
+            `
+         Cảm ơn bạn đã dành thời gian tham dự buổi phỏng vấn. Chúng tôi xin thông báo rằng Bạn đã vượt qua thành công cuộc phỏng vấn của chúng tôi 
+         Chúng tôi sẽ liên hệ với bạn sau. Hãy kiểm tra email thường xuyên để không bỏ lỡ bất kỳ thông tin nào từ chúng tôi.
+         Chúng tôi rất mong được hợp tác với bạn `
+         );
+
          let newCurrencyValue = client.currency - approveFee;
          client.setDataValue("currency", newCurrencyValue);
          client.save();
+
          sendEmail(
             application.jobs.clients.accounts.email,
             `[FPT-SEP] Công việc bạn đăng đã được thanh toán tự động thành công`,
@@ -331,6 +349,16 @@ const approveApplication = async (req, res) => {
          Trân trọng.
       `
          );
+
+         let info = {
+            amount: approveFee,
+            name: "Thanh toán tự động",
+            description: `Thanh toán tự động cho công việc "${application.jobs.title}"`,
+            status: true,
+            type: "-",
+            clientId: `${application.jobs.clients.id}`,
+         };
+         paymentController.createAutoCollectFeePayment(info);
       } else {
          sendEmail(
             application.jobs.clients.accounts.email,
