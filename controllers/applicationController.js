@@ -256,7 +256,7 @@ const getApplicationByClientId = async (req, res) => {
                   {
                      model: Account,
                      as: "accounts",
-                     attributes: ["name", "image"],
+                     attributes: ["name", "image", "id"],
                   },
                ],
                attributes: ["id"],
