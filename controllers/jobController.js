@@ -130,6 +130,13 @@ const getJobById = async (req, res) => {
                {
                   model: Application,
                   as: "applications",
+                  include: [
+                     {
+                        model: Freelancer,
+                        as: "freelancers",
+                        attributes: ["id", "accountId"],
+                     }
+                  ],
                },
             ],
             where: { id: req.params.jobID },
