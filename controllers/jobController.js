@@ -586,12 +586,12 @@ const checkJobEndDate = async (req, res) => {
                item.save();
             }
          });
+         if (message.length == 0) {
+            message.push("No job is expired today");
+         }
+         console.log(message);
+         message = [];
       });
-      if (message.length == 0) {
-         message.push("No job is expired today");
-      }
-      console.log(message);
-      message = [];
    } catch (error) {
       console.log(error);
       res.status(500).send(`Lỗi server: ${error}`);

@@ -3,6 +3,7 @@ const { genSaltSync, hashSync, compareSync } = require("bcrypt");
 const { sign, verify } = require("jsonwebtoken");
 const nodemailer = require("nodemailer");
 const { favorite } = require("../models");
+const otpGenerator = require("otp-generator");
 // image Upload
 
 // create main Model
@@ -260,17 +261,26 @@ const forgorPassword = async (req, res) => {
       const { email } = req.body;
       await Account.findOne({ where: { email: email } }).then((account) => {
          if (!account) {
-            return res.send({ Status: "User not existed" });
+            return res.send({ Status: "Email này chưa được đăng kí" });
          }
-         const token = sign({ account: account.id }, process.env.JWT_KEY, {
-            expiresIn: "1d",
+         let otp = otpGenerator.generate(6, {
+            digits: true,
+            specialChars: false,
+            lowerCaseAlphabets: false,
+            upperCaseAlphabets: false,
          });
-
+         const token = sign(
+            { accountId: account.id, otp: otp },
+            process.env.JWT_KEY,
+            {
+               expiresIn: "1h",
+            }
+         );
+         req.session.token = token;
          sendEmail(
             email,
-            "Đặt lại mật khẩu",
-            `Vui lòng click vào link này để đặt lại mật khẩu
-            https://fpt-sep.onrender.com/accounts/reset_password/${account.id}/${token}`
+            "[FPT-SEP] Mã xác nhận đặt lại mật khẩu",
+            `Đây là mã xác nhận đặt lại mật khẩu của bạn : ${otp}`
          );
 
          res.status(200).send({ message: "Đã gửi mail thành công" });
@@ -286,16 +296,22 @@ const forgorPassword = async (req, res) => {
 };
 
 const resetPassword = async (req, res) => {
-   const { id, token } = req.params;
-   const { password } = req.body;
-
+   const { password, otp } = req.body;
+   let token = req.session.token;
    verify(token, process.env.JWT_KEY, async (err, decoded) => {
       if (err) {
          return res.json({ Status: "Error with token" });
       } else {
+         console.log(otp);
+         console.log(decoded.otp);
+         if (!decoded.otp == req.otp) {
+            res.send({ Status: "OTP không hợp lệ" });
+         }
          const salt = genSaltSync(10);
          newPassword = hashSync(password, salt);
-         let account = await Account.findOne({ where: { id: id } });
+         let account = await Account.findOne({
+            where: { id: decoded.accountId },
+         });
          account.setDataValue("password", newPassword);
          account
             .save()

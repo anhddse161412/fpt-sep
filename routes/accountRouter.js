@@ -63,9 +63,7 @@ router
 router.route("/job/:accountId").get(accountController.getAccountWithJobId);
 
 router.route("/forgot_password").post(accountController.forgorPassword);
-router
-   .route("/reset_password/:id/:token")
-   .post(accountController.resetPassword);
+router.route("/reset_password").post(accountController.resetPassword);
 
 router.route("/password/:accountId").put(accountController.changePassword);
 

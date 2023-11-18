@@ -18,6 +18,7 @@ const Notification = db.notifications;
 var notificaitonController = require("./controllers/notificationController");
 var jobController = require("./controllers/jobController");
 var recommendPointController = require("./controllers/recommendPointController");
+var feePaymentController = require("./controllers/feePaymentController");
 
 const swaggerUI = require("swagger-ui-express");
 const swaggerFile = require("./swagger_output.json");
@@ -119,6 +120,12 @@ cron.schedule("0 0 * * *", function () {
    jobController.checkJobEndDate();
 });
 
+cron.schedule("1 0 * * *", function () {
+   console.log("---------------------");
+   //will run every day at 00:01 AM
+   feePaymentController.checkFeePaymentDeadline();
+});
+
 cron.schedule("0 * * * *", function () {
    console.log("---------------------");
    //will run every hour
@@ -137,6 +144,7 @@ cron.schedule("2 * * * *", function () {
    recommendPointController.recommendationApplicationForJob();
    recommendPointController.recommendationForFreelancer();
 });
+
 // router
 app.get("/", (req, res) => {
    res.status(200).send("hello");

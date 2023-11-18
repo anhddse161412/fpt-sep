@@ -4,6 +4,7 @@ const db = require("../models");
 // controller
 const notificaitonController = require("./notificationController");
 const paymentController = require("./paymentController");
+const feePaymentController = require("./feePaymentController");
 
 // Sequelize operation
 const Op = Sequelize.Op;
@@ -360,6 +361,10 @@ const approveApplication = async (req, res) => {
          };
          paymentController.createAutoCollectFeePayment(info);
       } else {
+         feePaymentController.createFeePaymentDeadline(
+            `Hạn thanh toán của client ${application.jobs.clients.accounts.name}`,
+            application.jobs.clients.id
+         );
          sendEmail(
             application.jobs.clients.accounts.email,
             `[FPT-SEP] Công việc bạn đăng đã không được thanh toán tự động thành công`,

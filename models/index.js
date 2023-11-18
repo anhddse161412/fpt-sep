@@ -47,7 +47,10 @@ db.payments = require("./paymentModel")(sequelize, DataTypes);
 db.transactions = require("./transactionModel")(sequelize, DataTypes);
 db.notifications = require("./notificationModel")(sequelize, DataTypes);
 db.languages = require("./languageModel.js")(sequelize, DataTypes);
-
+db.feePaymentDeadlines = require("./feePaymentDeadlineModel")(
+   sequelize,
+   DataTypes
+);
 // many many model
 db.jobSubCategory = require("./jobSubCategoryModel")(sequelize, DataTypes);
 db.favorite = require("./favoriteModel")(sequelize, DataTypes);
@@ -252,6 +255,17 @@ db.accounts.hasMany(db.notifications, {
 db.notifications.belongsTo(db.accounts, {
    foreignKey: "accountId",
    as: "accounts",
+});
+
+// client - feePaymentDeadline
+db.clients.hasMany(db.feePaymentDeadlines, {
+   foreignKey: "clientId",
+   as: "feePaymentDeadlines",
+});
+
+db.feePaymentDeadlines.belongsTo(db.clients, {
+   foreignKey: "clientId",
+   as: "clients",
 });
 
 // Many to Many relation
