@@ -1,6 +1,6 @@
 const db = require("../models");
 const { genSaltSync, hashSync, compareSync } = require("bcrypt");
-const { sign, verify } = require("jsonwebtoken");
+const { sign, verify, decode } = require("jsonwebtoken");
 const nodemailer = require("nodemailer");
 const { favorite } = require("../models");
 const otpGenerator = require("otp-generator");
@@ -28,6 +28,7 @@ const register = async (req, res) => {
          name: req.body.name,
          email: req.body.email,
          password: req.body.password,
+         password: req.body.password,
          role: req.body.role ? req.body.role : "client",
          status: true,
       };
@@ -39,23 +40,81 @@ const register = async (req, res) => {
       ) {
          throw new Error("Tài khoản email này đã được sử dụng!");
       }
-
+      let { token, otp } = await sendEmailOtp(req.body.email, info);
+      sendEmail(
+         req.body.email,
+         "[FPT-SEP] Mã xác nhận tài khoản",
+         `Đây là mã xác nhận nhận tài khoản của bạn : ${otp}`
+      );
       // decode password
-      const salt = genSaltSync(10);
-      info.password = hashSync(req.body.password, salt);
+      // const salt = genSaltSync(10);
+      // info.password = hashSync(req.body.password, salt);
 
       // create account
-      const account = await Account.create(info);
+      // const account = await Account.create(info);
 
-      if (info.role === "client") {
-         const client = await Client.create({ status: "true" });
-         account.setClients(client);
-      } else if (info.role === "freelancer") {
-         const freelancer = await Freelancer.create({ status: "true" });
-         account.setFreelancers(freelancer);
-      }
-      res.status(200).json({ message: "Tài khoản đã được tạo!" });
-      console.log(account.dataValues);
+      // if (info.role === "client") {
+      //    const client = await Client.create({ status: "true" });
+      //    account.setClients(client);
+      // } else if (info.role === "freelancer") {
+      //    const freelancer = await Freelancer.create({ status: "true" });
+      //    account.setFreelancers(freelancer);
+      // }
+      req.session.token = token;
+      res.status(200).json({ message: "Đã gửi mã xác nhận tới email!" });
+      // console.log(account.dataValues);
+   } catch (error) {
+      console.log(error);
+      res.status(400).json({ message: error.toString() });
+   }
+};
+
+// complete register
+const confirmRegister = async (req, res) => {
+   try {
+      let { otp, email } = req.body;
+      let token = req.session.token;
+
+      verify(token, process.env.JWT_KEY, async (err, decoded) => {
+         if (err) {
+            return res.json({ Status: "Error with token" });
+         } else {
+            if (
+               decoded.otp == otp &&
+               decoded.email == email &&
+               decoded.registerInfo != null
+            ) {
+               let info = {
+                  name: decoded.registerInfo.name,
+                  email: decoded.registerInfo.email,
+                  password: decoded.registerInfo.password,
+                  role: decoded.registerInfo.role,
+                  status: true,
+               };
+               const salt = genSaltSync(10);
+               info.password = hashSync(info.password, salt);
+
+               // create account
+               const account = await Account.create(info);
+
+               if (info.role === "client") {
+                  const client = await Client.create({
+                     status: "true",
+                     currency: 0,
+                  });
+                  account.setClients(client);
+               } else if (info.role === "freelancer") {
+                  const freelancer = await Freelancer.create({
+                     status: "true",
+                  });
+                  account.setFreelancers(freelancer);
+               }
+               res.status(200).json({ message: "Tài khoản đã được tạo!" });
+               console.log(account.dataValues);
+            } else {
+            }
+         }
+      });
    } catch (error) {
       console.log(error);
       res.status(400).json({ message: error.toString() });
@@ -259,32 +318,21 @@ const getFavoriteJobOfAccount = async (req, res) => {
 const forgorPassword = async (req, res) => {
    try {
       const { email } = req.body;
-      await Account.findOne({ where: { email: email } }).then((account) => {
-         if (!account) {
-            return res.send({ Status: "Email này chưa được đăng kí" });
-         }
-         let otp = otpGenerator.generate(6, {
-            digits: true,
-            specialChars: false,
-            lowerCaseAlphabets: false,
-            upperCaseAlphabets: false,
-         });
-         const token = sign(
-            { accountId: account.id, otp: otp },
-            process.env.JWT_KEY,
-            {
-               expiresIn: "1h",
+      await Account.findOne({ where: { email: email } }).then(
+         async (account) => {
+            if (!account) {
+               return res.send({ Status: "Email này chưa được đăng kí" });
             }
-         );
-         req.session.token = token;
-         sendEmail(
-            email,
-            "[FPT-SEP] Mã xác nhận đặt lại mật khẩu",
-            `Đây là mã xác nhận đặt lại mật khẩu của bạn : ${otp}`
-         );
-
-         res.status(200).send({ message: "Đã gửi mail thành công" });
-      });
+            let { token, otp } = await sendEmailOtp(account.email, "");
+            sendEmail(
+               email,
+               "[FPT-SEP] Mã xác nhận đặt lại mật khẩu",
+               `Đây là mã xác nhận đặt lại mật khẩu của bạn : ${otp}`
+            );
+            req.session.token = token;
+            res.status(200).send({ message: "Đã gửi mail thành công" });
+         }
+      );
    } catch (error) {
       console.log(error);
       res.status(500).send(`Lỗi server: ${error}`);
@@ -296,29 +344,22 @@ const forgorPassword = async (req, res) => {
 };
 
 const resetPassword = async (req, res) => {
-   const { password, otp } = req.body;
-   let token = req.session.token;
-   verify(token, process.env.JWT_KEY, async (err, decoded) => {
-      if (err) {
-         return res.json({ Status: "Error with token" });
-      } else {
-         console.log(otp);
-         console.log(decoded.otp);
-         if (!decoded.otp == req.otp) {
-            res.send({ Status: "OTP không hợp lệ" });
-         }
-         const salt = genSaltSync(10);
-         newPassword = hashSync(password, salt);
-         let account = await Account.findOne({
-            where: { id: decoded.accountId },
-         });
-         account.setDataValue("password", newPassword);
-         account
-            .save()
-            .then((u) => res.send({ Status: "Success" }))
-            .catch((err) => res.send({ Status: err }));
-      }
-   });
+   try {
+      const { email, password } = req.body;
+      const salt = genSaltSync(10);
+      newPassword = hashSync(password, salt);
+      let account = await Account.findOne({
+         where: { email: email },
+      });
+      account.setDataValue("password", newPassword);
+      account
+         .save()
+         .then((u) => res.send({ Status: "Success" }))
+         .catch((err) => res.send({ Status: err }));
+   } catch (error) {
+      console.log(error);
+      res.status(500).send(`Lỗi server: ${error}`);
+   }
 };
 
 const changePassword = async (req, res) => {
@@ -364,6 +405,58 @@ const deleteAccount = async (req, res) => {
    }
 };
 
+const sendEmailOtp = async (email, registerInfo) => {
+   try {
+      let otp = otpGenerator.generate(6, {
+         digits: true,
+         specialChars: false,
+         lowerCaseAlphabets: false,
+         upperCaseAlphabets: false,
+      });
+      const token = sign(
+         { registerInfo: registerInfo, email: email, otp: otp },
+         process.env.JWT_KEY,
+         {
+            expiresIn: "1m",
+         }
+      );
+      return {
+         token: token,
+         otp: otp,
+      };
+   } catch (error) {
+      console.log(error);
+   }
+};
+
+const verifyEmailOtp = async (req, res) => {
+   try {
+      let { email, otp } = req.body;
+      let token = req.session.token;
+      console.log(token);
+      let message;
+      let status;
+      verify(token, process.env.JWT_KEY, async (err, decoded) => {
+         if (err) {
+            return res.json({ Status: "Error with token" });
+         } else {
+            console.log(decoded);
+            if (decoded.otp == otp && decoded.email == email) {
+               message = "Xác thực thành công. OTP và Email trùng khớp";
+               status = true;
+            } else {
+               message = "Xác thực thất bại. OTP và Email không trùng khớp";
+               status = false;
+            }
+            res.send({ status: status, message: message });
+         }
+      });
+   } catch (error) {
+      console.log(error);
+      res.status(500).send(`Lỗi server: ${error}`);
+   }
+};
+
 module.exports = {
    register,
    getAccountById,
@@ -378,4 +471,6 @@ module.exports = {
    resetPassword,
    changePassword,
    deleteAccount,
+   verifyEmailOtp,
+   confirmRegister,
 };

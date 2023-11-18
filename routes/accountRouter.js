@@ -12,6 +12,7 @@ const router = require("express").Router();
 // use routers
 // router.post("/create", accountController.createAccount);
 router.post("/register", accountController.register);
+router.route("/register/confirm").post(accountController.confirmRegister);
 router.route("/login").post(accountController.login);
 router.route("/").get(checkToken, accountController.getAllAccount);
 
@@ -64,6 +65,8 @@ router.route("/job/:accountId").get(accountController.getAccountWithJobId);
 
 router.route("/forgot_password").post(accountController.forgorPassword);
 router.route("/reset_password").post(accountController.resetPassword);
+
+router.route("/verify").post(accountController.verifyEmailOtp);
 
 router.route("/password/:accountId").put(accountController.changePassword);
 
