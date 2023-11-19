@@ -7,6 +7,9 @@ const request = require("request");
 
 const Payment = db.payments;
 const Client = db.clients;
+const FeePaymentDeadline = db.feePaymentDeadlines;
+const Application = db.applications;
+const Job = db.jobs;
 
 const getAllPayment = async (req, res) => {
    try {
@@ -41,6 +44,7 @@ const getPaymentByClientId = async (req, res) => {
 
 const createPayment = async (req, res) => {
    try {
+      let approveFee = 10000;
       let info = {
          amount: req.body.amount,
          name: req.body.name,
@@ -70,6 +74,43 @@ const createPayment = async (req, res) => {
 
       //
       client.addPayment(payment);
+      let feePaymentDeadline = await FeePaymentDeadline.findAll({
+         include: [
+            {
+               model: Client,
+               as: "clients",
+            },
+            {
+               model: Application,
+               as: "applications",
+               include: [
+                  {
+                     model: Job,
+                     as: "jobs",
+                  },
+               ],
+            },
+         ],
+         where: { clientId: clientId, status: "not paid" },
+      }).then((res) => {
+         res.forEach(async (item) => {
+            if (item && client.currency >= approveFee) {
+               item.setDataValue("status", "paid");
+               item.save();
+
+               // create new payment
+               let info = {
+                  amount: approveFee,
+                  name: "Thanh toán tự động",
+                  description: `Thanh toán tự động cho công việc "${item.applications.jobs.title}"`,
+                  status: true,
+                  type: "-",
+                  clientId: `${item.clients.id}`,
+               };
+               await createAutoCollectFeePayment(info);
+            }
+         });
+      });
       res.status(200).send({ message: "Luu giao dich thanh cong" });
    } catch (error) {
       console.log(error);

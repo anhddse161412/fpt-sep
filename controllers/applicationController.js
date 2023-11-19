@@ -363,7 +363,8 @@ const approveApplication = async (req, res) => {
       } else {
          feePaymentController.createFeePaymentDeadline(
             `Hạn thanh toán của client ${application.jobs.clients.accounts.name}`,
-            application.jobs.clients.id
+            application.jobs.clients.id,
+            application.id
          );
          sendEmail(
             application.jobs.clients.accounts.email,

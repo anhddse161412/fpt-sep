@@ -268,6 +268,17 @@ db.feePaymentDeadlines.belongsTo(db.clients, {
    as: "clients",
 });
 
+// application - feePaymentDeadline
+db.applications.hasOne(db.feePaymentDeadlines, {
+   foreignKey: "applicationId",
+   as: "feePaymentDeadlines",
+});
+
+db.feePaymentDeadlines.belongsTo(db.applications, {
+   foreignKey: "applicationId",
+   as: "applications",
+});
+
 // Many to Many relation
 db.jobs.belongsToMany(db.accounts, { through: db.favorite });
 db.accounts.belongsToMany(db.jobs, { through: db.favorite });

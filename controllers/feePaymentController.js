@@ -5,7 +5,7 @@ const Client = db.clients;
 const Account = db.accounts;
 const { sendEmail } = require("../util/sendEmail");
 
-const createFeePaymentDeadline = async (name, clientId) => {
+const createFeePaymentDeadline = async (name, clientId, applicationId) => {
    try {
       const deadLineDays = 10; // 10 days before banning
       const currentDate = new Date().getTime();
@@ -16,6 +16,7 @@ const createFeePaymentDeadline = async (name, clientId) => {
          paymentDeadline: paymentDeadline,
          status: "not paid",
          clientId: clientId,
+         applicationId: applicationId,
       };
 
       let client = Client.findOne({
