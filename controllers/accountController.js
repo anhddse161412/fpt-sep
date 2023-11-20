@@ -43,8 +43,7 @@ const register = async (req, res) => {
       let { token, otp } = await sendEmailOtp(req.body.email, info);
       sendEmail(
          req.body.email,
-         "[FPT-SEP] Mã xác nhận tài khoản",
-         `Đây là mã xác nhận nhận tài khoản của bạn : ${otp}`
+         `[FPT-SEP] Mã xác ns nhận tài khoản của bạn : ${otp}`
       );
       // decode password
       // const salt = genSaltSync(10);
@@ -61,7 +60,10 @@ const register = async (req, res) => {
       //    account.setFreelancers(freelancer);
       // }
       req.session.token = token;
-      res.status(200).json({ message: "Đã gửi mã xác nhận tới email!" });
+      res.status(200).json({
+         message: "Đã gửi mã xác nhận tới email!",
+         otp: otp,
+      });
       // console.log(account.dataValues);
    } catch (error) {
       console.log(error);
@@ -330,7 +332,10 @@ const forgorPassword = async (req, res) => {
                `Đây là mã xác nhận đặt lại mật khẩu của bạn : ${otp}`
             );
             req.session.token = token;
-            res.status(200).send({ message: "Đã gửi mail thành công" });
+            res.status(200).send({
+               message: "Đã gửi mail thành công",
+               otp: otp,
+            });
          }
       );
    } catch (error) {
