@@ -14,7 +14,10 @@ const router = require("express").Router();
 router.post("/register", accountController.register);
 router.route("/register/confirm").post(accountController.confirmRegister);
 router.route("/login").post(accountController.login);
-router.route("/").get(checkToken, accountController.getAllAccount);
+router
+   .route("/")
+   .get(checkToken, accountController.getAllAccount)
+   .post(accountController.searchAccountAndJob);
 
 // router google login
 // router.get(

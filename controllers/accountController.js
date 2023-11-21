@@ -1,10 +1,12 @@
 const db = require("../models");
 const { genSaltSync, hashSync, compareSync } = require("bcrypt");
 const { sign, verify, decode } = require("jsonwebtoken");
-const nodemailer = require("nodemailer");
-const { favorite } = require("../models");
+const { Sequelize } = require("sequelize");
 const otpGenerator = require("otp-generator");
 // image Upload
+
+// Sequelize operation
+const Op = Sequelize.Op;
 
 // create main Model
 const Account = db.accounts;
@@ -460,6 +462,33 @@ const verifyEmailOtp = async (req, res) => {
    }
 };
 
+const searchAccountAndJob = async (req, res) => {
+   try {
+      let resultList = [];
+      let searchInput = req.body.searchInput;
+      await Account.findAll({
+         where: { name: { [db.Op.like]: `%${searchInput}%` }, status: 1 },
+      }).then((res) => {
+         res.forEach(async (item) => {
+            resultList.push(item.name);
+         });
+      });
+
+      await Job.findAll({
+         where: { title: { [db.Op.like]: `%${searchInput}%` }, status: "open" },
+         order: [["updatedAt", "DESC"]],
+      }).then((res) => {
+         res.forEach(async (item) => {
+            resultList.push(item.title);
+         });
+      });
+      res.status(200).send({ searchList: resultList });
+   } catch (error) {
+      console.log(error);
+      res.status(500).send(`Lỗi server: ${error}`);
+   }
+};
+
 module.exports = {
    register,
    getAccountById,
@@ -476,4 +505,5 @@ module.exports = {
    deleteAccount,
    verifyEmailOtp,
    confirmRegister,
+   searchAccountAndJob,
 };
