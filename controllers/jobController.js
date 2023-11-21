@@ -655,9 +655,16 @@ const extendJob = async (req, res) => {
 
 const recommendedJobForFreelancer = async (req, res) => {
    try {
-      let limit = 10;
+      let limit = Number(req.query.limit) || 10;
+      let page = Number(req.query.page) || 1;
 
-      let recommended = await RecommendPoint.findAll({
+      if (limit && page && (limit <= 0 || page <= 0)) {
+         return res.status(400).json({ error: "Invalid limit or page number" });
+      }
+
+      let offset = (page - 1) * limit;
+
+      const { count, rows: recommendeds } = await RecommendPoint.findAndCountAll({
          include: [
             {
                model: Job,
@@ -690,10 +697,23 @@ const recommendedJobForFreelancer = async (req, res) => {
             type: "forFreelancers",
             point: { [Op.gt]: 0 },
          },
-         order: [["point", "DESC"]],
+         distinct: true,
+         offset,
          limit,
+         order: [["point", "DESC"]],
       });
-      res.status(200).send(recommended);
+
+      const totalPages = Math.ceil(count / limit);
+
+      res.status(200).json({
+         recommendeds,
+         pagination: {
+            totalItems: count,
+            totalPages,
+            currentPage: page,
+            itemsPerPage: limit,
+         },
+      });
    } catch (error) {
       console.log(error);
       res.status(500).send(`Lỗi server: ${error}`);
