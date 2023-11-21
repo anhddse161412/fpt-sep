@@ -173,7 +173,7 @@ const login = async (req, res) => {
       const checkPassword = compareSync(req.body.password, account.password);
       if (checkPassword) {
          const jsontoken = sign({ result: account }, process.env.JWT_KEY, {
-            expiresIn: "60s",
+            expiresIn: "1h",
          });
          res.status(201).json({
             success: 1,
@@ -218,7 +218,7 @@ const loginGoogle = async (req, res) => {
          account = newAccount;
       }
       const jsontoken = sign({ result: account }, process.env.JWT_KEY, {
-         expiresIn: "60s",
+         expiresIn: "1h",
       });
       res.status(200).json({
          token: jsontoken,
