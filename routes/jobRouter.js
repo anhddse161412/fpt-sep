@@ -42,7 +42,7 @@ router
    .get(jobController.getJobHasAppointmentByClientId);
 
 router
-   .route("/recommended/:freelancerId")
+   .route("/recommended/:accountId")
    .get(jobController.recommendedJobForFreelancer);
 
 router.route("/:jobName").get(jobController.paginationJobByName);
