@@ -323,13 +323,14 @@ const forgorPassword = async (req, res) => {
       await Account.findOne({ where: { email: email } }).then(
          async (account) => {
             if (!account) {
-               return res.send({ Status: "Email này chưa được đăng kí" });
+               return res.status(500).send({ Status: "Email này chưa được đăng kí" });
             }
             let { token, otp } = await sendEmailOtp(account.email, "");
             sendEmail(
                email,
                "[FPT-SEP] Mã xác nhận đặt lại mật khẩu",
-               `Đây là mã xác nhận đặt lại mật khẩu của bạn : ${otp}`
+               `Đây là mã xác nhận đặt lại mật khẩu của bạn : ${otp}
+               .Mã xác nhận có hiệu lực trong vòng 5 phút`
             );
             req.session.token = token;
             res.status(200).send({
@@ -422,7 +423,7 @@ const sendEmailOtp = async (email, registerInfo) => {
          { registerInfo: registerInfo, email: email, otp: otp },
          process.env.JWT_KEY,
          {
-            expiresIn: "1m",
+            expiresIn: "5m",
          }
       );
       return {
@@ -443,7 +444,7 @@ const verifyEmailOtp = async (req, res) => {
       let status;
       verify(token, process.env.JWT_KEY, async (err, decoded) => {
          if (err) {
-            return res.json({ Status: "Error with token" });
+            return res.status(500).json({ Status: "Error with token" });
          } else {
             console.log(decoded);
             if (decoded.otp == otp && decoded.email == email) {
