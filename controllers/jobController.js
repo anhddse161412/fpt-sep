@@ -690,10 +690,15 @@ const recommendedJobForFreelancer = async (req, res) => {
                ],
                where: { status: "open" },
             },
+            {
+               model: Freelancer,
+               as: "freelancers",
+               where: { accountId: req.params.accountId },
+               attributes: [],
+            }
          ],
          attributes: ["point"],
          where: {
-            freelancerId: req.params.freelancerId,
             type: "forFreelancers",
             point: { [Op.gt]: 0 },
          },
