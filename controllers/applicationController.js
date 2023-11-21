@@ -181,7 +181,6 @@ const getRecommendApplicationByJobId = async (req, res) => {
          where: {
             jobId: req.params.jobId,
             type: "forApplications",
-            point: { [Op.gt]: 0 },
          },
          order: [["point", "DESC"]],
       });
