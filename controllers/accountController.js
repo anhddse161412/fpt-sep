@@ -11,8 +11,6 @@ const Account = db.accounts;
 const Job = db.jobs;
 const Freelancer = db.freelancers;
 const Client = db.clients;
-const Favorite = db.favorite;
-const SubCategory = db.subCategories;
 const Skill = db.skills;
 const Category = db.categories;
 

@@ -13,7 +13,7 @@ const Job = db.jobs;
 
 const getAllPayment = async (req, res) => {
    try {
-      let payments = await Payment.findAll({ order: [["createAt", "ASC"]] });
+      let payments = await Payment.findAll({ order: [["createdAt", "DESC"]] });
       res.status(200).send(payments);
    } catch (error) {
       console.log(error);
@@ -26,8 +26,8 @@ const getPaymentByClientId = async (req, res) => {
       let payments = await Payment.findAll({
          where: {
             clientId: req.params.clientId,
-            order: [["createAt", "ASC"]],
          },
+         order: [["createdAt", "DESC"]],
       });
       let client = await Client.findOne({
          where: { id: req.params.clientId },
