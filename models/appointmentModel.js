@@ -6,7 +6,7 @@ module.exports = (sequelize, DataTypes) => {
          autoIncrement: true,
       },
       location: {
-         type: DataTypes.STRING,
+         type: DataTypes.STRING(100),
          allowNull: true,
       },
       link: {
@@ -18,7 +18,7 @@ module.exports = (sequelize, DataTypes) => {
          allowNull: true,
       },
       status: {
-         type: DataTypes.STRING,
+         type: DataTypes.STRING(50),
          allowNull: true,
       },
    });

@@ -19,6 +19,7 @@ const Freelancer = db.freelancers;
 const Job = db.jobs;
 const Client = db.clients;
 const RecommendPoint = db.recommendPoints;
+const SystemValue = db.systemValues;
 // main work
 
 // 1. create application
@@ -274,7 +275,11 @@ const getApplicationByClientId = async (req, res) => {
 // approve application
 const approveApplication = async (req, res) => {
    try {
-      let approveFee = 10000;
+      let systemValue = await SystemValue.findOne({
+         where: { name: "commissionFee" },
+      });
+      let approveFee = systemValue.value;
+      console.log(approveFee);
       let application = await Application.findOne({
          include: [
             {

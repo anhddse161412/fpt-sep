@@ -51,6 +51,7 @@ db.feePaymentDeadlines = require("./feePaymentDeadlineModel")(
    sequelize,
    DataTypes
 );
+db.systemValues = require("./systemValueModel")(sequelize, DataTypes);
 // many many model
 db.jobSubCategory = require("./jobSubCategoryModel")(sequelize, DataTypes);
 db.favorite = require("./favoriteModel")(sequelize, DataTypes);

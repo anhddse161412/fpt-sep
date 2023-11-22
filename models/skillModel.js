@@ -1,11 +1,11 @@
 module.exports = (sequelize, DataTypes) => {
    const Skill = sequelize.define("skill", {
       name: {
-         type: DataTypes.STRING,
+         type: DataTypes.STRING(100),
          allowNull: false,
       },
       description: {
-         type: DataTypes.STRING,
+         type: DataTypes.STRING(100),
          allowNull: true,
       },
    });

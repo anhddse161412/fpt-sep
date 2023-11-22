@@ -6,10 +6,10 @@ module.exports = (sequelize, DataTypes) => {
          defaultValue: 0,
       },
       type: {
-         type: DataTypes.STRING,
+         type: DataTypes.STRING(100),
          allowNull: true,
-         defaultValue: "forFreelancers"
-      }
+         defaultValue: "forFreelancers",
+      },
    });
 
    return RecommendPoint;

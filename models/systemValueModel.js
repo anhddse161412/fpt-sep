@@ -1,16 +1,14 @@
 module.exports = (sequelize, DataTypes) => {
-   const Category = sequelize.define("category", {
+   const SystemValue = sequelize.define("systemvalue", {
       name: {
          type: DataTypes.STRING(100),
-      },
-      description: {
-         type: DataTypes.STRING,
          allowNull: false,
       },
-      parentId: {
+      value: {
          type: DataTypes.INTEGER,
+         allowNull: false,
       },
    });
 
-   return Category;
+   return SystemValue;
 };

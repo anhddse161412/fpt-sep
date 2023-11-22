@@ -9,7 +9,7 @@ module.exports = (sequelize, DataTypes) => {
          allowNull: true,
       },
       hoursPerWeek: {
-         type: DataTypes.STRING,
+         type: DataTypes.STRING(100),
          allowNull: true,
       },
       introduction: {
@@ -17,11 +17,11 @@ module.exports = (sequelize, DataTypes) => {
          allowNull: true,
       },
       major: {
-         type: DataTypes.STRING,
+         type: DataTypes.STRING(100),
          allowNull: true,
       },
       title: {
-         type: DataTypes.STRING,
+         type: DataTypes.STRING(100),
          allowNull: true,
       },
    });

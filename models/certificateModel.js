@@ -1,11 +1,11 @@
 module.exports = (sequelize, DataTypes) => {
    const Certificate = sequelize.define("certificate", {
       name: {
-         type: DataTypes.STRING,
+         type: DataTypes.STRING(100),
          allowNull: false,
       },
       issuingOrganization: {
-         type: DataTypes.STRING,
+         type: DataTypes.STRING(100),
          allowNull: true,
       },
       issueDate: {

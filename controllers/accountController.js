@@ -470,7 +470,7 @@ const searchAccountAndJob = async (req, res) => {
          where: { name: { [db.Op.like]: `%${searchInput}%` }, status: 1 },
       }).then((res) => {
          res.forEach(async (item) => {
-            resultList.push(item.name);
+            resultList.push({ id: item.id, name: item.name });
          });
       });
 
@@ -479,7 +479,7 @@ const searchAccountAndJob = async (req, res) => {
          order: [["updatedAt", "DESC"]],
       }).then((res) => {
          res.forEach(async (item) => {
-            resultList.push(item.title);
+            resultList.push({ id: item.id, title: item.title });
          });
       });
       res.status(200).send({ searchList: resultList });

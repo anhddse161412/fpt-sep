@@ -16,15 +16,15 @@ module.exports = (sequelize, DataTypes) => {
          allowNull: true,
       },
       lowestIncome: {
-         type: DataTypes.STRING,
+         type: DataTypes.STRING(100),
          allowNull: true,
       },
       highestIncome: {
-         type: DataTypes.STRING,
+         type: DataTypes.STRING(100),
          allowNull: true,
       },
       applied: {
-         type: DataTypes.STRING,
+         type: DataTypes.STRING(100),
          allowNull: true,
       },
       status: {

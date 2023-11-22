@@ -5,10 +5,10 @@ module.exports = (sequelize, DataTypes) => {
          allowNull: false,
       },
       taxCode: {
-         type: DataTypes.STRING,
+         type: DataTypes.STRING(100),
       },
       companyWebsite: {
-         type: DataTypes.STRING,
+         type: DataTypes.STRING(100),
       },
       introduction: {
          type: DataTypes.TEXT,
@@ -16,7 +16,7 @@ module.exports = (sequelize, DataTypes) => {
       currency: {
          type: DataTypes.INTEGER,
          allowNull: false,
-         default: 0
+         default: 0,
       },
    });
 

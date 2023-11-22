@@ -1,7 +1,7 @@
 module.exports = (sequelize, DataTypes) => {
    const FeePaymentDeadline = sequelize.define("feepaymentdeadline", {
       name: {
-         type: DataTypes.STRING,
+         type: DataTypes.STRING(100),
          allowNull: false,
       },
       paymentDeadline: {
@@ -9,7 +9,7 @@ module.exports = (sequelize, DataTypes) => {
          allowNull: true,
       },
       status: {
-         type: DataTypes.STRING,
+         type: DataTypes.STRING(50),
          allowNull: false,
       },
    });
