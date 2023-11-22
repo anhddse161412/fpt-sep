@@ -62,7 +62,10 @@ router
    .route("/profile/:accountId")
    .get(accountController.getAccountById)
    .put(accountController.updateAccount)
-   .delete(accountController.deleteAccount);
+   .delete(accountController.deactiveAccount);
+
+router
+   .route("/active/:accountId").put(accountController.activeAccount);
 
 router.route("/job/:accountId").get(accountController.getAccountWithJobId);
 
