@@ -25,7 +25,10 @@ router
    .get(applicationController.getApplicationById)
    .put(applicationController.updateApplication);
 
-router.route("/job/:jobId").get(applicationController.getApplicationByJobId);
+router
+   .route("/job/:jobId")
+   .get(applicationController.getApplicationByJobId)
+   .post(applicationController.getApplicationByJobId);
 router
    .route("/freelancer/:freelancerId")
    .get(applicationController.getApplicationByFreelancerId);

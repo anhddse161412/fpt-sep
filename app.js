@@ -73,15 +73,15 @@ io.on("connection", (socket) => {
       addNewUser(email, socket.id);
    });
 
-   io.on("sendNotification", async (data, email) => {
+   socket.on("sendNotification", async (data, email) => {
       try {
          let notification = await notificaitonController.createNotificationInfo(
             data.accountId,
             data.notificationName,
             data.notificationDescription
          );
-         const freelancer = getUser(email);
-         io.to(freelancer.socketId).emit("getNotification", {
+         const account = getUser(email);
+         io.to(account.socketId).emit("getNotification", {
             notification: notification,
          });
       } catch (error) {

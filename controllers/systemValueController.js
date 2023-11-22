@@ -16,7 +16,7 @@ const getCommissionFee = async (req, res) => {
 
 const updateCommissionFee = async (req, res) => {
    try {
-      let systemValues = await SystemValue.update(req.body.commissionFee, {
+      let systemValues = await SystemValue.update(req.body, {
          where: { name: "commissionFee" },
       });
       res.status(200).send({ message: "Đã cập nhật phí hoa hồng" });
