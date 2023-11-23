@@ -131,6 +131,11 @@ const updateApplication = async (req, res) => {
 const getApplicationByJobId = async (req, res) => {
    try {
       let freelancerList = [];
+
+      const job = await Job.findOne({
+         where: { id: req.params.jobId }
+      })
+
       await Application.findAll({
          include: [
             {

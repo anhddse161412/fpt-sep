@@ -27,8 +27,7 @@ router
 
 router
    .route("/job/:jobId")
-   .get(applicationController.getApplicationByJobId)
-   .post(applicationController.getApplicationByJobId);
+   .get(applicationController.getApplicationByJobId);
 router
    .route("/freelancer/:freelancerId")
    .get(applicationController.getApplicationByFreelancerId);
