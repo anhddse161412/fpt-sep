@@ -395,7 +395,7 @@ const changePassword = async (req, res) => {
    }
 };
 
-const deleteAccount = async (req, res) => {
+const deactiveAccount = async (req, res) => {
    try {
       let account = await Account.findOne({
          where: { id: req.params.accountId },
@@ -404,7 +404,23 @@ const deleteAccount = async (req, res) => {
       account.setDataValue("status", false);
       account.save();
 
-      res.status(200).send("Da dong tai khoan!");
+      res.status(200).send("Đã đóng tài khoản!");
+   } catch (error) {
+      console.log(error);
+      res.status(500).send(`Lỗi server: ${error}`);
+   }
+};
+
+const activeAccount = async (req, res) => {
+   try {
+      let account = await Account.findOne({
+         where: { id: req.params.accountId },
+      });
+
+      account.setDataValue("status", true);
+      account.save();
+
+      res.status(200).send("Đã tái kích hoạt tài khoản!");
    } catch (error) {
       console.log(error);
       res.status(500).send(`Lỗi server: ${error}`);
@@ -503,7 +519,8 @@ module.exports = {
    forgorPassword,
    resetPassword,
    changePassword,
-   deleteAccount,
+   deactiveAccount,
+   activeAccount,
    verifyEmailOtp,
    confirmRegister,
    searchAccountAndJob,

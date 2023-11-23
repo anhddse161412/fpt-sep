@@ -31,7 +31,7 @@ const createApplication = async (req, res) => {
          sendDate: req.body.sendDate,
          freelancerId: req.body.freelancerId,
          jobId: req.body.jobId,
-         status: req.body.status ? req.body.status : "Sent",
+         status: req.body.status ? req.body.status : "sent",
       };
       const job = await Job.findOne({
          where: { id: req.body.jobId },
@@ -130,7 +130,37 @@ const updateApplication = async (req, res) => {
 
 const getApplicationByJobId = async (req, res) => {
    try {
-      let application = await Application.findAll({
+      let freelancerList = [];
+      await Application.findAll({
+         include: [
+            {
+               model: Job,
+               as: "jobs",
+               include: [
+                  {
+                     model: Client,
+                     as: "clients",
+                  },
+               ],
+               where: { clientId: req.body.clientId },
+            },
+            {
+               model: Freelancer,
+               as: "freelancers",
+            },
+         ],
+         where: {
+            status: "approved",
+         },
+      }).then((res) => {
+         res.forEach(async (item) => {
+            freelancerList.push(item.freelancers.id);
+         });
+      });
+      let freelancerSetList = new Set(freelancerList);
+      let resultList = [];
+
+      await Application.findAll({
          include: [
             {
                model: Freelancer,
@@ -147,8 +177,16 @@ const getApplicationByJobId = async (req, res) => {
             },
          ],
          where: { jobId: req.params.jobId },
+      }).then((res) => {
+         res.forEach(async (item) => {
+            if ([...freelancerSetList].includes(item.freelancers.id)) {
+               item.setDataValue("hired", true);
+            }
+            resultList.push(item);
+         });
       });
-      res.status(200).send(application);
+
+      res.status(200).send(resultList);
    } catch (error) {
       console.log(error);
       res.status(500).send(`Lỗi server: ${error}`);
