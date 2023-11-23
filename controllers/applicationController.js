@@ -147,7 +147,7 @@ const getApplicationByJobId = async (req, res) => {
                      as: "clients",
                   },
                ],
-               where: { clientId: req.body.clientId },
+               where: { clientId: job.clientId },
             },
             {
                model: Freelancer,
