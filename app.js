@@ -66,33 +66,33 @@ const getUser = (email) => {
    return onlineUsers.find((user) => user.email === email);
 };
 
-io.on("connection", (socket) => {
-   console.log(`user id ${socket.id} connected`);
+io.on('connection', (socket) => {
+  console.log(`user id ${socket.id} connected`);
 
-   socket.on("newUser", (email) => {
-      addNewUser(email, socket.id);
-   });
+  socket.on('newUser', (email) => {
+    addNewUser(email, socket.id);
+  });
 
-   io.on("sendNotification", async (data, email) => {
-      try {
-         let notification = await notificaitonController.createNotificationInfo(
-            data.accountId,
-            data.notificationName,
-            data.notificationDescription
-         );
-         const freelancer = getUser(email);
-         io.to(freelancer.socketId).emit("getNotification", {
-            notification: notification,
-         });
-      } catch (error) {
-         console.log(error);
-      }
-   });
+  socket.on('sendNotification', async (data, email) => {
+    try {
+      let notification = await notificaitonController.createNotificationInfo(
+        data.accountId,
+        data.notificationName,
+        data.notificationDescription
+      );
+      const account = getUser(email);
+      io.to(account.socketId).emit('getNotification', {
+        notification: notification,
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  });
 
-   socket.on("disconnect", () => {
-      console.log(`user id ${socket.id} disconnected`);
-      removeUser(socket.id);
-   });
+  socket.on('disconnect', () => {
+    console.log(`user id ${socket.id} disconnected`);
+    removeUser(socket.id);
+  });
 });
 
 httpServer.listen(3001);
