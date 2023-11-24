@@ -165,23 +165,33 @@ const getApplicationByJobId = async (req, res) => {
       let freelancerSetList = new Set(freelancerList);
       let resultList = [];
 
-      await Application.findAll({
+      await RecommendPoint.findAll({
          include: [
             {
                model: Freelancer,
                as: "freelancers",
-
+               attributes: ["id"],
                include: [
                   {
                      model: Account,
                      as: "accounts",
-                     attributes: ["name", "image"],
+                     attributes: ["name", "email", "image"],
+                  },
+                  {
+                     model: Application,
+                     as: "applications",
+                     attributes: { exclude: ["createdAt", "updatedAt"] },
+                     where: { jobId: req.params.jobId },
                   },
                ],
-               attributes: ["id"],
             },
          ],
-         where: { jobId: req.params.jobId },
+         attributes: ["point"],
+         where: {
+            jobId: req.params.jobId,
+            type: "forApplications",
+         },
+         order: [["point", "DESC"]],
       }).then((res) => {
          res.forEach(async (item) => {
             if ([...freelancerSetList].includes(item.freelancers.id)) {
