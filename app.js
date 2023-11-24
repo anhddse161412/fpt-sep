@@ -53,46 +53,46 @@ const io = new Server(httpServer, {
 
 let onlineUsers = [];
 
-const addNewUser = (email, socketId) => {
-   !onlineUsers.some((user) => user.email === email) &&
-      onlineUsers.push({ email, socketId });
+const addNewUser = (accountId, socketId) => {
+   !onlineUsers.some((user) => user.accountId === accountId) &&
+      onlineUsers.push({ accountId, socketId });
 };
 
 const removeUser = (socketId) => {
    onlineUsers = onlineUsers.filter((user) => user.socketId !== socketId);
 };
 
-const getUser = (email) => {
-   return onlineUsers.find((user) => user.email === email);
+const getUser = (accountId) => {
+   return onlineUsers.find((user) => user.accountId === accountId);
 };
 
-io.on('connection', (socket) => {
-  console.log(`user id ${socket.id} connected`);
+io.on("connection", (socket) => {
+   console.log(`user id ${socket.id} connected`);
 
-  socket.on('newUser', (email) => {
-    addNewUser(email, socket.id);
-  });
+   socket.on("newUser", (accountId) => {
+      addNewUser(accountId, socket.id);
+   });
 
-  socket.on('sendNotification', async (data, email) => {
-    try {
-      let notification = await notificaitonController.createNotificationInfo(
-        data.accountId,
-        data.notificationName,
-        data.notificationDescription
-      );
-      const account = getUser(email);
-      io.to(account.socketId).emit('getNotification', {
-        notification: notification,
-      });
-    } catch (error) {
-      console.log(error);
-    }
-  });
+   socket.on("sendNotification", async (data, accountId) => {
+      try {
+         let notification = await notificaitonController.createNotificationInfo(
+            data.accountId,
+            data.notificationName,
+            data.notificationDescription
+         );
+         const account = getUser(accountId);
+         io.to(account.socketId).emit("getNotification", {
+            notification: notification,
+         });
+      } catch (error) {
+         console.log(error);
+      }
+   });
 
-  socket.on('disconnect', () => {
-    console.log(`user id ${socket.id} disconnected`);
-    removeUser(socket.id);
-  });
+   socket.on("disconnect", () => {
+      console.log(`user id ${socket.id} disconnected`);
+      removeUser(socket.id);
+   });
 });
 
 httpServer.listen(3001);
