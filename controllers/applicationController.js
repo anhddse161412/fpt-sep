@@ -175,7 +175,7 @@ const getApplicationByJobId = async (req, res) => {
                   {
                      model: Account,
                      as: "accounts",
-                     attributes: ["name", "email", "image"],
+                     attributes: ["name", "email", "image", "id"],
                   },
                   {
                      model: Application,
