@@ -282,7 +282,7 @@ const getFavoriteJobOfAccount = async (req, res) => {
                   {
                      model: Account,
                      as: "accounts",
-                     attributes: ["name", "image"],
+                     attributes: ["id", "name", "image"],
                   },
                ],
                attributes: ["id"],
@@ -323,7 +323,9 @@ const forgorPassword = async (req, res) => {
       await Account.findOne({ where: { email: email } }).then(
          async (account) => {
             if (!account) {
-               return res.status(500).send({ Status: "Email này chưa được đăng kí" });
+               return res
+                  .status(500)
+                  .send({ Status: "Email này chưa được đăng kí" });
             }
             let { token, otp } = await sendEmailOtp(account.email, "");
             sendEmail(

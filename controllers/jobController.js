@@ -80,7 +80,7 @@ const getAllJob = async (req, res) => {
                   {
                      model: Account,
                      as: "accounts",
-                     attributes: ["name", "image"],
+                     attributes: ["id", "name", "image"],
                   },
                ],
 
@@ -135,7 +135,7 @@ const getJobById = async (req, res) => {
                         model: Freelancer,
                         as: "freelancers",
                         attributes: ["id", "accountId"],
-                     }
+                     },
                   ],
                },
             ],
@@ -357,7 +357,7 @@ const paginationJob = async (req, res) => {
                   {
                      model: Account,
                      as: "accounts",
-                     attributes: ["name", "image"],
+                     attributes: ["id", "name", "image"],
                   },
                ],
                attributes: ["id"],
@@ -433,7 +433,7 @@ const paginationJobBySubCategoryId = async (req, res) => {
                   {
                      model: Account,
                      as: "accounts",
-                     attributes: ["name", "image"],
+                     attributes: ["id", "name", "image"],
                   },
                ],
                attributes: ["id"],
@@ -664,49 +664,50 @@ const recommendedJobForFreelancer = async (req, res) => {
 
       let offset = (page - 1) * limit;
 
-      const { count, rows: recommendeds } = await RecommendPoint.findAndCountAll({
-         include: [
-            {
-               model: Job,
-               as: "jobs",
-               include: [
-                  {
-                     model: Client,
-                     as: "clients",
-                     include: [
-                        {
-                           model: Account,
-                           as: "accounts",
-                           attributes: ["name", "image"],
-                        },
-                     ],
-                     attributes: ["id"],
-                  },
-                  {
-                     model: Skill,
-                     as: "skills",
-                     attributes: { exclude: ["createdAt", "updatedAt"] },
-                  },
-               ],
-               where: { status: "open" },
+      const { count, rows: recommendeds } =
+         await RecommendPoint.findAndCountAll({
+            include: [
+               {
+                  model: Job,
+                  as: "jobs",
+                  include: [
+                     {
+                        model: Client,
+                        as: "clients",
+                        include: [
+                           {
+                              model: Account,
+                              as: "accounts",
+                              attributes: ["name", "image"],
+                           },
+                        ],
+                        attributes: ["id"],
+                     },
+                     {
+                        model: Skill,
+                        as: "skills",
+                        attributes: { exclude: ["createdAt", "updatedAt"] },
+                     },
+                  ],
+                  where: { status: "open" },
+               },
+               {
+                  model: Freelancer,
+                  as: "freelancers",
+                  where: { accountId: req.params.accountId },
+                  attributes: [],
+               },
+            ],
+            attributes: ["point"],
+            where: {
+               type: "forFreelancers",
+               point: { [Op.gt]: 0 },
             },
-            {
-               model: Freelancer,
-               as: "freelancers",
-               where: { accountId: req.params.accountId },
-               attributes: [],
-            }
-         ],
-         attributes: ["point"],
-         where: {
-            type: "forFreelancers",
-            point: { [Op.gt]: 0 },
-         },
-         distinct: true,
-         offset,
-         limit,
-         order: [["point", "DESC"]],
-      });
+            distinct: true,
+            offset,
+            limit,
+            order: [["point", "DESC"]],
+         });
 
       const totalPages = Math.ceil(count / limit);
 
@@ -763,7 +764,7 @@ const paginationJobByName = async (req, res) => {
                   {
                      model: Account,
                      as: "accounts",
-                     attributes: ["name", "image"],
+                     attributes: ["id", "name", "image"],
                   },
                ],
                attributes: ["id"],

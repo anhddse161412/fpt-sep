@@ -61,7 +61,7 @@ const getAllApplication = async (req, res) => {
                   {
                      model: Account,
                      as: "accounts",
-                     attributes: ["name", "image"],
+                     attributes: ["name", "image", "id"],
                   },
                ],
                attributes: ["id"],
@@ -87,7 +87,7 @@ const getApplicationById = async (req, res) => {
                   {
                      model: Account,
                      as: "accounts",
-                     attributes: ["name", "image"],
+                     attributes: ["id", "name", "image"],
                   },
                ],
                attributes: ["id"],
@@ -113,7 +113,7 @@ const updateApplication = async (req, res) => {
                   {
                      model: Account,
                      as: "accounts",
-                     attributes: ["name", "image"],
+                     attributes: ["id", "name", "image"],
                   },
                ],
                attributes: ["id"],
@@ -133,8 +133,8 @@ const getApplicationByJobId = async (req, res) => {
       let freelancerList = [];
 
       const job = await Job.findOne({
-         where: { id: req.params.jobId }
-      })
+         where: { id: req.params.jobId },
+      });
 
       await Application.findAll({
          include: [
@@ -220,7 +220,7 @@ const getRecommendApplicationByJobId = async (req, res) => {
                   {
                      model: Account,
                      as: "accounts",
-                     attributes: ["name", "email", "image"],
+                     attributes: ["id", "name", "email", "image"],
                   },
                   {
                      model: Application,

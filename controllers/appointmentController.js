@@ -128,7 +128,7 @@ const getAllAppointment = async (req, res) => {
                   {
                      model: Account,
                      as: "accounts",
-                     attributes: ["name", "image"],
+                     attributes: ["id", "name", "image"],
                   },
                ],
                attributes: ["id"],
@@ -172,7 +172,7 @@ const getAppointmentById = async (req, res) => {
                   {
                      model: Account,
                      as: "accounts",
-                     attributes: ["name", "image"],
+                     attributes: ["id", "name", "image"],
                   },
                ],
                attributes: ["id"],
@@ -199,7 +199,7 @@ const getAppointmentByClientId = async (req, res) => {
                   {
                      model: Account,
                      as: "accounts",
-                     attributes: ["name", "email"],
+                     attributes: ["id", "name", "email"],
                   },
                ],
                attributes: ["id"],
