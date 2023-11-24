@@ -284,23 +284,44 @@ const getApplicationByFreelancerId = async (req, res) => {
 // Get Application by Client ID
 const getApplicationByClientId = async (req, res) => {
    try {
-      let jobs = await Job.findAll({
-         attributes: ["id"],
-         where: { clientId: req.params.clientId, applied: { [Op.not]: null } },
+      let freelancerList = [];
+
+      await Application.findAll({
+         include: [
+            {
+               model: Job,
+               as: "jobs",
+               include: [
+                  {
+                     model: Client,
+                     as: "clients",
+                  },
+               ],
+               where: { clientId: req.params.clientId },
+            },
+            {
+               model: Freelancer,
+               as: "freelancers",
+            },
+         ],
+         where: {
+            status: "approved",
+         },
+      }).then((res) => {
+         res.forEach(async (item) => {
+            freelancerList.push(item.freelancers.id);
+         });
       });
+      let freelancerSetList = new Set(freelancerList);
+      let resultList = [];
 
-      let jobsId = [];
-
-      jobs.forEach((job) => {
-         jobsId.push(job.id);
-      });
-
-      let applications = await Application.findAll({
+      await Application.findAll({
          include: [
             {
                model: Job,
                as: "jobs",
                attributes: ["id", "title"],
+               where: { clientId: req.params.clientId, applied: { [Op.not]: null } }
             },
             {
                model: Freelancer,
@@ -315,10 +336,17 @@ const getApplicationByClientId = async (req, res) => {
                attributes: ["id"],
             },
          ],
-         where: { jobId: { [Op.in]: jobsId } },
+         // where: { jobId: { [Op.in]: jobsId } },
          order: [["sendDate", "DESC"]],
+      }).then((res) => {
+         res.forEach(async (item) => {
+            if ([...freelancerSetList].includes(item.freelancers.id)) {
+               item.freelancers.setDataValue("hired", true);
+            }
+            resultList.push(item);
+         });
       });
-      res.status(200).send(applications);
+      res.status(200).send(resultList);
    } catch (error) {
       console.log(error);
       res.status(500).send(`Lỗi server: ${error}`);
