@@ -776,7 +776,7 @@ const paginationJobByName = async (req, res) => {
          ],
          distinct: true,
          where: {
-            status: true,
+            status: "open",
             title: {
                [db.Op.like]: `%${req.params.jobName}%`,
             },
