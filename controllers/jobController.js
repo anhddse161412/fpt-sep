@@ -678,7 +678,7 @@ const recommendedJobForFreelancer = async (req, res) => {
                            {
                               model: Account,
                               as: "accounts",
-                              attributes: ["name", "image"],
+                              attributes: ["id","name", "image"],
                            },
                         ],
                         attributes: ["id"],
