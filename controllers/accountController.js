@@ -485,11 +485,46 @@ const searchAccountAndJob = async (req, res) => {
    try {
       let resultList = [];
       let searchInput = req.body.searchInput;
-      await Account.findAll({
-         where: { name: { [db.Op.like]: `%${searchInput}%` }, status: 1 },
+      // await Account.findAll({
+      //    where: { name: { [db.Op.like]: `%${searchInput}%` }, status: 1 },
+      // }).then((res) => {
+      //    res.forEach(async (item) => {
+      //       resultList.push({ id: item.id, name: item.name, tag: item.role });
+      //    });
+      // });
+      await Freelancer.findAll({
+         include: [
+            {
+               model: Account,
+               as: "accounts",
+               where: { name: { [db.Op.like]: `%${searchInput}%` }, status: 1 },
+            },
+         ],
       }).then((res) => {
          res.forEach(async (item) => {
-            resultList.push({ id: item.id, name: item.name, tag: item.role });
+            resultList.push({
+               id: item.id,
+               name: item.accounts.name,
+               tag: "freelancer",
+            });
+         });
+      });
+
+      await Client.findAll({
+         include: [
+            {
+               model: Account,
+               as: "accounts",
+               where: { name: { [db.Op.like]: `%${searchInput}%` }, status: 1 },
+            },
+         ],
+      }).then((res) => {
+         res.forEach(async (item) => {
+            resultList.push({
+               id: item.id,
+               name: item.accounts.name,
+               tag: "client",
+            });
          });
       });
 
