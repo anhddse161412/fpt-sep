@@ -503,9 +503,10 @@ const searchAccountAndJob = async (req, res) => {
       }).then((res) => {
          res.forEach(async (item) => {
             resultList.push({
-               id: item.id,
+               id: item.accounts.id,
                name: item.accounts.name,
                tag: "freelancer",
+               referId: item.id,
             });
          });
       });
@@ -521,9 +522,10 @@ const searchAccountAndJob = async (req, res) => {
       }).then((res) => {
          res.forEach(async (item) => {
             resultList.push({
-               id: item.id,
+               id: item.accounts.id,
                name: item.accounts.name,
                tag: "client",
+               referId: item.id,
             });
          });
       });
