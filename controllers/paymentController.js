@@ -62,11 +62,11 @@ const createPayment = async (req, res) => {
          where: { id: clientId },
       });
       // update client's currency
-      if (info.type == "+") {
+      if (info.type === "+") {
          let newCurrencyValue = client.currency + parseInt(info.amount);
          client.setDataValue("currency", newCurrencyValue);
          client.save();
-      } else if (info.type == "-") {
+      } else if (info.type === "-") {
          let newCurrencyValue = client.currency - parseInt(info.amount);
          client.setDataValue("currency", newCurrencyValue);
          client.save();
@@ -74,7 +74,7 @@ const createPayment = async (req, res) => {
 
       //
       client.addPayment(payment);
-      let feePaymentDeadline = await FeePaymentDeadline.findAll({
+      await FeePaymentDeadline.findAll({
          include: [
             {
                model: Client,
@@ -94,7 +94,11 @@ const createPayment = async (req, res) => {
          where: { clientId: clientId, status: "not paid" },
       }).then((res) => {
          res.forEach(async (item) => {
+            console.log(item.id);
             if (item && client.currency >= approveFee) {
+               let newCurrencyValue = client.currency - parseInt(approveFee);
+               client.setDataValue("currency", newCurrencyValue);
+               client.save();
                item.setDataValue("status", "paid");
                item.save();
 
@@ -107,6 +111,7 @@ const createPayment = async (req, res) => {
                   type: "-",
                   clientId: `${item.clients.id}`,
                };
+
                await createAutoCollectFeePayment(info);
             }
          });
@@ -124,18 +129,6 @@ const createAutoCollectFeePayment = async (info) => {
       const client = await Client.findOne({
          where: { id: info.clientId },
       });
-      // update client's currency
-      if (info.type == "+") {
-         let newCurrencyValue = client.currency + parseInt(info.amount);
-         client.setDataValue("currency", newCurrencyValue);
-         client.save();
-      } else if (info.type == "-") {
-         let newCurrencyValue = client.currency - parseInt(info.amount);
-         client.setDataValue("currency", newCurrencyValue);
-         client.save();
-      }
-
-      //
       client.addPayment(payment);
       console.log("Lưu giao dịch thành công");
    } catch (error) {

@@ -321,7 +321,10 @@ const getApplicationByClientId = async (req, res) => {
                model: Job,
                as: "jobs",
                attributes: ["id", "title"],
-               where: { clientId: req.params.clientId, applied: { [Op.not]: null } }
+               where: {
+                  clientId: req.params.clientId,
+                  applied: { [Op.not]: null },
+               },
             },
             {
                model: Freelancer,
@@ -446,6 +449,25 @@ const approveApplication = async (req, res) => {
          };
          paymentController.createAutoCollectFeePayment(info);
       } else {
+         const client = await Client.findOne({
+            where: { id: application.jobs.clients.id },
+            include: [
+               {
+                  model: Account,
+                  as: "accounts",
+               },
+            ],
+         });
+
+         sendEmail(
+            application.freelancers.accounts.email,
+            `[FPT-SEP] THÔNG BÁO PHỎNG VẤN TỪ ${client.accounts.name}`,
+            `
+         Cảm ơn bạn đã dành thời gian tham dự buổi phỏng vấn. Chúng tôi xin thông báo rằng Bạn đã vượt qua thành công cuộc phỏng vấn của chúng tôi 
+         Chúng tôi sẽ liên hệ với bạn sau. Hãy kiểm tra email thường xuyên để không bỏ lỡ bất kỳ thông tin nào từ chúng tôi.
+         Chúng tôi rất mong được hợp tác với bạn `
+         );
+
          feePaymentController.createFeePaymentDeadline(
             `Hạn thanh toán của client ${application.jobs.clients.accounts.name}`,
             application.jobs.clients.id,

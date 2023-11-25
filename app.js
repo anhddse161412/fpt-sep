@@ -76,7 +76,7 @@ io.on("connection", (socket) => {
    socket.on("sendNotification", async (data, accountId) => {
       try {
          let notification = await notificaitonController.createNotificationInfo(
-            data.accountId,
+            accountId,
             data.notificationName,
             data.notificationDescription
          );
