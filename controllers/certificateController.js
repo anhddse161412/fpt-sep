@@ -28,8 +28,8 @@ const createCertificate = async (req, res) => {
       const certificate = await Certificate.create(info);
       res.status(200).send(certificate);
    } catch (error) {
-      console.log(error);
-      res.status(500).send(`Lỗi server: ${error}`);
+      console.error(error);
+      res.status(400).json({ message: error.toString() });
    }
 };
 
@@ -46,8 +46,8 @@ const getAllCertificate = async (req, res) => {
       });
       res.status(200).send(certificate);
    } catch (error) {
-      console.log(error);
-      res.status(500).send(`Lỗi server: ${error}`);
+      console.error(error);
+      res.status(400).json({ message: error.toString() });
    }
 };
 
@@ -58,7 +58,8 @@ const getCertificateById = async (req, res) => {
       });
       res.status(200).send(certificate);
    } catch (error) {
-      console.log(error);
+      console.error(error);
+      res.status(400).json({ message: error.toString() });
    }
 };
 
@@ -69,8 +70,8 @@ const updateCertificate = async (req, res) => {
       });
       res.status(200).json({ messsage: "Update certificate thành công" });
    } catch (error) {
-      console.log(error);
-      res.status(500).send(`Lỗi server: ${error}`);
+      console.error(error);
+      res.status(400).json({ message: error.toString() });
    }
 };
 
@@ -90,8 +91,8 @@ const getCertificateByFreelancerId = async (req, res) => {
 
       res.status(200).send(data);
    } catch (error) {
-      console.log(error);
-      res.status(500).send(`Lỗi server: ${error}`);
+      console.error(error);
+      res.status(400).json({ message: error.toString() });
    }
 };
 
@@ -103,8 +104,8 @@ const removeCertificate = async (req, res) => {
       })
       res.status(200).send("Xóa thành công!")
    } catch (error) {
-      console.log(error);
-      res.status(500).send(`Lỗi server: ${error}`);
+      console.error(error);
+      res.status(400).json({ message: error.toString() });
    }
 }
 

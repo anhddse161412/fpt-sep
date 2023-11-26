@@ -24,8 +24,8 @@ const getAllFreelancer = async (req, res) => {
       });
       res.status(200).send(freelancers);
    } catch (error) {
-      console.log(error);
-      res.status(500).send(`Lỗi server: ${error}`);
+      console.error(error);
+      res.status(400).json({ message: error.toString() });
    }
 };
 
@@ -55,8 +55,8 @@ const getFreelancerById = async (req, res) => {
       });
       res.status(200).send(freelancer);
    } catch (error) {
-      console.log(error);
-      res.status(500).send(`Lỗi server: ${error}`);
+      console.error(error);
+      res.status(400).json({ message: error.toString() });
    }
 };
 
@@ -71,8 +71,8 @@ const updateFreelancerAccount = async (req, res) => {
       })
       res.status(200).send("Cập nhật thành công!");
    } catch (error) {
-      console.log(error);
-      res.status(500).send(`Lỗi server: ${error}`);
+      console.error(error);
+      res.status(400).json({ message: error.toString() });
    }
 };
 
@@ -89,8 +89,8 @@ const updateIntroduction = async (req, res) => {
 
       res.status(200).send("Cập nhật thành công!");
    } catch (error) {
-      console.log(error);
-      res.status(500).send(`Lỗi server: ${error}`);
+      console.error(error);
+      res.status(400).json({ message: error.toString() });
    }
 };
 
@@ -106,8 +106,8 @@ const updateMajor = async (req, res) => {
 
       res.status(200).send("Cập nhật thành công!");
    } catch (error) {
-      console.log(error);
-      res.status(500).send(`Lỗi server: ${error}`);
+      console.error(error);
+      res.status(400).json({ message: error.toString() });
    }
 };
 
@@ -123,8 +123,8 @@ const updateHoursPerWeek = async (req, res) => {
 
       res.status(200).send("Cập nhật thành công!");
    } catch (error) {
-      console.log(error);
-      res.status(500).send(`Lỗi server: ${error}`);
+      console.error(error);
+      res.status(400).json({ message: error.toString() });
    }
 };
 
@@ -145,8 +145,8 @@ const updateBasicInfo = async (req, res) => {
 
       res.status(200).send("Cập nhật thành công!");
    } catch (error) {
-      console.log(error);
-      res.status(500).send(`Lỗi server: ${error}`);
+      console.error(error);
+      res.status(400).json({ message: error.toString() });
    }
 };
 
@@ -167,8 +167,8 @@ const updateNameAndImage = async (req, res) => {
 
       res.status(200).send("Cập nhật thành công!");
    } catch (error) {
-      console.log(error);
-      res.status(500).send(`Lỗi server: ${error}`);
+      console.error(error);
+      res.status(400).json({ message: error.toString() });
    }
 };
 
@@ -184,8 +184,8 @@ const updateCVFile = async (req, res) => {
 
       res.status(200).send("Cập nhật thành công!");
    } catch (error) {
-      console.log(error);
-      res.status(500).send(`Lỗi server: ${error}`);
+      console.error(error);
+      res.status(400).json({ message: error.toString() });
    }
 }
 
@@ -245,8 +245,8 @@ const updateSkillSet = async (req, res) => {
 
       res.status(200).send("Cập nhật thành công!")
    } catch (error) {
-      console.log(error);
-      res.status(500).send(`Lỗi server: ${error}`);
+      console.error(error);
+      res.status(400).json({ message: error.toString() });
    }
 };
 
@@ -262,8 +262,8 @@ const updateSkillLevel = async (req, res) => {
       res.status(200).send("Cập nhật thành công!")
 
    } catch (error) {
-      console.log(error);
-      res.status(500).send(`Lỗi server: ${error}`);
+      console.error(error);
+      res.status(400).json({ message: error.toString() });
    }
 };
 
@@ -277,8 +277,8 @@ const getLanguagesByFreelancer = async (req, res) => {
 
       res.status(200).send(languages);
    } catch (error) {
-      console.log(error);
-      res.status(500).send(`Lỗi server: ${error}`);
+      console.error(error);
+      res.status(400).json({ message: error.toString() });
    }
 };
 
@@ -305,8 +305,8 @@ const addLanguages = async (req, res) => {
          res.status(400).send('Ngoại ngữ này bạn đã có!');
       }
    } catch (error) {
-      console.log(error);
-      res.status(500).send(`Lỗi server: ${error}`);
+      console.error(error);
+      res.status(400).json({ message: error.toString() });
    }
 };
 
@@ -323,8 +323,8 @@ const updateLanguages = async (req, res) => {
 
       res.status(200).send("Cập nhật thành công!")
    } catch (error) {
-      console.log(error);
-      res.status(500).send(`Lỗi server: ${error}`);
+      console.error(error);
+      res.status(400).json({ message: error.toString() });
    }
 };
 
@@ -337,8 +337,8 @@ const deleteLanguages = async (req, res) => {
 
       res.status(200).send("Xóa thành công!")
    } catch (error) {
-      console.log(error);
-      res.status(500).send(`Lỗi server: ${error}`);
+      console.error(error);
+      res.status(400).json({ message: error.toString() });
    }
 };
 

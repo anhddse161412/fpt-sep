@@ -23,8 +23,8 @@ const getAllClient = async (req, res) => {
       });
       res.status(200).send(clients);
    } catch (error) {
-      console.log(error);
-      res.status(500).send(`Lỗi server: ${error}`);
+      console.error(error);
+      res.status(400).json({ message: error.toString() });
    }
 };
 
@@ -43,8 +43,8 @@ const getClientById = async (req, res) => {
       });
       res.status(200).send(client);
    } catch (error) {
-      console.log(error);
-      res.status(500).send(`Lỗi server: ${error}`);
+      console.error(error);
+      res.status(400).json({ message: error.toString() });
    }
 };
 
@@ -58,8 +58,8 @@ const updateClientAccount = async (req, res) => {
       });
       res.status(200).send(client);
    } catch (error) {
-      console.log(error);
-      res.status(500).send(`Lỗi server: ${error}`);
+      console.error(error);
+      res.status(400).json({ message: error.toString() });
    }
 };
 
@@ -83,8 +83,8 @@ const getClientByName = async (req, res) => {
       });
       res.status(200).send(client);
    } catch (error) {
-      console.log(error);
-      res.status(500).send(`Lỗi server: ${error}`);
+      console.error(error);
+      res.status(400).json({ message: error.toString() });
    }
 };
 

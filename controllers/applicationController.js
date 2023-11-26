@@ -44,8 +44,8 @@ const createApplication = async (req, res) => {
 
       res.status(200).json({ messsage: "Tạo application thành công" });
    } catch (error) {
-      console.log(error);
-      res.status(500).send(`Lỗi server: ${error}`);
+      console.error(error);
+      res.status(400).json({ message: error.toString() });
    }
 };
 // 2. get all application
@@ -70,8 +70,8 @@ const getAllApplication = async (req, res) => {
       });
       res.status(200).send(propsals);
    } catch (error) {
-      console.log(error);
-      res.status(500).send(`Lỗi server: ${error}`);
+      console.error(error);
+      res.status(400).json({ message: error.toString() });
    }
 };
 
@@ -97,8 +97,8 @@ const getApplicationById = async (req, res) => {
       });
       res.status(200).send(application);
    } catch (error) {
-      console.log(error);
-      res.status(500).send(`Lỗi server: ${error}`);
+      console.error(error);
+      res.status(400).json({ message: error.toString() });
    }
 };
 
@@ -123,8 +123,8 @@ const updateApplication = async (req, res) => {
       });
       res.status(200).send(application);
    } catch (error) {
-      console.log(error);
-      res.status(500).send(`Lỗi server: ${error}`);
+      console.error(error);
+      res.status(400).json({ message: error.toString() });
    }
 };
 
@@ -203,8 +203,8 @@ const getApplicationByJobId = async (req, res) => {
 
       res.status(200).send(resultList);
    } catch (error) {
-      console.log(error);
-      res.status(500).send(`Lỗi server: ${error}`);
+      console.error(error);
+      res.status(400).json({ message: error.toString() });
    }
 };
 
@@ -241,8 +241,8 @@ const getRecommendApplicationByJobId = async (req, res) => {
 
       res.status(200).send(recommended);
    } catch (error) {
-      console.log(error);
-      res.status(500).send(`Lỗi server: ${error}`);
+      console.error(error);
+      res.status(400).json({ message: error.toString() });
    }
 };
 
@@ -276,8 +276,8 @@ const getApplicationByFreelancerId = async (req, res) => {
       });
       res.status(200).send(application);
    } catch (error) {
-      console.log(error);
-      res.status(500).send(`Lỗi server: ${error}`);
+      console.error(error);
+      res.status(400).json({ message: error.toString() });
    }
 };
 
@@ -351,8 +351,8 @@ const getApplicationByClientId = async (req, res) => {
       });
       res.status(200).send(resultList);
    } catch (error) {
-      console.log(error);
-      res.status(500).send(`Lỗi server: ${error}`);
+      console.error(error);
+      res.status(400).json({ message: error.toString() });
    }
 };
 
@@ -487,8 +487,8 @@ const approveApplication = async (req, res) => {
 
       res.status(200).send(application);
    } catch (error) {
-      console.log(error);
-      res.status(500).send(`Lỗi server: ${error}`);
+      console.error(error);
+      res.status(400).json({ message: error.toString() });
    }
 };
 
@@ -540,8 +540,8 @@ const interviewApplication = async (req, res) => {
 
       res.status(200).send(application);
    } catch (error) {
-      console.log(error);
-      res.status(500).send(`Lỗi server: ${error}`);
+      console.error(error);
+      res.status(400).json({ message: error.toString() });
    }
 };
 
@@ -575,8 +575,8 @@ const declineApplication = async (req, res) => {
       // );
       res.status(200).send(application);
    } catch (error) {
-      console.log(error);
-      res.status(500).send(`Lỗi server: ${error}`);
+      console.error(error);
+      res.status(400).json({ message: error.toString() });
    }
 };
 

@@ -16,8 +16,8 @@ const getAllPayment = async (req, res) => {
       let payments = await Payment.findAll({ order: [["createdAt", "DESC"]] });
       res.status(200).send(payments);
    } catch (error) {
-      console.log(error);
-      res.status(500).send(`Lỗi server: ${error}`);
+      console.error(error);
+      res.status(400).json({ message: error.toString() });
    }
 };
 
@@ -37,8 +37,8 @@ const getPaymentByClientId = async (req, res) => {
          clientCurrency: client.currency,
       });
    } catch (error) {
-      console.log(error);
-      res.status(500).send(`Lỗi server: ${error}`);
+      console.error(error);
+      res.status(400).json({ message: error.toString() });
    }
 };
 
@@ -118,8 +118,8 @@ const createPayment = async (req, res) => {
       });
       res.status(200).send({ message: "Luu giao dich thanh cong" });
    } catch (error) {
-      console.log(error);
-      res.status(500).send(`Lỗi server: ${error}`);
+      console.error(error);
+      res.status(400).json({ message: error.toString() });
    }
 };
 
@@ -132,7 +132,8 @@ const createAutoCollectFeePayment = async (info) => {
       client.addPayment(payment);
       console.log("Lưu giao dịch thành công");
    } catch (error) {
-      console.log(error);
+      console.error(error);
+      res.status(400).json({ message: error.toString() });
    }
 };
 
@@ -194,8 +195,8 @@ const createVnpayUrl = async (req, res) => {
          clientId: req.session.clientId,
       });
    } catch (error) {
-      console.log(error);
-      res.status(500).send(`Lỗi server: ${error}`);
+      console.error(error);
+      res.status(400).json({ message: error.toString() });
    }
 };
 
@@ -327,8 +328,8 @@ const vnpayReturn = async (req, res) => {
          });
       }
    } catch (error) {
-      console.log(error);
-      res.status(500).send(`Lỗi server: ${error}`);
+      console.error(error);
+      res.status(400).json({ message: error.toString() });
    }
 };
 

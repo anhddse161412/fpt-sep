@@ -26,8 +26,8 @@ const createSubCategory = async (req, res) => {
       res.status(200).send(subCategory);
       console.log(subCategory);
    } catch (error) {
-      console.log(error);
-      res.status(500).send(`Lỗi server: ${error}`);
+      console.error(error);
+      res.status(400).json({ message: error.toString() });
    }
 };
 
@@ -50,8 +50,8 @@ const getAllSubCategory = async (req, res) => {
 
       res.status(200).send(categories);
    } catch (error) {
-      console.log(error);
-      res.status(500).send(`Lỗi server: ${error}`);
+      console.error(error);
+      res.status(400).json({ message: error.toString() });
    }
 };
 
@@ -73,8 +73,8 @@ const getSubCategoryById = async (req, res) => {
       });
       res.status(200).send(subCategory);
    } catch (error) {
-      console.log(error);
-      res.status(500).send(`Lỗi server: ${error}`);
+      console.error(error);
+      res.status(400).json({ message: error.toString() });
    }
 };
 
@@ -85,8 +85,8 @@ const updateSubCategory = async (req, res) => {
       });
       res.status(200).send(subCategory);
    } catch (error) {
-      console.log(error);
-      res.status(500).send(`Lỗi server: ${error}`);
+      console.error(error);
+      res.status(400).json({ message: error.toString() });
    }
 };
 
@@ -105,8 +105,8 @@ const getSubCategoryWithCategoryId = async (req, res) => {
       });
       res.status(200).send(subCategories);
    } catch (error) {
-      console.log(error);
-      res.status(500).send(`Lỗi server: ${error}`);
+      console.error(error);
+      res.status(400).json({ message: error.toString() });
    }
 };
 

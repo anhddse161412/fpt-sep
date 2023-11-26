@@ -9,8 +9,8 @@ const getCommissionFee = async (req, res) => {
       });
       res.status(200).send(systemValues);
    } catch (error) {
-      console.log(error);
-      res.status(500).send(`Lỗi server: ${error}`);
+      console.error(error);
+      res.status(400).json({ message: error.toString() });
    }
 };
 
@@ -21,8 +21,8 @@ const updateCommissionFee = async (req, res) => {
       });
       res.status(200).send({ message: "Đã cập nhật phí hoa hồng" });
    } catch (error) {
-      console.log(error);
-      res.status(500).send(`Lỗi server: ${error}`);
+      console.error(error);
+      res.status(400).json({ message: error.toString() });
    }
 };
 

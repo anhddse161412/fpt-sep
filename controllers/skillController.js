@@ -6,8 +6,8 @@ const getAllSkill = async (req, res) => {
       let skills = await Skill.findAll({});
       res.status(200).send(skills);
    } catch (error) {
-      console.log(error);
-      res.status(500).send(`Lỗi server: ${error}`);
+      console.error(error);
+      res.status(400).json({ message: error.toString() });
    }
 };
 

@@ -1,5 +1,6 @@
 const db = require("../models");
 const { Sequelize } = require("sequelize");
+const { verify } = require("jsonwebtoken");
 
 // Sequelize operation
 const Op = Sequelize.Op;
@@ -61,10 +62,10 @@ const createJob = async (req, res) => {
          });
       }
 
-      res.status(200).send("job Created");
+      res.status(200).send("Tạo Công việc thành công!");
    } catch (error) {
-      console.log(error);
-      res.status(500).send(`Lỗi server: ${error}`);
+      console.error(error);
+      res.status(400).json({ message: error.toString() });
    }
 };
 
@@ -97,8 +98,8 @@ const getAllJob = async (req, res) => {
       });
       res.status(200).send(job);
    } catch (error) {
-      console.log(error);
-      res.status(500).send(`Lỗi server: ${error}`);
+      console.error(error);
+      res.status(400).json({ message: error.toString() });
    }
 };
 
@@ -194,8 +195,8 @@ const getJobById = async (req, res) => {
          res.status(200).send(job);
       }
    } catch (error) {
-      console.log(error);
-      res.status(500).send(`Lỗi server: ${error}`);
+      console.error(error);
+      res.status(400).json({ message: error.toString() });
    }
 };
 
@@ -206,8 +207,8 @@ const updateJob = async (req, res) => {
       });
       res.status(200).send(job);
    } catch (error) {
-      console.log(error);
-      res.status(500).send(`Lỗi server: ${error}`);
+      console.error(error);
+      res.status(400).json({ message: error.toString() });
    }
 };
 
@@ -225,8 +226,8 @@ const getJobWithClientId = async (req, res) => {
 
       res.status(200).send(data);
    } catch (error) {
-      console.log(error);
-      res.status(500).send(`Lỗi server: ${error}`);
+      console.error(error);
+      res.status(400).json({ message: error.toString() });
    }
 };
 
@@ -243,8 +244,8 @@ const addFavoriteJob = async (req, res) => {
 
       res.status(200).send("job favorite added");
    } catch (error) {
-      console.log(error);
-      res.status(500).send(`Lỗi server: ${error}`);
+      console.error(error);
+      res.status(400).json({ message: error.toString() });
    }
 };
 
@@ -260,8 +261,8 @@ const removeFavoriteJob = async (req, res) => {
 
       res.status(200).send("job favorite removed");
    } catch (error) {
-      console.log(error);
-      res.status(500).send(`Lỗi server: ${error}`);
+      console.error(error);
+      res.status(400).json({ message: error.toString() });
    }
 };
 
@@ -314,8 +315,8 @@ const applyJob = async (req, res) => {
       // );
       res.status(200).send("applied");
    } catch (error) {
-      console.log(error);
-      res.status(500).send(`Lỗi server: ${error}`);
+      console.error(error);
+      res.status(400).json({ message: error.toString() });
    }
 };
 // get job pagination
@@ -331,7 +332,7 @@ const paginationJob = async (req, res) => {
       }
 
       if (limit && page && (limit <= 0 || page <= 0)) {
-         return res.status(400).json({ error: "Invalid limit or page number" });
+         return res.status(400).json({ message: "Invalid limit or page number" });
       }
 
       let offset = (page - 1) * limit;
@@ -388,7 +389,7 @@ const paginationJob = async (req, res) => {
       });
    } catch (error) {
       console.error(error);
-      res.status(500).json({ error: "Internal Server Error" });
+      res.status(400).json({ message: error.toString() });
    }
 };
 
@@ -404,7 +405,7 @@ const paginationJobBySubCategoryId = async (req, res) => {
       }
 
       if (limit && page && (limit <= 0 || page <= 0)) {
-         return res.status(400).json({ error: "Invalid limit or page number" });
+         return res.status(400).json({ message: "Invalid limit or page number" });
       }
 
       let offset = (page - 1) * limit;
@@ -464,7 +465,7 @@ const paginationJobBySubCategoryId = async (req, res) => {
       });
    } catch (error) {
       console.error(error);
-      res.status(500).json({ error: "Internal Server Error" });
+      res.status(400).json({ message: error.toString() });
    }
 };
 
@@ -495,8 +496,8 @@ const getJobBySubCategory = async (req, res) => {
 
       res.status(200).send(data);
    } catch (error) {
-      console.log(error);
-      res.status(500).send(`Lỗi server: ${error}`);
+      console.error(error);
+      res.status(400).json({ message: error.toString() });
    }
 };
 
@@ -512,8 +513,8 @@ const getJobByClientId = async (req, res) => {
 
       res.status(200).send(jobs);
    } catch (error) {
-      console.log(error);
-      res.status(500).send(`Lỗi server: ${error}`);
+      console.error(error);
+      res.status(400).json({ message: error.toString() });
    }
 };
 
@@ -557,8 +558,8 @@ const getJobHasAppointmentByClientId = async (req, res) => {
 
       res.status(200).send(jobs);
    } catch (error) {
-      console.log(error);
-      res.status(500).send(`Lỗi server: ${error}`);
+      console.error(error);
+      res.status(400).json({ message: error.toString() });
    }
 };
 
@@ -572,10 +573,10 @@ const inactiveJob = async (req, res) => {
       job.setDataValue("status", "delete");
       job.save();
 
-      res.status(200).send("Xoa cong viec thanh cong!");
+      res.status(200).send("Xóa công việc thành công!");
    } catch (error) {
-      console.log(error);
-      res.status(500).send(`Lỗi server: ${error}`);
+      console.error(error);
+      res.status(400).json({ message: error.toString() });
    }
 };
 
@@ -600,8 +601,8 @@ const checkJobEndDate = async (req, res) => {
          message = [];
       });
    } catch (error) {
-      console.log(error);
-      res.status(500).send(`Lỗi server: ${error}`);
+      console.error(error);
+      res.status(400).json({ message: error.toString() });
    }
 };
 
@@ -628,8 +629,8 @@ const closeJob = async (req, res) => {
 
       res.status(200).send(job);
    } catch (error) {
-      console.log(error);
-      res.status(500).send(`Lỗi server: ${error}`);
+      console.error(error);
+      res.status(400).json({ message: error.toString() });
    }
 };
 
@@ -648,8 +649,8 @@ const extendJob = async (req, res) => {
 
       res.status(200).send(job);
    } catch (error) {
-      console.log(error);
-      res.status(500).send(`Lỗi server: ${error}`);
+      console.error(error);
+      res.status(400).json({ message: error.toString() });
    }
 };
 
@@ -659,7 +660,7 @@ const recommendedJobForFreelancer = async (req, res) => {
       let page = Number(req.query.page) || 1;
 
       if (limit && page && (limit <= 0 || page <= 0)) {
-         return res.status(400).json({ error: "Invalid limit or page number" });
+         return res.status(400).json({ message: "Invalid limit or page number" });
       }
 
       let offset = (page - 1) * limit;
@@ -678,7 +679,7 @@ const recommendedJobForFreelancer = async (req, res) => {
                            {
                               model: Account,
                               as: "accounts",
-                              attributes: ["id","name", "image"],
+                              attributes: ["id", "name", "image"],
                            },
                         ],
                         attributes: ["id"],
@@ -721,8 +722,8 @@ const recommendedJobForFreelancer = async (req, res) => {
          },
       });
    } catch (error) {
-      console.log(error);
-      res.status(500).send(`Lỗi server: ${error}`);
+      console.error(error);
+      res.status(400).json({ message: error.toString() });
    }
 };
 
@@ -738,7 +739,7 @@ const paginationJobByName = async (req, res) => {
       }
 
       if (limit && page && (limit <= 0 || page <= 0)) {
-         return res.status(400).json({ error: "Invalid limit or page number" });
+         return res.status(400).json({ message: "Invalid limit or page number" });
       }
 
       let offset = (page - 1) * limit;
@@ -800,7 +801,7 @@ const paginationJobByName = async (req, res) => {
       });
    } catch (error) {
       console.error(error);
-      res.status(500).json({ error: "Internal Server Error" });
+      res.status(400).json({ message: error.toString() });
    }
 };
 

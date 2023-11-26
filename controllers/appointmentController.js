@@ -87,8 +87,8 @@ const createAppointment = async (req, res) => {
          messsage: "Tạo Appointment thành công",
       });
    } catch (error) {
-      console.log(error);
-      res.status(500).send(`Lỗi server: ${error}`);
+      console.error(error);
+      res.status(400).json({ message: error.toString() });
    }
 };
 
@@ -137,8 +137,8 @@ const getAllAppointment = async (req, res) => {
       });
       res.status(200).send(appointment);
    } catch (error) {
-      console.log(error);
-      res.status(500).send(`Lỗi server: ${error}`);
+      console.error(error);
+      res.status(400).json({ message: error.toString() });
    }
 };
 
@@ -182,8 +182,8 @@ const getAppointmentById = async (req, res) => {
       });
       res.status(200).send(appointment);
    } catch (error) {
-      console.log(error);
-      res.status(500).send(`Lỗi server: ${error}`);
+      console.error(error);
+      res.status(400).json({ message: error.toString() });
    }
 };
 
@@ -209,8 +209,8 @@ const getAppointmentByClientId = async (req, res) => {
       });
       res.status(200).send(appointment);
    } catch (error) {
-      console.log(error);
-      res.status(500).send(`Lỗi server: ${error}`);
+      console.error(error);
+      res.status(400).json({ message: error.toString() });
    }
 };
 
@@ -242,8 +242,8 @@ const getAppointmentByFreelancerId = async (req, res) => {
       });
       res.status(200).send(appointment);
    } catch (error) {
-      console.log(error);
-      res.status(500).send(`Lỗi server: ${error}`);
+      console.error(error);
+      res.status(400).json({ message: error.toString() });
    }
 };
 
@@ -266,8 +266,8 @@ const getAppointmentByJobId = async (req, res) => {
       });
       res.status(200).send(appointment);
    } catch (error) {
-      console.log(error);
-      res.status(500).send(`Lỗi server: ${error}`);
+      console.error(error);
+      res.status(400).json({ message: error.toString() });
    }
 };
 
@@ -301,8 +301,8 @@ const updateAppointment = async (req, res) => {
          }
       }
    } catch (error) {
-      console.log(error);
-      res.status(500).send(`Lỗi server: ${error}`);
+      console.error(error);
+      res.status(400).json({ message: error.toString() });
    }
 };
 

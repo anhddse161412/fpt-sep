@@ -25,7 +25,8 @@ const createNotification = async (req, res) => {
          message: "Tao thong bao thanh cong",
       });
    } catch (error) {
-      console.log(error);
+      console.error(error);
+      res.status(400).json({ message: error.toString() });
    }
 };
 
@@ -55,8 +56,8 @@ const createNotificationInfo = async (
       console.log(notification.dataValues);
       return notification.dataValues;
    } catch (error) {
-      console.log(error);
-      res.status(500).send(`Lỗi server: ${error}`);
+      console.error(error);
+      res.status(400).json({ message: error.toString() });
    }
 };
 
@@ -65,7 +66,8 @@ const getAllNotification = async (req, res) => {
       const notifications = await Notification.findAll();
       res.status(200).send(notifications);
    } catch (error) {
-      console.log(error);
+      console.error(error);
+      res.status(400).json({ message: error.toString() });
    }
 };
 
@@ -76,8 +78,8 @@ const getNotificationById = async (req, res) => {
       });
       res.status(200).send(notification);
    } catch (error) {
-      console.log(error);
-      res.status(500).send(`Lỗi server: ${error}`);
+      console.error(error);
+      res.status(400).json({ message: error.toString() });
    }
 };
 
@@ -96,8 +98,8 @@ const getAllNotificationByAccountId = async (req, res) => {
          notifications: notifications,
       });
    } catch (error) {
-      console.log(error);
-      res.status(500).send(`Lỗi server: ${error}`);
+      console.error(error);
+      res.status(400).json({ message: error.toString() });
    }
 };
 
@@ -111,7 +113,7 @@ const markAsReadNotification = async (req, res) => {
       res.status(200).send({ message: "Đã đánh dấu đọc thông báo này" });
    } catch (error) {
       console.log(error);
-      res.status(500).send(`Lỗi server: ${error}`);
+      res.status(400).json({ message: error.toString() });
    }
 };
 
@@ -128,8 +130,8 @@ const markAsReadAllNotification = async (req, res) => {
 
       res.status(200).send({ message: "Đã đánh dấu đọc tất cả" });
    } catch (error) {
-      console.log(error);
-      res.status(500).send(`Lỗi server: ${error}`);
+      console.error(error);
+      res.status(400).json({ message: error.toString() });
    }
 };
 

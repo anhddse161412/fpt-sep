@@ -21,8 +21,8 @@ const createCategory = async (req, res) => {
       res.status(200).send(category);
       console.log(category);
    } catch (error) {
-      console.log(error);
-      res.status(500).send(`Lỗi server: ${error}`);
+      console.error(error);
+      res.status(400).json({ message: error.toString() });
    }
 };
 
@@ -47,8 +47,8 @@ const getAllCategory = async (req, res) => {
 
       res.status(200).json(allCategories);
    } catch (error) {
-      console.log(error);
-      res.status(500).send(`Lỗi server: ${error}`);
+      console.error(error);
+      res.status(400).json({ message: error.toString() });
    }
 };
 
@@ -59,8 +59,8 @@ const getCategoryById = async (req, res) => {
       });
       res.status(200).send(category);
    } catch (error) {
-      console.log(error);
-      res.status(500).send(`Lỗi server: ${error}`);
+      console.error(error);
+      res.status(400).json({ message: error.toString() });
    }
 };
 
@@ -71,8 +71,8 @@ const updateCategory = async (req, res) => {
       });
       res.status(200).send(category);
    } catch (error) {
-      console.log(error);
-      res.status(500).send(`Lỗi server: ${error}`);
+      console.error(error);
+      res.status(400).json({ message: error.toString() });
    }
 };
 
@@ -88,8 +88,8 @@ const getCategoryWithSubCategory = async (req, res) => {
 
       res.status(200).json(subCategories);
    } catch (error) {
-      console.error("Error:", error);
-      res.status(500).send(`Lỗi server: ${error}`);
+      console.error(error);
+      res.status(400).json({ message: error.toString() });
    }
 };
 

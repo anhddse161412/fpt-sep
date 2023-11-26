@@ -6,7 +6,7 @@ const Transaction = db.transactions;
 const createTransaction = async (req, res) => {
    try {
    } catch (error) {
-      console.log(error);
+      console.error(error);
    }
 };
 
@@ -15,8 +15,8 @@ const getAllTransaction = async (req, res) => {
       let transaction = await Transaction.findAll({});
       res.status(200).send(transaction);
    } catch (error) {
-      console.log(error);
-      res.status(500).send(`Lỗi server: ${error}`);
+      console.error(error);
+      res.status(400).json({ message: error.toString() });
    }
 };
 
@@ -27,8 +27,8 @@ const getTransactionByClientId = async (req, res) => {
       });
       res.status(200).send(transaction);
    } catch (error) {
-      console.log(error);
-      res.status(500).send(`Lỗi server: ${error}`);
+      console.error(error);
+      res.status(400).json({ message: error.toString() });
    }
 };
 

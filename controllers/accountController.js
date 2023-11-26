@@ -66,7 +66,7 @@ const register = async (req, res) => {
       });
       // console.log(account.dataValues);
    } catch (error) {
-      console.log(error);
+      console.error(error);
       res.status(400).json({ message: error.toString() });
    }
 };
@@ -79,7 +79,7 @@ const confirmRegister = async (req, res) => {
 
       verify(token, process.env.JWT_KEY, async (err, decoded) => {
          if (err) {
-            return res.json({ Status: "Error with token" });
+            return res.status(400).json({ message: "Error with token" });
          } else {
             if (
                decoded.otp == otp &&
@@ -118,7 +118,7 @@ const confirmRegister = async (req, res) => {
          }
       });
    } catch (error) {
-      console.log(error);
+      console.error(error);
       res.status(400).json({ message: error.toString() });
    }
 };
@@ -129,7 +129,7 @@ const getAllAccount = async (req, res) => {
       let accounts = await Account.findAll({});
       res.status(200).send(accounts);
    } catch (error) {
-      console.log(error);
+      console.error(error);
       res.status(400).json({ message: error.toString() });
    }
 };
@@ -141,7 +141,7 @@ const getAccountById = async (req, res) => {
       });
       res.status(200).send(accounts);
    } catch (error) {
-      console.log(error);
+      console.error(error);
       res.status(400).json({ message: error.toString() });
    }
 };
@@ -153,7 +153,7 @@ const updateAccount = async (req, res) => {
       });
       res.status(200).send(accounts);
    } catch (error) {
-      console.log(error);
+      console.error(error);
       res.status(400).json({ message: error.toString() });
    }
 };
@@ -189,7 +189,7 @@ const login = async (req, res) => {
          });
       }
    } catch (error) {
-      console.log(error);
+      console.error(error);
       res.status(400).json({ message: error.toString() });
    }
 };
@@ -227,7 +227,7 @@ const loginGoogle = async (req, res) => {
          message: "Đăng nhập thành công!",
       });
    } catch (error) {
-      console.log(error);
+      console.error(error);
       res.status(400).json({ message: error.toString() });
    }
 };
@@ -258,7 +258,7 @@ const getFavoriteJobOfAccount = async (req, res) => {
       }
 
       if (limit && page && (limit <= 0 || page <= 0)) {
-         return res.status(400).json({ error: "Invalid limit or page number" });
+         return res.status(400).json({ message: "Invalid limit or page number" });
       }
 
       let offset = (page - 1) * limit;
@@ -313,7 +313,7 @@ const getFavoriteJobOfAccount = async (req, res) => {
       });
    } catch (error) {
       console.error(error);
-      res.status(500).json({ error: "Internal Server Error" });
+      res.status(400).json({ message: error.toString() });
    }
 };
 
@@ -324,8 +324,8 @@ const forgorPassword = async (req, res) => {
          async (account) => {
             if (!account) {
                return res
-                  .status(500)
-                  .send({ Status: "Email này chưa được đăng kí" });
+                  .status(400)
+                  .json({ message: "Email này chưa được đăng kí" });
             }
             let { token, otp } = await sendEmailOtp(account.email, "");
             sendEmail(
@@ -342,8 +342,8 @@ const forgorPassword = async (req, res) => {
          }
       );
    } catch (error) {
-      console.log(error);
-      res.status(500).send(`Lỗi server: ${error}`);
+      console.error(error);
+      res.status(400).json({ message: error.toString() });
    }
 
    // res.status(200).send({
@@ -365,8 +365,8 @@ const resetPassword = async (req, res) => {
          .then((u) => res.send({ Status: "Success" }))
          .catch((err) => res.send({ Status: err }));
    } catch (error) {
-      console.log(error);
-      res.status(500).send(`Lỗi server: ${error}`);
+      console.error(error);
+      res.status(400).json({ message: error.toString() });
    }
 };
 
@@ -392,8 +392,8 @@ const changePassword = async (req, res) => {
          });
       }
    } catch (error) {
-      console.log(error);
-      res.status(500).send(`Lỗi server: ${error}`);
+      console.error(error);
+      res.status(400).json({ message: error.toString() });
    }
 };
 
@@ -408,8 +408,8 @@ const deactiveAccount = async (req, res) => {
 
       res.status(200).send("Đã đóng tài khoản!");
    } catch (error) {
-      console.log(error);
-      res.status(500).send(`Lỗi server: ${error}`);
+      console.error(error);
+      res.status(400).json({ message: error.toString() });
    }
 };
 
@@ -424,8 +424,8 @@ const activeAccount = async (req, res) => {
 
       res.status(200).send("Đã tái kích hoạt tài khoản!");
    } catch (error) {
-      console.log(error);
-      res.status(500).send(`Lỗi server: ${error}`);
+      console.error(error);
+      res.status(400).json({ message: error.toString() });
    }
 };
 
@@ -449,7 +449,7 @@ const sendEmailOtp = async (email, registerInfo) => {
          otp: otp,
       };
    } catch (error) {
-      console.log(error);
+      console.error(error);
    }
 };
 
@@ -462,7 +462,7 @@ const verifyEmailOtp = async (req, res) => {
       let status;
       verify(token, process.env.JWT_KEY, async (err, decoded) => {
          if (err) {
-            return res.status(500).json({ Status: "Error with token" });
+            return res.status(400).json({ message: "Error with token!" });
          } else {
             console.log(decoded);
             if (decoded.otp == otp && decoded.email == email) {
@@ -476,8 +476,8 @@ const verifyEmailOtp = async (req, res) => {
          }
       });
    } catch (error) {
-      console.log(error);
-      res.status(500).send(`Lỗi server: ${error}`);
+      console.error(error);
+      res.status(400).json({ message: error.toString() });
    }
 };
 
@@ -540,8 +540,8 @@ const searchAccountAndJob = async (req, res) => {
       });
       res.status(200).send({ searchList: resultList });
    } catch (error) {
-      console.log(error);
-      res.status(500).send(`Lỗi server: ${error}`);
+      console.error(error);
+      res.status(400).json({ message: error.toString() });
    }
 };
 
