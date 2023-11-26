@@ -12,7 +12,11 @@ router
 
 router
    .route("/account/:accountId")
-   .get(notificationController.getNotificationByAccountId);
+   .get(notificationController.getAllNotificationByAccountId)
+   .put(notificationController.markAsReadAllNotification);
 
-router.route("/delete/:id").delete(notificationController.deleteNotification);
+router
+   .route("/:id")
+   .get(notificationController.getNotificationById)
+   .put(notificationController.markAsReadNotification);
 module.exports = router;

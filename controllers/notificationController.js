@@ -56,6 +56,7 @@ const createNotificationInfo = async (
       return notification.dataValues;
    } catch (error) {
       console.log(error);
+      res.status(500).send(`Lỗi server: ${error}`);
    }
 };
 
@@ -68,25 +69,35 @@ const getAllNotification = async (req, res) => {
    }
 };
 
-const getNotificationByAccountId = async (req, res) => {
+const getNotificationById = async (req, res) => {
    try {
-      const notifications = await Notification.findAll({
-         where: { accountId: req.params.accountId },
+      const notification = await Notification.findOne({
+         where: { id: req.params.id },
       });
-      res.status(200).send(notifications);
+      res.status(200).send(notification);
    } catch (error) {
       console.log(error);
+      res.status(500).send(`Lỗi server: ${error}`);
    }
 };
 
-const deleteNotification = async (req, res) => {
+const getAllNotificationByAccountId = async (req, res) => {
    try {
-      const notification = await Notification.destroy({
-         where: { id: req.params.id },
+      const { count, rows: unreadNotifications } =
+         await Notification.findAndCountAll({
+            where: { accountId: req.params.accountId, status: "unread" },
+         });
+
+      const { rows: notifications } = await Notification.findAndCountAll({
+         where: { accountId: req.params.accountId },
       });
-      res.status(200).send({ message: "deleted" });
+      res.status(200).send({
+         unreadNotifications: count,
+         notifications: notifications,
+      });
    } catch (error) {
       console.log(error);
+      res.status(500).send(`Lỗi server: ${error}`);
    }
 };
 
@@ -97,19 +108,37 @@ const markAsReadNotification = async (req, res) => {
       });
       notification.setDataValue("status", "read");
       notification.save();
-      res.status(200).send({
-         message: "",
-      });
+      res.status(200).send({ message: "Đã đánh dấu đọc thông báo này" });
    } catch (error) {
       console.log(error);
+      res.status(500).send(`Lỗi server: ${error}`);
+   }
+};
+
+const markAsReadAllNotification = async (req, res) => {
+   try {
+      await Notification.findAll({
+         where: { accountId: req.params.accountId },
+      }).then((res) => {
+         res.forEach(async (item) => {
+            item.setDataValue("status", "read");
+            item.save();
+         });
+      });
+
+      res.status(200).send({ message: "Đã đánh dấu đọc tất cả" });
+   } catch (error) {
+      console.log(error);
+      res.status(500).send(`Lỗi server: ${error}`);
    }
 };
 
 module.exports = {
    createNotification,
    getAllNotification,
-   getNotificationByAccountId,
-   deleteNotification,
+   getAllNotificationByAccountId,
    markAsReadNotification,
+   markAsReadAllNotification,
    createNotificationInfo,
+   getNotificationById,
 };
