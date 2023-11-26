@@ -34,15 +34,19 @@ const createApplication = async (req, res) => {
          status: req.body.status ? req.body.status : "sent",
       };
       const job = await Job.findOne({
-         where: { id: req.body.jobId },
+         where: { id: req.body.jobId, status: "open" },
       });
 
-      const application = await Application.create(info);
-      let applicationCounter = await job.countApplications();
-      job.setDataValue("applied", applicationCounter.toString());
-      job.save();
+      if (job) {
+         await Application.create(info);
+         let applicationCounter = await job.countApplications();
+         job.setDataValue("applied", applicationCounter.toString());
+         job.save();
 
-      res.status(200).json({ messsage: "Tạo application thành công" });
+         res.status(200).json({ messsage: "Tạo application thành công" });
+      } else {
+         res.status(400).json({ message: "Công việc này đã đóng!" });
+      }
    } catch (error) {
       console.error(error);
       res.status(400).json({ message: error.toString() });
