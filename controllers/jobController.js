@@ -142,7 +142,11 @@ const getJobById = async (req, res) => {
             ],
             where: { id: req.params.jobID },
          });
-         res.status(200).send(job);
+         if (job) {
+            res.status(200).send(job);
+         } else {
+            res.status(400).json({ message: "Công việc này không tồn tại!" });
+         }
       } else {
          let job = await Job.findOne({
             include: [
@@ -192,7 +196,11 @@ const getJobById = async (req, res) => {
                where: { id: req.params.jobID },
             });
          }
-         res.status(200).send(job);
+         if (job) {
+            res.status(200).send(job);
+         } else {
+            res.status(400).json({ message: "Công việc này không tồn tại!" });
+         }
       }
    } catch (error) {
       console.error(error);
