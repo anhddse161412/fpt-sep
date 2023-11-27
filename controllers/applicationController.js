@@ -455,8 +455,8 @@ const approveApplication = async (req, res) => {
          await paymentController.createAutoCollectFeePayment(info);
          messsage =
             "Đã thanh toán tự động cho công việc" +
-            `"${application.jobs.title}": - ${approveFee} VNĐ` +
-            "Vui lòng kiểu tra số dư toàn khoản trên website. ";
+            `"${application.jobs.title}": -${approveFee}VNĐ` +
+            ". Vui lòng kiểu tra số dư toàn khoản trên website. ";
       } else {
          const client = await Client.findOne({
             where: { id: application.jobs.clients.id },
