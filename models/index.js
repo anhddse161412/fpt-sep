@@ -44,7 +44,7 @@ db.appointments = require("./appointmentModel")(sequelize, DataTypes);
 db.certificates = require("./certificateModel")(sequelize, DataTypes);
 db.recommendPoints = require("./recommendPoint.js")(sequelize, DataTypes);
 db.payments = require("./paymentModel")(sequelize, DataTypes);
-db.transactions = require("./transactionModel")(sequelize, DataTypes);
+// db.transactions = require("./transactionModel")(sequelize, DataTypes);
 db.notifications = require("./notificationModel")(sequelize, DataTypes);
 db.languages = require("./languageModel.js")(sequelize, DataTypes);
 db.feePaymentDeadlines = require("./feePaymentDeadlineModel")(
@@ -215,26 +215,26 @@ db.payments.belongsTo(db.clients, {
 });
 
 // transaction - payment
-db.payments.hasOne(db.transactions, {
-   foreignKey: "paymentId",
-   as: "transactions",
-});
+// db.payments.hasOne(db.transactions, {
+//    foreignKey: "paymentId",
+//    as: "transactions",
+// });
 
-db.transactions.belongsTo(db.payments, {
-   foreignKey: "paymentId",
-   as: "payments",
-});
+// db.transactions.belongsTo(db.payments, {
+//    foreignKey: "paymentId",
+//    as: "payments",
+// });
 
 // transaction - applications
-db.applications.hasOne(db.transactions, {
-   foreignKey: "applicationId",
-   as: "transactions",
-});
+// db.applications.hasOne(db.transactions, {
+//    foreignKey: "applicationId",
+//    as: "transactions",
+// });
 
-db.transactions.belongsTo(db.applications, {
-   foreignKey: "applicationId",
-   as: "application",
-});
+// db.transactions.belongsTo(db.applications, {
+//    foreignKey: "applicationId",
+//    as: "application",
+// });
 
 // freelancer - language
 db.freelancers.hasMany(db.languages, {

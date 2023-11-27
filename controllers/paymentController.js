@@ -10,6 +10,7 @@ const Client = db.clients;
 const FeePaymentDeadline = db.feePaymentDeadlines;
 const Application = db.applications;
 const Job = db.jobs;
+const SystemValue = db.systemValues;
 
 const getAllPayment = async (req, res) => {
    try {
@@ -44,7 +45,10 @@ const getPaymentByClientId = async (req, res) => {
 
 const createPayment = async (req, res) => {
    try {
-      let approveFee = 10000;
+      let systemValue = await SystemValue.findOne({
+         where: { name: "commissionFee" },
+      });
+      let approveFee = systemValue.value;
       let info = {
          amount: req.body.amount,
          name: req.body.name,

@@ -363,6 +363,7 @@ const getApplicationByClientId = async (req, res) => {
 // approve application
 const approveApplication = async (req, res) => {
    try {
+      let messsage = "Lỗi server";
       let systemValue = await SystemValue.findOne({
          where: { name: "commissionFee" },
       });
@@ -451,7 +452,11 @@ const approveApplication = async (req, res) => {
             type: "-",
             clientId: `${application.jobs.clients.id}`,
          };
-         paymentController.createAutoCollectFeePayment(info);
+         await paymentController.createAutoCollectFeePayment(info);
+         messsage =
+            "Công việc " +
+            `"${application.jobs.title}"` +
+            " đã được thanh toán tự động thành công. Vui lòng kiểu tra số dư toàn khoản trên website. ";
       } else {
          const client = await Client.findOne({
             where: { id: application.jobs.clients.id },
@@ -472,7 +477,7 @@ const approveApplication = async (req, res) => {
          Chúng tôi rất mong được hợp tác với bạn `
          );
 
-         feePaymentController.createFeePaymentDeadline(
+         await feePaymentController.createFeePaymentDeadline(
             `Hạn thanh toán của client ${application.jobs.clients.accounts.name}`,
             application.jobs.clients.id,
             application.id
@@ -487,9 +492,13 @@ const approveApplication = async (req, res) => {
          Trân trọng.
       `
          );
+         messsage =
+            "Công việc " +
+            `"${application.jobs.title}"` +
+            " đã không được thanh toán tự động thành công do không đủ số dư trong tài khoản.Vui lòng nạp thêm để có thể thanh toán. ";
       }
 
-      res.status(200).send(application);
+      res.status(200).send({ messsage });
    } catch (error) {
       console.error(error);
       res.status(400).json({ message: error.toString() });
