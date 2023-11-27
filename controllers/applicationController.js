@@ -43,7 +43,7 @@ const createApplication = async (req, res) => {
          job.setDataValue("applied", applicationCounter.toString());
          job.save();
 
-         res.status(200).json({ messsage: "Tạo application thành công" });
+         res.status(200).json({ message: "Tạo application thành công" });
       } else {
          res.status(400).json({ message: "Công việc này đã đóng!" });
       }
@@ -363,7 +363,7 @@ const getApplicationByClientId = async (req, res) => {
 // approve application
 const approveApplication = async (req, res) => {
    try {
-      let messsage = "Lỗi server";
+      let message = "Lỗi server";
       let systemValue = await SystemValue.findOne({
          where: { name: "commissionFee" },
       });
@@ -453,7 +453,7 @@ const approveApplication = async (req, res) => {
             clientId: `${application.jobs.clients.id}`,
          };
          await paymentController.createAutoCollectFeePayment(info);
-         messsage =
+         message =
             "Đã thanh toán tự động cho công việc" +
             `"${application.jobs.title}": -${approveFee}VNĐ` +
             ". Vui lòng kiểu tra số dư toàn khoản trên website. ";
@@ -492,13 +492,13 @@ const approveApplication = async (req, res) => {
          Trân trọng.
       `
          );
-         messsage =
+         message =
             "Công việc " +
             `"${application.jobs.title}"` +
             " đã không được thanh toán tự động thành công do không đủ số dư trong tài khoản.Vui lòng nạp thêm để có thể thanh toán. ";
       }
 
-      res.status(200).send({ messsage });
+      res.status(200).send({ message });
    } catch (error) {
       console.error(error);
       res.status(400).json({ message: error.toString() });
