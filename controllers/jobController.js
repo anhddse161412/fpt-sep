@@ -330,7 +330,6 @@ const applyJob = async (req, res) => {
 // get job pagination
 const paginationJob = async (req, res) => {
    try {
-
       let user;
       let token = req.get("authorization");
       if (token) {
@@ -353,13 +352,15 @@ const paginationJob = async (req, res) => {
       }
 
       if (limit && page && (limit <= 0 || page <= 0)) {
-         return res.status(400).json({ message: "Invalid limit or page number" });
+         return res
+            .status(400)
+            .json({ message: "Invalid limit or page number" });
       }
 
       let offset = (page - 1) * limit;
 
       if (user && user.result.role == "admin") {
-         console.log("hahahaha")
+         console.log("hahahaha");
          const { count, rows: jobs } = await Job.findAndCountAll({
             include: [
                {
@@ -480,7 +481,9 @@ const paginationJobBySubCategoryId = async (req, res) => {
       }
 
       if (limit && page && (limit <= 0 || page <= 0)) {
-         return res.status(400).json({ message: "Invalid limit or page number" });
+         return res
+            .status(400)
+            .json({ message: "Invalid limit or page number" });
       }
 
       let offset = (page - 1) * limit;
@@ -615,7 +618,7 @@ const getJobHasAppointmentByClientId = async (req, res) => {
                         {
                            model: Account,
                            as: "accounts",
-                           attributes: ["name", "email", "image"],
+                           attributes: ["id", "name", "email", "image"],
                         },
                      ],
                      attributes: ["id"],
@@ -735,7 +738,9 @@ const recommendedJobForFreelancer = async (req, res) => {
       let page = Number(req.query.page) || 1;
 
       if (limit && page && (limit <= 0 || page <= 0)) {
-         return res.status(400).json({ message: "Invalid limit or page number" });
+         return res
+            .status(400)
+            .json({ message: "Invalid limit or page number" });
       }
 
       let offset = (page - 1) * limit;
@@ -814,7 +819,9 @@ const paginationJobByName = async (req, res) => {
       }
 
       if (limit && page && (limit <= 0 || page <= 0)) {
-         return res.status(400).json({ message: "Invalid limit or page number" });
+         return res
+            .status(400)
+            .json({ message: "Invalid limit or page number" });
       }
 
       let offset = (page - 1) * limit;
