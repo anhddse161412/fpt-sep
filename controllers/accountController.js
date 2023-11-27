@@ -38,7 +38,7 @@ const register = async (req, res) => {
             where: { email: req.body.email },
          }))
       ) {
-         throw new Error("Tài khoản email này đã được sử dụng!");
+         res.status(400).json({ message: "Tài khoản email này đã được sử dụng!" });
       }
       let { token, otp } = await sendEmailOtp(req.body.email, info);
       sendEmail(
@@ -126,7 +126,11 @@ const confirmRegister = async (req, res) => {
 // 2. get all account
 const getAllAccount = async (req, res) => {
    try {
-      let accounts = await Account.findAll({});
+      let accounts = await Account.findAll({
+         where: {
+            role: { [Op.ne]: "admin" }
+         },
+      });
       res.status(200).send(accounts);
    } catch (error) {
       console.error(error);
