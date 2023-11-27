@@ -28,7 +28,6 @@ var app = express();
 
 app.use(cors());
 app.use((req, res, next) => {
-   res.setHeader("Access-Control-Allow-Origin", "https://fpt-sep.vercel.app");
    res.setHeader("Access-Control-Allow-Origin", "http://localhost:3000");
    res.setHeader(
       "Access-Control-Allow-Methods",
@@ -51,7 +50,7 @@ app.use(
       secret: "mysecret",
       resave: false,
       saveUninitialized: true,
-      cookie: { path: "/", secure: false },
+      cookie: { secure: false },
    })
 );
 
@@ -64,7 +63,7 @@ const io = new Server(httpServer, {
    /* options */
    cors: {
       // url of connector here
-      origin: "https://fpt-sep.vercel.app",
+      origin: "http://localhost:3000",
    },
 });
 
