@@ -21,4 +21,7 @@ router.route("/vnpay_test").get((req, res) => {
 router.route("/vnpay_return").get(paymentController.receivePaymentResult);
 
 router.route("/vnpay_refund").post(paymentController.refundPayment);
+
+router.route("/revenue").get(paymentController.getRevenue);
+router.route("/deposit").get(paymentController.getDeposit);
 module.exports = router;

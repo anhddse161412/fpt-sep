@@ -22,6 +22,51 @@ const getAllPayment = async (req, res) => {
    }
 };
 
+const getRevenue = async (req, res) => {
+   try {
+      let { count, rows: payments } = await Payment.findAndCountAll({
+         where: { type: "-" },
+         order: [["createdAt", "DESC"]]
+      });
+      let totalRevenue = 0;
+      payments.forEach(item => {
+         item.setDataValue("type", "+")
+         totalRevenue = totalRevenue + item.amount;
+      })
+
+      res.status(200).json({
+         payments,
+         total: count,
+         revenue: totalRevenue
+      });
+   } catch (error) {
+      console.error(error);
+      res.status(400).json({ message: error.toString() });
+   }
+}
+
+const getDeposit = async (req, res) => {
+   try {
+      let { count, rows: payments } = await Payment.findAndCountAll({
+         where: { type: "+" },
+         order: [["createdAt", "DESC"]]
+      });
+      let totalDeposit = 0;
+      payments.forEach(item => {
+         totalDeposit = totalDeposit + item.amount;
+      })
+
+      res.status(200).json({
+         payments,
+         total: count,
+         deposit: totalDeposit
+      });
+   } catch (error) {
+      console.error(error);
+      res.status(400).json({ message: error.toString() });
+   }
+}
+
 const getPaymentByClientId = async (req, res) => {
    try {
       let payments = await Payment.findAll({
@@ -463,4 +508,6 @@ module.exports = {
    receivePaymentResult,
    refundPayment,
    createAutoCollectFeePayment,
+   getRevenue,
+   getDeposit
 };
