@@ -38,13 +38,25 @@ const register = async (req, res) => {
             where: { email: req.body.email },
          }))
       ) {
-         res.status(400).json({ message: "Tài khoản email này đã được sử dụng!" });
+         res.status(400).json({
+            message: "Tài khoản email này đã được sử dụng!",
+         });
+      } else {
+         let { token, otp } = await sendEmailOtp(req.body.email, info);
+         sendEmail(
+            req.body.email,
+            `[FPT-SEP] Mã xác nhận tài khoản`,
+            `Mã xác nhận tài khoản của bạn : ${otp}
+            Lưu ý : mã xác nhận sẽ hết hạn sau 5 phút.`
+         );
+         req.session.token = token;
+         req.session.save();
+         res.status(200).json({
+            message: "Đã gửi mã xác nhận tới email!",
+            otp: otp,
+         });
       }
-      let { token, otp } = await sendEmailOtp(req.body.email, info);
-      sendEmail(
-         req.body.email,
-         `[FPT-SEP] Mã xác ns nhận tài khoản của bạn : ${otp}`
-      );
+
       // decode password
       // const salt = genSaltSync(10);
       // info.password = hashSync(req.body.password, salt);
@@ -59,15 +71,11 @@ const register = async (req, res) => {
       //    const freelancer = await Freelancer.create({ status: "true" });
       //    account.setFreelancers(freelancer);
       // }
-      req.session.token = token;
-      res.status(200).json({
-         message: "Đã gửi mã xác nhận tới email!",
-         otp: otp,
-      });
+
       // console.log(account.dataValues);
    } catch (error) {
       console.error(error);
-      res.status(400).json({ message: error.toString() });
+      return res.status(400).json({ message: error.toString() });
    }
 };
 
@@ -76,10 +84,12 @@ const confirmRegister = async (req, res) => {
    try {
       let { otp, email } = req.body;
       let token = req.session.token;
-
+      console.log(token);
       verify(token, process.env.JWT_KEY, async (err, decoded) => {
          if (err) {
-            return res.status(400).json({ message: "Error with token" });
+            return res
+               .status(400)
+               .json({ message: "Error with token", content: err });
          } else {
             if (
                decoded.otp == otp &&
@@ -128,7 +138,7 @@ const getAllAccount = async (req, res) => {
    try {
       let accounts = await Account.findAll({
          where: {
-            role: { [Op.ne]: "admin" }
+            role: { [Op.ne]: "admin" },
          },
       });
       res.status(200).send(accounts);
@@ -262,7 +272,9 @@ const getFavoriteJobOfAccount = async (req, res) => {
       }
 
       if (limit && page && (limit <= 0 || page <= 0)) {
-         return res.status(400).json({ message: "Invalid limit or page number" });
+         return res
+            .status(400)
+            .json({ message: "Invalid limit or page number" });
       }
 
       let offset = (page - 1) * limit;

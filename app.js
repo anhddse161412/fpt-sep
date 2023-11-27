@@ -28,7 +28,11 @@ var app = express();
 
 app.use(cors());
 app.use((req, res, next) => {
-   res.setHeader("Access-Control-Allow-Origin", "http://localhost:3000");
+   res.setHeader(
+      "Access-Control-Allow-Origin",
+      "http://localhost:3000",
+      "https://fpt-sep.vercel.app"
+   );
    res.setHeader(
       "Access-Control-Allow-Methods",
       "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS,CONNECT,TRACE"
@@ -45,13 +49,25 @@ app.use((req, res, next) => {
    next();
 });
 
+app.use(
+   session({
+      secret: "mysecret",
+      resave: false,
+      saveUninitialized: true,
+      cookie: { path: "/", secure: false },
+   })
+);
+
+app.use(passport.initialize());
+app.use(passport.session());
+
 // socket
 const httpServer = createServer(app);
 const io = new Server(httpServer, {
    /* options */
    cors: {
       // url of connector here
-      origin: "http://localhost:3000",
+      origin: "https://fpt-sep.vercel.app",
    },
 });
 
@@ -106,18 +122,6 @@ io.on("connection", (socket) => {
 });
 
 httpServer.listen(3001);
-
-app.use(
-   session({
-      secret: "mysecret",
-      resave: false,
-      saveUninitialized: true,
-      cookie: { secure: false },
-   })
-);
-
-app.use(passport.initialize());
-app.use(passport.session());
 
 // swagger
 app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(swaggerFile));
