@@ -30,7 +30,15 @@ app.use(
    cors({ origin: ["http://localhost:3000", "https://fpt-sep.vercel.app"] })
 );
 app.use((req, res, next) => {
-   res.setHeader("Access-Control-Allow-Origin", "http://localhost:3000");
+   // res.setHeader("Access-Control-Allow-Origin", "http://localhost:3000");
+   const allowedOrigins = [
+      "http://localhost:3000",
+      "https://fpt-sep.vercel.app",
+   ];
+   const origin = req.headers.origin;
+   if (allowedOrigins.includes(origin)) {
+      res.setHeader("Access-Control-Allow-Origin", origin);
+   }
    res.setHeader(
       "Access-Control-Allow-Methods",
       "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS,CONNECT,TRACE"
