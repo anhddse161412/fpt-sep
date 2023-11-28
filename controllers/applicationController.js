@@ -70,6 +70,10 @@ const getAllApplication = async (req, res) => {
                ],
                attributes: ["id"],
             },
+            {
+               model: Job,
+               as: "jobs"
+            }
          ],
       });
       res.status(200).send(propsals);
