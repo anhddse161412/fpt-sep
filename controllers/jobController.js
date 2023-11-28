@@ -587,6 +587,7 @@ const getJobByClientId = async (req, res) => {
             clientId: req.params.clientId,
             status: { [Op.ne]: "delete" },
          },
+         order: [["createdAt", "DESC"]],
       });
 
       res.status(200).send(jobs);
