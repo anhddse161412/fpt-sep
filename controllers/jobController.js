@@ -19,6 +19,7 @@ const Skill = db.skills;
 const Appointment = db.appointments;
 const Freelancer = db.freelancers;
 const RecommendPoint = db.recommendPoints;
+const JobSubCategory = db.jobSubCategory;
 // main work
 
 // 1. create Job
@@ -210,10 +211,122 @@ const getJobById = async (req, res) => {
 
 const updateJob = async (req, res) => {
    try {
-      let job = await Job.update(req.body, {
+      await Job.update(req.body, {
          where: { id: req.params.jobID },
       });
-      res.status(200).send(job);
+
+      const job = await Job.findOne({
+         include: [
+            {
+               model: Skill,
+               as: "skills",
+               attributes: { include: ["name"] },
+            },
+            {
+               model: Category,
+               as: "subcategories",
+               attributes: { include: ["name"] },
+            }
+
+         ],
+         where: { id: req.params.jobID },
+      });
+
+      let newSkills = [];
+      let subCategoryList = [];
+
+      req.body.skill.forEach(item => {
+         if (item.value) {
+            newSkills.push(item.value)
+         } else {
+            newSkills.push(item)
+         }
+      });
+      req.body.subCategory.forEach(item => {
+         if (item.value) {
+            subCategoryList.push(item.value)
+         } else {
+            subCategoryList.push(item)
+         }
+      });
+
+      if (subCategoryList) {
+         const jobCategories = [];
+
+         job.subcategories.forEach(async item => {
+            jobCategories.push(item.name)
+         });
+
+         // old and new
+         let difference = jobCategories.filter(x => !subCategoryList.includes(x));
+         if (difference.length != 0) {
+            difference.forEach(async (item) => {
+               const subCategory = await Category.findOne({
+                  where: { name: item, parentId: { [Op.not]: null } },
+               });
+               await subCategory.removeJobs(job);
+            });
+         };
+
+         // new and old
+         difference = subCategoryList.filter(x => !jobCategories.includes(x));
+         if (difference.length != 0) {
+            difference.forEach(async (item) => {
+               const subCategory = await Category.findOne({
+                  where: { name: item, parentId: { [Op.not]: null } },
+               });
+               await subCategory.addJobs(job);
+            });
+         };
+      };
+
+      if (newSkills) {
+         const jobSkills = [];
+
+         job.skills.forEach(async jobSkill => {
+            jobSkills.push(jobSkill.name)
+         });
+
+
+         // difference between old skill and new skill
+         let difference = jobSkills.filter(x => !newSkills.includes(x));
+         if (difference.length != 0) {
+            difference.forEach(async item => {
+               const skill = await Skill.findOne({
+                  where: {
+                     name: {
+                        [db.Op.like]: `%${item}`,
+                     }
+                  }
+               });
+               await skill.removeJobs(job);
+            })
+         }
+
+         // difference between new skill and old skill
+         difference = newSkills.filter(x => !jobSkills.includes(x));
+         if (difference.length != 0) {
+            difference.forEach(async item => {
+               let skill = await Skill.findOne({
+                  where: {
+                     name: {
+                        [db.Op.like]: `%${item}`,
+                     }
+                  }
+               });
+               if (!skill) {
+                  skill = await Skill.create({
+                     name: item.charAt(0).toUpperCase() + item.slice(1),
+                  });
+                  skill.addJobs(job);
+               } else {
+                  skill.addJobs(job);
+               }
+            });
+         }
+      }
+
+      res.status(200).send("Cập nhật thành công!");
    } catch (error) {
       console.error(error);
       res.status(400).json({ message: error.toString() });
@@ -250,7 +363,7 @@ const addFavoriteJob = async (req, res) => {
       });
       job.addAccount(account);
 
-      res.status(200).send("job favorite added");
+      res.status(200).send("Đã thêm vào danh sách ưu thích!");
    } catch (error) {
       console.error(error);
       res.status(400).json({ message: error.toString() });
