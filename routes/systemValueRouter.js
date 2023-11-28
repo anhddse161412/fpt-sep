@@ -8,5 +8,5 @@ const router = require("express").Router();
 router
    .route("/fee")
    .get(systemValueController.getCommissionFee)
-   .post(systemValueController.updateCommissionFee);
+   .put(systemValueController.updateCommissionFee);
 module.exports = router;
