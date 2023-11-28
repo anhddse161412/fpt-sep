@@ -11,10 +11,27 @@ const FeePaymentDeadline = db.feePaymentDeadlines;
 const Application = db.applications;
 const Job = db.jobs;
 const SystemValue = db.systemValues;
+const Account = db.accounts;
 
 const getAllPayment = async (req, res) => {
    try {
-      let payments = await Payment.findAll({ order: [["createdAt", "DESC"]] });
+      let payments = await Payment.findAll({
+         include: [
+            {
+               model: Client,
+               as: "clients",
+               attributes: ["id"],
+               include: [
+                  {
+                     model: Account,
+                     as: "accounts",
+                     attributes: ["id", "name", "email"],
+                  }
+               ],
+            }
+         ],
+         order: [["createdAt", "DESC"]]
+      });
       res.status(200).send(payments);
    } catch (error) {
       console.error(error);
@@ -24,11 +41,26 @@ const getAllPayment = async (req, res) => {
 
 const getRevenue = async (req, res) => {
    try {
+      let totalRevenue = 0;
       let { count, rows: payments } = await Payment.findAndCountAll({
+         include: [
+            {
+               model: Client,
+               as: "clients",
+               attributes: ["id"],
+               include: [
+                  {
+                     model: Account,
+                     as: "accounts",
+                     attributes: ["id", "name", "email"],
+                  }
+               ],
+            }
+         ],
          where: { type: "-" },
          order: [["createdAt", "DESC"]]
       });
-      let totalRevenue = 0;
+
       payments.forEach(item => {
          item.setDataValue("type", "+")
          totalRevenue = totalRevenue + item.amount;
@@ -47,11 +79,26 @@ const getRevenue = async (req, res) => {
 
 const getDeposit = async (req, res) => {
    try {
+      let totalDeposit = 0;
       let { count, rows: payments } = await Payment.findAndCountAll({
+         include: [
+            {
+               model: Client,
+               as: "clients",
+               attributes: ["id"],
+               include: [
+                  {
+                     model: Account,
+                     as: "accounts",
+                     attributes: ["id", "name", "email"],
+                  }
+               ],
+            }
+         ],
          where: { type: "+" },
          order: [["createdAt", "DESC"]]
       });
-      let totalDeposit = 0;
+
       payments.forEach(item => {
          totalDeposit = totalDeposit + item.amount;
       })
