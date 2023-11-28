@@ -26,19 +26,18 @@ const swaggerFile = require("./swagger_output.json");
 const connection = require("./config/db");
 var app = express();
 
-app.use(
-   cors({ origin: ["http://localhost:3000", "https://fpt-sep.vercel.app"] })
-);
+app.use(cors());
 app.use((req, res, next) => {
    // res.setHeader("Access-Control-Allow-Origin", "http://localhost:3000");
-   const allowedOrigins = [
-      "http://localhost:3000",
-      "https://fpt-sep.vercel.app",
-   ];
-   const origin = req.headers.origin;
-   if (allowedOrigins.includes(origin)) {
-      res.setHeader("Access-Control-Allow-Origin", origin);
-   }
+   // const allowedOrigins = [
+   //    "http://localhost:3000",
+   //    "https://fpt-sep.vercel.app",
+   // ];
+   // const origin = req.headers.origin;
+   // if (allowedOrigins.includes(origin)) {
+   //    res.setHeader("Access-Control-Allow-Origin", origin);
+   // }
+   res.setHeader("Access-Control-Allow-Origin", "*");
    res.setHeader(
       "Access-Control-Allow-Methods",
       "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS,CONNECT,TRACE"
@@ -72,8 +71,7 @@ const httpServer = createServer(app);
 const io = new Server(httpServer, {
    /* options */
    cors: {
-      // url of connector here
-      origin: ["http://localhost:3000", "https://fpt-sep.vercel.app"],
+      origin: "*",
    },
 });
 
