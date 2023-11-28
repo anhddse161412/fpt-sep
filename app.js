@@ -26,7 +26,9 @@ const swaggerFile = require("./swagger_output.json");
 const connection = require("./config/db");
 var app = express();
 
-app.use(cors());
+app.use(
+   cors({ origin: ["http://localhost:3000", "https://fpt-sep.vercel.app"] })
+);
 app.use((req, res, next) => {
    res.setHeader("Access-Control-Allow-Origin", "http://localhost:3000");
    res.setHeader(
@@ -63,7 +65,7 @@ const io = new Server(httpServer, {
    /* options */
    cors: {
       // url of connector here
-      origin: "http://localhost:3000",
+      origin: ["http://localhost:3000", "https://fpt-sep.vercel.app"],
    },
 });
 
