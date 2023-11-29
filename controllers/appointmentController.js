@@ -209,6 +209,17 @@ const getAppointmentByClientId = async (req, res) => {
                ],
                attributes: ["id"],
             },
+            {
+               model: Application,
+               as: "applications",
+               include: [
+                  {
+                     model: Job,
+                     as: "jobs",
+                     attributes: ["title"],
+                  },
+               ],
+            },
          ],
          where: { clientId: req.params.clientId },
       });
