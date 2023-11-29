@@ -26,11 +26,11 @@ const getAllPayment = async (req, res) => {
                      model: Account,
                      as: "accounts",
                      attributes: ["id", "name", "email"],
-                  }
+                  },
                ],
-            }
+            },
          ],
-         order: [["createdAt", "DESC"]]
+         order: [["createdAt", "DESC"]],
       });
       res.status(200).send(payments);
    } catch (error) {
@@ -53,29 +53,29 @@ const getRevenue = async (req, res) => {
                      model: Account,
                      as: "accounts",
                      attributes: ["id", "name", "email"],
-                  }
+                  },
                ],
-            }
+            },
          ],
          where: { type: "-" },
-         order: [["createdAt", "DESC"]]
+         order: [["createdAt", "DESC"]],
       });
 
-      payments.forEach(item => {
-         item.setDataValue("type", "+")
+      payments.forEach((item) => {
+         item.setDataValue("type", "+");
          totalRevenue = totalRevenue + item.amount;
-      })
+      });
 
       res.status(200).json({
          payments,
          total: count,
-         revenue: totalRevenue
+         revenue: totalRevenue,
       });
    } catch (error) {
       console.error(error);
       res.status(400).json({ message: error.toString() });
    }
-}
+};
 
 const getDeposit = async (req, res) => {
    try {
@@ -91,28 +91,28 @@ const getDeposit = async (req, res) => {
                      model: Account,
                      as: "accounts",
                      attributes: ["id", "name", "email"],
-                  }
+                  },
                ],
-            }
+            },
          ],
          where: { type: "+" },
-         order: [["createdAt", "DESC"]]
+         order: [["createdAt", "DESC"]],
       });
 
-      payments.forEach(item => {
+      payments.forEach((item) => {
          totalDeposit = totalDeposit + item.amount;
-      })
+      });
 
       res.status(200).json({
          payments,
          total: count,
-         deposit: totalDeposit
+         deposit: totalDeposit,
       });
    } catch (error) {
       console.error(error);
       res.status(400).json({ message: error.toString() });
    }
-}
+};
 
 const getPaymentByClientId = async (req, res) => {
    try {
@@ -341,7 +341,7 @@ const receivePaymentResult = async (req, res) => {
                   const queryParameters = Object.keys(vnp_Params)
                      .map((key) => `${key}=${vnp_Params[key]}`)
                      .join("&");
-                  const redirectURL = `http://localhost:3000/client/billing?${queryParameters}`;
+                  const redirectURL = `${process.env.FE_SERVER}?${queryParameters}`;
                   res.redirect(redirectURL);
                   // res.status(200).json({
                   //   RspCode: '00',
@@ -357,7 +357,7 @@ const receivePaymentResult = async (req, res) => {
                   //that bai
                   //paymentStatus = '2'
                   // Ở đây cập nhật trạng thái giao dịch thanh toán thất bại vào CSDL của bạn
-                  res.redirect("http://localhost:3000/client/billing");
+                  res.redirect(`${process.env.FE_SERVER}`);
                   res.status(200).json({
                      RspCode: "24",
                      Message:
@@ -556,5 +556,5 @@ module.exports = {
    refundPayment,
    createAutoCollectFeePayment,
    getRevenue,
-   getDeposit
+   getDeposit,
 };
