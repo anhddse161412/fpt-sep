@@ -53,7 +53,7 @@ db.feePaymentDeadlines = require("./feePaymentDeadlineModel")(
 );
 db.systemValues = require("./systemValueModel")(sequelize, DataTypes);
 // many many model
-db.jobSubCategory = require("./jobSubCategoryModel")(sequelize, DataTypes);
+db.jobCategory = require("./jobCategoryModel")(sequelize, DataTypes);
 db.favorite = require("./favoriteModel")(sequelize, DataTypes);
 db.jobSkill = require("./jobSkillModel")(sequelize, DataTypes);
 db.freelancerSkill = require("./freelancerSkillModel")(sequelize, DataTypes);
@@ -286,11 +286,11 @@ db.accounts.belongsToMany(db.jobs, { through: db.favorite });
 
 db.jobs.belongsToMany(db.categories, {
    as: "subcategories",
-   through: db.jobSubCategory,
+   through: db.jobCategory,
 });
 db.categories.belongsToMany(db.jobs, {
    as: "jobs",
-   through: db.jobSubCategory,
+   through: db.jobCategory,
 });
 
 db.jobs.belongsToMany(db.skills, { through: db.jobSkill });
