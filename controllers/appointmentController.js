@@ -193,41 +193,54 @@ const getAppointmentById = async (req, res) => {
 };
 
 const getAppointmentByClientId = async (req, res) => {
-   try {
-      let appointment = await Appointment.findAll({
-         include: [
-            {
-               model: Client,
-               as: "clients",
+  try {
+    let appointment = await Appointment.findAll({
+      include: [
+        {
+          model: Client,
+          as: 'clients',
 
-               include: [
-                  {
-                     model: Account,
-                     as: "accounts",
-                     attributes: ["id", "name", "email"],
-                  },
-               ],
-               attributes: ["id"],
+          include: [
+            {
+              model: Account,
+              as: 'accounts',
+              attributes: ['id', 'name', 'email'],
+            },
+          ],
+          attributes: ['id'],
+        },
+        {
+          model: Application,
+          as: 'applications',
+          include: [
+            {
+              model: Job,
+              as: 'jobs',
+              attributes: ['title'],
             },
             {
-               model: Application,
-               as: "applications",
-               include: [
-                  {
-                     model: Job,
-                     as: "jobs",
-                     attributes: ["title"],
-                  },
-               ],
+              model: Freelancer,
+              as: 'freelancers',
+
+              include: [
+                {
+                  model: Account,
+                  as: 'accounts',
+                  attributes: ['id', 'name', 'email'],
+                },
+              ],
+              attributes: ['id'],
             },
-         ],
-         where: { clientId: req.params.clientId },
-      });
-      res.status(200).send(appointment);
-   } catch (error) {
-      console.error(error);
-      res.status(400).json({ message: error.toString() });
-   }
+          ],
+        },
+      ],
+      where: { clientId: req.params.clientId },
+    });
+    res.status(200).send(appointment);
+  } catch (error) {
+    console.error(error);
+    res.status(400).json({ message: error.toString() });
+  }
 };
 
 const getAppointmentByFreelancerId = async (req, res) => {
