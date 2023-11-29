@@ -151,6 +151,11 @@ const getAppointmentById = async (req, res) => {
                as: "applications",
                include: [
                   {
+                     model: Job,
+                     as: "jobs",
+                     attributes: ["title"],
+                  },
+                  {
                      model: Freelancer,
                      as: "freelancers",
 
@@ -222,6 +227,11 @@ const getAppointmentByFreelancerId = async (req, res) => {
                model: Application,
                as: "applications",
                include: [
+                  {
+                     model: Job,
+                     as: "jobs",
+                     attributes: ["title"],
+                  },
                   {
                      model: Freelancer,
                      as: "freelancers",
