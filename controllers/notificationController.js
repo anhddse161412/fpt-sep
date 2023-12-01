@@ -63,7 +63,9 @@ const createNotificationInfo = async (
 
 const getAllNotification = async (req, res) => {
    try {
-      const notifications = await Notification.findAll();
+      const notifications = await Notification.findAll({
+         order: [["updatedAt", "ASC"]],
+      });
       res.status(200).send(notifications);
    } catch (error) {
       console.error(error);
@@ -88,10 +90,12 @@ const getAllNotificationByAccountId = async (req, res) => {
       const { count, rows: unreadNotifications } =
          await Notification.findAndCountAll({
             where: { accountId: req.params.accountId, status: "unread" },
+            order: [["updatedAt", "ASC"]],
          });
 
       const { rows: notifications } = await Notification.findAndCountAll({
          where: { accountId: req.params.accountId },
+         order: [["updatedAt", "ASC"]],
       });
       res.status(200).send({
          unreadNotifications: count,
