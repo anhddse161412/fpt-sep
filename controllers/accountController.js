@@ -508,43 +508,43 @@ const searchAccountAndJob = async (req, res) => {
       //       resultList.push({ id: item.id, name: item.name, tag: item.role });
       //    });
       // });
-      await Freelancer.findAll({
-         include: [
-            {
-               model: Account,
-               as: "accounts",
-               where: { name: { [db.Op.like]: `%${searchInput}%` }, status: 1 },
-            },
-         ],
-      }).then((res) => {
-         res.forEach(async (item) => {
-            resultList.push({
-               id: item.accounts.id,
-               name: item.accounts.name,
-               tag: "freelancer",
-               referId: item.id,
-            });
-         });
-      });
+      // await Freelancer.findAll({
+      //    include: [
+      //       {
+      //          model: Account,
+      //          as: "accounts",
+      //          where: { name: { [db.Op.like]: `%${searchInput}%` }, status: 1 },
+      //       },
+      //    ],
+      // }).then((res) => {
+      //    res.forEach(async (item) => {
+      //       resultList.push({
+      //          id: item.accounts.id,
+      //          name: item.accounts.name,
+      //          tag: "freelancer",
+      //          referId: item.id,
+      //       });
+      //    });
+      // });
 
-      await Client.findAll({
-         include: [
-            {
-               model: Account,
-               as: "accounts",
-               where: { name: { [db.Op.like]: `%${searchInput}%` }, status: 1 },
-            },
-         ],
-      }).then((res) => {
-         res.forEach(async (item) => {
-            resultList.push({
-               id: item.accounts.id,
-               name: item.accounts.name,
-               tag: "client",
-               referId: item.id,
-            });
-         });
-      });
+      // await Client.findAll({
+      //    include: [
+      //       {
+      //          model: Account,
+      //          as: "accounts",
+      //          where: { name: { [db.Op.like]: `%${searchInput}%` }, status: 1 },
+      //       },
+      //    ],
+      // }).then((res) => {
+      //    res.forEach(async (item) => {
+      //       resultList.push({
+      //          id: item.accounts.id,
+      //          name: item.accounts.name,
+      //          tag: "client",
+      //          referId: item.id,
+      //       });
+      //    });
+      // });
 
       await Job.findAll({
          where: { title: { [db.Op.like]: `%${searchInput}%` }, status: "open" },
