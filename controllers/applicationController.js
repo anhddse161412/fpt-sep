@@ -20,6 +20,7 @@ const Job = db.jobs;
 const Client = db.clients;
 const RecommendPoint = db.recommendPoints;
 const SystemValue = db.systemValues;
+const Appointment = db.appointments;
 // main work
 
 // 1. create application
@@ -190,6 +191,12 @@ const getApplicationByJobId = async (req, res) => {
                      as: "applications",
                      attributes: { exclude: ["createdAt", "updatedAt"] },
                      where: { jobId: req.params.jobId },
+                     include: [
+                        {
+                           model: Appointment,
+                           as: "appointments",
+                        },
+                     ],
                   },
                ],
             },
@@ -345,6 +352,10 @@ const getApplicationByClientId = async (req, res) => {
                   },
                ],
                attributes: ["id"],
+            },
+            {
+               model: Appointment,
+               as: "appointments",
             },
          ],
          // where: { jobId: { [Op.in]: jobsId } },
