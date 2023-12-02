@@ -171,7 +171,7 @@ db.appointments.belongsTo(db.clients, {
 });
 
 // applications - appointment
-db.applications.hasMany(db.appointments, {
+db.applications.hasOne(db.appointments, {
    foreignKey: "applicationId",
    as: "appointments",
 });
