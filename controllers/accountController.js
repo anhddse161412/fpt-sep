@@ -350,10 +350,10 @@ const forgorPassword = async (req, res) => {
                `Đây là mã xác nhận đặt lại mật khẩu của bạn : ${otp}
                .Mã xác nhận có hiệu lực trong vòng 5 phút`
             );
-            req.session.token = token;
             res.status(200).send({
                message: "Đã gửi mail thành công",
                otp: otp,
+               token: token,
             });
          }
       );
@@ -471,8 +471,8 @@ const sendEmailOtp = async (email, registerInfo) => {
 
 const verifyEmailOtp = async (req, res) => {
    try {
-      let { email, otp } = req.body;
-      let token = req.session.token;
+      let { email, otp, token } = req.body;
+
       console.log(token);
       let message;
       let status;
