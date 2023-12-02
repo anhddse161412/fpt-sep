@@ -49,11 +49,10 @@ const register = async (req, res) => {
             `Mã xác nhận tài khoản của bạn : ${otp}
             Lưu ý : mã xác nhận sẽ hết hạn sau 5 phút.`
          );
-         req.session.token = token;
-         req.session.save();
          res.status(200).json({
             message: "Đã gửi mã xác nhận tới email!",
             otp: otp,
+            token: token,
          });
       }
 
@@ -82,8 +81,8 @@ const register = async (req, res) => {
 // complete register
 const confirmRegister = async (req, res) => {
    try {
-      let { otp, email } = req.body;
-      let token = req.session.token;
+      let { otp, email, token } = req.body;
+
       console.log(token);
       verify(token, process.env.JWT_KEY, async (err, decoded) => {
          if (err) {
