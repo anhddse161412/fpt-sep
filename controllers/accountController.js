@@ -82,47 +82,52 @@ const register = async (req, res) => {
 const confirmRegister = async (req, res) => {
    try {
       let { otp, email, token } = req.body;
-
+      let message;
+      let status;
       console.log(token);
       verify(token, process.env.JWT_KEY, async (err, decoded) => {
          if (err) {
-            return res
-               .status(400)
-               .json({ message: "Error with token", content: err });
+            return res.status(400).json({ message: "Error with token!" });
          } else {
-            if (
-               decoded.otp == otp &&
-               decoded.email == email &&
-               decoded.registerInfo != null
-            ) {
-               let info = {
-                  name: decoded.registerInfo.name,
-                  email: decoded.registerInfo.email,
-                  password: decoded.registerInfo.password,
-                  role: decoded.registerInfo.role,
-                  status: true,
-               };
-               const salt = genSaltSync(10);
-               info.password = hashSync(info.password, salt);
+            console.log(decoded);
+            if (decoded.otp == otp && decoded.email == email) {
+               if (
+                  decoded.otp == otp &&
+                  decoded.email == email &&
+                  decoded.registerInfo != null
+               ) {
+                  let info = {
+                     name: decoded.registerInfo.name,
+                     email: decoded.registerInfo.email,
+                     password: decoded.registerInfo.password,
+                     role: decoded.registerInfo.role,
+                     status: true,
+                  };
+                  const salt = genSaltSync(10);
+                  info.password = hashSync(info.password, salt);
 
-               // create account
-               const account = await Account.create(info);
+                  // create account
+                  const account = await Account.create(info);
 
-               if (info.role === "client") {
-                  const client = await Client.create({
-                     status: "true",
-                     currency: 0,
-                  });
-                  account.setClients(client);
-               } else if (info.role === "freelancer") {
-                  const freelancer = await Freelancer.create({
-                     status: "true",
-                  });
-                  account.setFreelancers(freelancer);
+                  if (info.role === "client") {
+                     const client = await Client.create({
+                        status: "true",
+                        currency: 0,
+                     });
+                     account.setClients(client);
+                  } else if (info.role === "freelancer") {
+                     const freelancer = await Freelancer.create({
+                        status: "true",
+                     });
+                     account.setFreelancers(freelancer);
+                  }
+                  res.status(200).json({ message: "Tài khoản đã được tạo!" });
+                  console.log(account.dataValues);
                }
-               res.status(200).json({ message: "Tài khoản đã được tạo!" });
-               console.log(account.dataValues);
             } else {
+               message = "Xác thực thất bại. OTP và Email không trùng khớp";
+               status = false;
+               res.send({ status: status, message: message });
             }
          }
       });
