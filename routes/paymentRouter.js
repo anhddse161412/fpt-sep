@@ -13,6 +13,10 @@ router.route("/client/:clientId").get(paymentController.getPaymentByClientId);
 
 router.route("/vnpay").post(paymentController.createVnpayUrl);
 
+router.route("/momo").post(paymentController.createMomoUrl);
+
+router.route("/momo_return").get(paymentController.receiveMomoResult);
+
 router.route("/vnpay_test").get((req, res) => {
    let clientId = req.session.clientId;
    return res.send({ clientId });
