@@ -6,7 +6,7 @@ module.exports = (sequelize, DataTypes) => {
          defaultValue: 0,
       },
       type: {
-         type: DataTypes.STRING(100),
+         type: DataTypes.STRING(20),
          allowNull: true,
          defaultValue: "forFreelancers",
       },

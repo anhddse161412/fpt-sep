@@ -5,7 +5,7 @@ module.exports = (sequelize, DataTypes) => {
          allowNull: false,
       },
       taxCode: {
-         type: DataTypes.STRING(100),
+         type: DataTypes.STRING(15),
       },
       companyWebsite: {
          type: DataTypes.STRING(100),
