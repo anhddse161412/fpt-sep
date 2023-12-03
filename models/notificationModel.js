@@ -1,5 +1,5 @@
 module.exports = (sequelize, DataTypes) => {
-   const Notification = sequelize.define("notification", {
+   const Notification = sequelize.define('notification', {
       name: {
          type: DataTypes.STRING(100),
          allowNull: false,
@@ -9,7 +9,11 @@ module.exports = (sequelize, DataTypes) => {
          allowNull: true,
       },
       status: {
-         type: DataTypes.STRING(10),
+         type: DataTypes.STRING(20),
+         allowNull: false,
+      },
+      context: {
+         type: DataTypes.STRING(20),
          allowNull: false,
       },
    });
