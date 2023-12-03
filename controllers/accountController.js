@@ -225,7 +225,7 @@ const loginGoogle = async (req, res) => {
          const salt = genSaltSync(10);
          let info = {
             name: req.body.name,
-            image: req.body.imageUrl,
+            image: req.body.image,
             email: req.body.email,
             password: hashSync(req.body.googleId, salt),
             currency: 0,
