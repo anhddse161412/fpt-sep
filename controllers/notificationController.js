@@ -31,34 +31,36 @@ const createNotification = async (req, res) => {
 };
 
 const createNotificationInfo = async (
-   accountId,
-   notificationName,
-   notificationDescription
+  accountId,
+  notificationName,
+  notificationDescription,
+  notificationContext
 ) => {
-   try {
-      let info = {
-         name: notificationName,
-         description: notificationDescription,
-         status: "unread",
-      };
+  try {
+    let info = {
+      name: notificationName,
+      description: notificationDescription,
+      context: notificationContext,
+      status: 'unread',
+    };
 
-      const notification = await Notification.create(info);
-      const account = await Account.findOne({
-         where: { id: accountId },
-      });
+    const notification = await Notification.create(info);
+    const account = await Account.findOne({
+      where: { id: accountId },
+    });
 
-      if (account) {
-         account.addNotification(notification);
-      }
-      console.log(
-         `Tao thanh cong thong bao ${notificationName} cho User ${accountId}`
-      );
-      console.log(notification.dataValues);
-      return notification.dataValues;
-   } catch (error) {
-      console.error(error);
-      res.status(400).json({ message: error.toString() });
-   }
+    if (account) {
+      account.addNotification(notification);
+    }
+    console.log(
+      `Tao thanh cong thong bao ${notificationName} cho User ${accountId}`
+    );
+    console.log(notification.dataValues);
+    return notification.dataValues;
+  } catch (error) {
+    console.error(error);
+    res.status(400).json({ message: error.toString() });
+  }
 };
 
 const getAllNotification = async (req, res) => {

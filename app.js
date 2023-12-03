@@ -96,33 +96,34 @@ const getUser = (accountId) => {
    return onlineUsers.find((user) => user.accountId === accountId);
 };
 
-io.on("connection", (socket) => {
-   console.log(`user id ${socket.id} connected`);
+io.on('connection', (socket) => {
+  console.log(`user id ${socket.id} connected`);
 
-   socket.on("newUser", (accountId) => {
-      addNewUser(accountId, socket.id);
-   });
+  socket.on('newUser', (accountId) => {
+    addNewUser(accountId, socket.id);
+  });
 
-   socket.on("sendNotification", async (data, accountId) => {
-      try {
-         let notification = await notificaitonController.createNotificationInfo(
-            accountId,
-            data.notificationName,
-            data.notificationDescription
-         );
-         const account = getUser(accountId);
-         io.to(account.socketId).emit("getNotification", {
-            notification: notification,
-         });
-      } catch (error) {
-         console.error(error);
-      }
-   });
+  socket.on('sendNotification', async (data, accountId) => {
+    try {
+      let notification = await notificaitonController.createNotificationInfo(
+        accountId,
+        data.notificationName,
+        data.notificationDescription,
+        data.context
+      );
+      const account = getUser(accountId);
+      io.to(account.socketId).emit('getNotification', {
+        notification: notification,
+      });
+    } catch (error) {
+      console.error(error);
+    }
+  });
 
-   socket.on("disconnect", () => {
-      console.log(`user id ${socket.id} disconnected`);
-      removeUser(socket.id);
-   });
+  socket.on('disconnect', () => {
+    console.log(`user id ${socket.id} disconnected`);
+    removeUser(socket.id);
+  });
 });
 
 httpServer.listen(3001);
