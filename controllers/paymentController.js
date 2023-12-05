@@ -656,8 +656,13 @@ const createMomoUrl = async (req, res) => {
 };
 
 const receiveMomoResult = async (req, res) => {
-   let query = req.query;
-   res.send({ query: query });
+   try {
+      const redirectURL = `${process.env.FE_SERVER}?${queryParameters}`;
+      res.redirect(redirectURL);
+   } catch (error) {
+      console.error(error);
+      res.status(400).json({ message: error.toString() });
+   }
 };
 
 // MOMO

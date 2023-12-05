@@ -20,12 +20,17 @@ const Appointment = db.appointments;
 const Freelancer = db.freelancers;
 const RecommendPoint = db.recommendPoints;
 const JobSkill = db.jobSkill;
+const SystemValue = db.systemValues;
 // main work
 
 // 1. create Job
 
 const createJob = async (req, res) => {
    try {
+      let systemValue = await SystemValue.findOne({
+         where: { name: "postingFee" },
+      });
+      let postingFee = systemValue.value;
       let info = {
          title: req.body.title,
          description: req.body.description,
@@ -40,7 +45,9 @@ const createJob = async (req, res) => {
       let skillList = req.body.skill;
 
       const job = await Job.create(info);
-
+      const client = await Client.findOne({
+         where: { id: info.clientId },
+      });
       if (subCategoryList) {
          subCategoryList.forEach(async (item) => {
             const subCategory = await Category.findOne({
@@ -59,18 +66,36 @@ const createJob = async (req, res) => {
                await JobSkill.create({
                   jobId: job.id,
                   level: item.level,
-                  skillId: skill.id
-               })
+                  skillId: skill.id,
+               });
             } else {
                await JobSkill.create({
                   jobId: job.id,
                   level: item.level,
-                  skillId: skill.id
-               })
+                  skillId: skill.id,
+               });
             }
          });
       }
+      if (parseInt(client.currency) >= postingFee) {
+         let newCurrencyValue = client.currency - postingFee;
+         client.setDataValue("currency", newCurrencyValue);
+         client.save();
 
+         let info = {
+            amount: approveFee,
+            name: "Thanh toán tự động",
+            description: `Thanh toán tự động cho công việc "${info.title}"`,
+            status: true,
+            type: "-",
+            clientId: `${info.clientId}`,
+         };
+         await paymentController.createAutoCollectFeePayment(info);
+         message =
+            "Đã thanh toán tự động cho việc đăng bài" +
+            `"${info.title}": -${postingFee}VNĐ` +
+            ". Vui lòng kiểu tra số dư toàn khoản trên website. ";
+      }
       res.status(200).send("Tạo Công việc thành công!");
    } catch (error) {
       console.error(error);
@@ -234,8 +259,7 @@ const updateJob = async (req, res) => {
                model: Category,
                as: "subcategories",
                attributes: { include: ["name"] },
-            }
-
+            },
          ],
          where: { id: req.params.jobID },
       });
@@ -243,23 +267,25 @@ const updateJob = async (req, res) => {
       let newSkills = req.body.skill;
       let subCategoryList = [];
 
-      req.body.subCategory.forEach(item => {
+      req.body.subCategory.forEach((item) => {
          if (item.value) {
-            subCategoryList.push(item.value)
+            subCategoryList.push(item.value);
          } else {
-            subCategoryList.push(item)
+            subCategoryList.push(item);
          }
       });
 
       if (subCategoryList) {
          const jobCategories = [];
 
-         job.subcategories.forEach(async item => {
-            jobCategories.push(item.name)
+         job.subcategories.forEach(async (item) => {
+            jobCategories.push(item.name);
          });
 
          // old and new
-         let difference = jobCategories.filter(x => !subCategoryList.includes(x));
+         let difference = jobCategories.filter(
+            (x) => !subCategoryList.includes(x)
+         );
          if (difference.length != 0) {
             difference.forEach(async (item) => {
                const subCategory = await Category.findOne({
@@ -267,10 +293,10 @@ const updateJob = async (req, res) => {
                });
                await subCategory.removeJobs(job);
             });
-         };
+         }
 
          // new and old
-         difference = subCategoryList.filter(x => !jobCategories.includes(x));
+         difference = subCategoryList.filter((x) => !jobCategories.includes(x));
          if (difference.length != 0) {
             difference.forEach(async (item) => {
                const subCategory = await Category.findOne({
@@ -278,19 +304,19 @@ const updateJob = async (req, res) => {
                });
                await subCategory.addJobs(job);
             });
-         };
-      };
+         }
+      }
 
       if (newSkills.length > 0) {
          let jobSkills = [];
 
-         job.skills.forEach(async jobSkill => {
+         job.skills.forEach(async (jobSkill) => {
             jobSkills.push(jobSkill);
          });
 
          if (jobSkills.length > 0) {
             jobSkills.forEach(async (oldSkill, index) => {
-               newSkills.forEach(async newSkill => {
+               newSkills.forEach(async (newSkill) => {
                   if (newSkill.name == oldSkill.name) {
                      jobSkills.splice(index, 1);
                      const jobSkill = await JobSkill.findOne({
@@ -301,65 +327,68 @@ const updateJob = async (req, res) => {
                      });
                      jobSkill.setDataValue("level", newSkill.level);
                      jobSkill.save();
-                  }
-                  else {
+                  } else {
                      let skill = await Skill.findOne({
                         where: {
                            name: {
                               [db.Op.like]: `%${newSkill.name}`,
-                           }
-                        }
+                           },
+                        },
                      });
                      if (!skill) {
                         skill = await Skill.create({
-                           name: newSkill.name.charAt(0).toUpperCase() + newSkill.name.slice(1),
+                           name:
+                              newSkill.name.charAt(0).toUpperCase() +
+                              newSkill.name.slice(1),
                         });
                         await JobSkill.create({
                            jobId: job.id,
                            level: newSkill.level,
-                           skillId: skill.id
-                        })
+                           skillId: skill.id,
+                        });
                      } else {
                         await JobSkill.create({
                            jobId: job.id,
                            level: newSkill.level,
-                           skillId: skill.id
-                        })
+                           skillId: skill.id,
+                        });
                      }
                   }
                });
             });
-            jobSkills.forEach(async oldSkill => {
+            jobSkills.forEach(async (oldSkill) => {
                await JobSkill.destroy({
                   where: {
-                     jobSkillId: oldSkill.jobskill.jobSkillId
+                     jobSkillId: oldSkill.jobskill.jobSkillId,
                   },
-               })
-            })
+               });
+            });
          } else {
-            newSkills.forEach(async newSkill => {
+            newSkills.forEach(async (newSkill) => {
                let skill = await Skill.findOne({
                   where: {
                      name: {
                         [db.Op.like]: `%${newSkill.name}`,
-                     }
-                  }
+                     },
+                  },
                });
                if (!skill) {
                   skill = await Skill.create({
-                     name: newSkill.name.charAt(0).toUpperCase() + newSkill.name.slice(1),
+                     name:
+                        newSkill.name.charAt(0).toUpperCase() +
+                        newSkill.name.slice(1),
                   });
                   await JobSkill.create({
                      jobId: job.id,
                      level: newSkill.level,
-                     skillId: skill.id
-                  })
+                     skillId: skill.id,
+                  });
                } else {
                   await JobSkill.create({
                      jobId: job.id,
                      level: newSkill.level,
-                     skillId: skill.id
-                  })
+                     skillId: skill.id,
+                  });
                }
             });
          }
@@ -368,7 +397,7 @@ const updateJob = async (req, res) => {
             where: {
                jobId: job.id,
             },
-         })
+         });
       }
 
       res.status(200).send("Cập nhật thành công!");

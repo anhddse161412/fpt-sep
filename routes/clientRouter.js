@@ -9,6 +9,8 @@ router.route("/").get(clientController.getAllClient);
 
 router.route("/:clientName").get(clientController.getClientByName);
 
+router.route("/check_currency").post(clientController.checkCurrency);
+
 router
    .route("/profile/:accountId")
    .get(clientController.getClientById)

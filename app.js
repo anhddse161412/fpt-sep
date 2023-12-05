@@ -96,34 +96,34 @@ const getUser = (accountId) => {
    return onlineUsers.find((user) => user.accountId === accountId);
 };
 
-io.on('connection', (socket) => {
-  console.log(`user id ${socket.id} connected`);
+io.on("connection", (socket) => {
+   console.log(`user id ${socket.id} connected`);
 
-  socket.on('newUser', (accountId) => {
-    addNewUser(accountId, socket.id);
-  });
+   socket.on("newUser", (accountId) => {
+      addNewUser(accountId, socket.id);
+   });
 
-  socket.on('sendNotification', async (data, accountId) => {
-    try {
-      let notification = await notificaitonController.createNotificationInfo(
-        accountId,
-        data.notificationName,
-        data.notificationDescription,
-        data.context
-      );
-      const account = getUser(accountId);
-      io.to(account.socketId).emit('getNotification', {
-        notification: notification,
-      });
-    } catch (error) {
-      console.error(error);
-    }
-  });
+   socket.on("sendNotification", async (data, accountId) => {
+      try {
+         let notification = await notificaitonController.createNotificationInfo(
+            accountId,
+            data.notificationName,
+            data.notificationDescription,
+            data.context
+         );
+         const account = getUser(accountId);
+         io.to(account.socketId).emit("getNotification", {
+            notification: notification,
+         });
+      } catch (error) {
+         console.error(error);
+      }
+   });
 
-  socket.on('disconnect', () => {
-    console.log(`user id ${socket.id} disconnected`);
-    removeUser(socket.id);
-  });
+   socket.on("disconnect", () => {
+      console.log(`user id ${socket.id} disconnected`);
+      removeUser(socket.id);
+   });
 });
 
 httpServer.listen(3001);
@@ -134,33 +134,34 @@ app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(swaggerFile));
 //
 
 cron.schedule("0 0 * * *", function () {
-   console.log("---------------------");
+   console.log("----------checkJobEndDate-----------");
    //will run every day at 00:00 AM
    jobController.checkJobEndDate();
 });
 
 cron.schedule("1 0 * * *", function () {
-   console.log("---------------------");
+   console.log("----------checkFeePaymentDeadline-----------");
    //will run every day at 00:01 AM
    feePaymentController.checkFeePaymentDeadline();
 });
 
 cron.schedule("0 * * * *", function () {
-   console.log("---------------------");
+   console.log("----------createDataForFreelancer-----------");
    //will run every hour
    recommendPointController.createDataForFreelancer();
 });
 
 cron.schedule("1 * * * *", function () {
-   console.log("---------------------");
+   console.log("----------createApplicationDataRecommend-----------");
    //will run every hour
    recommendPointController.createApplicationDataRecommend();
 });
 
 cron.schedule("2 * * * *", function () {
-   console.log("---------------------");
+   console.log("---------recommendationApplicationForJob------------");
    //will run every hour
    recommendPointController.recommendationApplicationForJob();
+   console.log("---------recommendationForFreelancer------------");
    recommendPointController.recommendationForFreelancer();
 });
 

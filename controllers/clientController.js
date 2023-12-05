@@ -6,6 +6,7 @@ const db = require("../models");
 const Account = db.accounts;
 
 const Client = db.clients;
+const SystemValue = db.systemValues;
 // main work
 
 // 1. register account
@@ -88,9 +89,44 @@ const getClientByName = async (req, res) => {
    }
 };
 
+const checkCurrency = async (req, res) => {
+   try {
+      let { clientId, feeName } = req.body;
+      let systemValue = await SystemValue.findOne({
+         where: { name: feeName },
+      });
+      let feeValue = systemValue.value;
+      let client = await Client.findOne({
+         where: { id: clientId },
+         include: [
+            {
+               model: Account,
+               as: "accounts",
+            },
+         ],
+      }).then((result) => {
+         if (parseInt(result.currency) >= feeValue) {
+            res.status(200).send({
+               status: true,
+               message: "Tài khoàn đủ số dư để thanh toán",
+            });
+         } else {
+            res.status(200).send({
+               status: false,
+               message: "Tài khoàn không đủ số dư để thanh toán",
+            });
+         }
+      });
+   } catch (error) {
+      console.error(error);
+      res.status(400).json({ message: error.toString() });
+   }
+};
+
 module.exports = {
    getAllClient,
    getClientById,
    updateClientAccount,
    getClientByName,
+   checkCurrency,
 };
