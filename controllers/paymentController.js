@@ -650,7 +650,6 @@ const createMomoUrl = async (req, res) => {
       });
    }
    await httpRequetst().then((res) => {
-      console.log(res);
       url = res;
    });
    res.status(200).send({ body: url });
@@ -658,7 +657,10 @@ const createMomoUrl = async (req, res) => {
 
 const receiveMomoResult = async (req, res) => {
    try {
-      let queryParameters = req.query;
+      const queryParameters = Object.keys(req.query)
+         .map((key) => `${key}=${req.query[key]}`)
+         .join("&");
+      console.log(queryParameters);
       const redirectURL = `${process.env.FE_SERVER}?${queryParameters}`;
       res.redirect(redirectURL);
    } catch (error) {
