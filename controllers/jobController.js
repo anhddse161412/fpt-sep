@@ -83,7 +83,7 @@ const createJob = async (req, res) => {
          client.save();
 
          let info = {
-            amount: approveFee,
+            amount: postingFee,
             name: "Thanh toán tự động",
             description: `Thanh toán tự động cho công việc "${info.title}"`,
             status: true,
