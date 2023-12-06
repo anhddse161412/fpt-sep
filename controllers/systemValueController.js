@@ -4,9 +4,7 @@ const SystemValue = db.systemValues;
 
 const getCommissionFee = async (req, res) => {
    try {
-      let systemValues = await SystemValue.findOne({
-         where: { name: "commissionFee" },
-      });
+      let systemValues = await SystemValue.findAll({});
       res.status(200).send(systemValues);
    } catch (error) {
       console.error(error);
@@ -17,7 +15,7 @@ const getCommissionFee = async (req, res) => {
 const updateCommissionFee = async (req, res) => {
    try {
       let systemValues = await SystemValue.update(req.body, {
-         where: { name: "commissionFee" },
+         where: { name: req.body.feeName },
       });
       res.status(200).send({ message: "Đã cập nhật phí hoa hồng" });
    } catch (error) {
