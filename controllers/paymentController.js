@@ -658,7 +658,7 @@ const createMomoUrl = async (req, res) => {
 
 const receiveMomoResult = async (req, res) => {
    try {
-      let queryParameters = req.body;
+      let queryParameters = req.query;
       const redirectURL = `${process.env.FE_SERVER}?${queryParameters}`;
       res.redirect(redirectURL);
    } catch (error) {
