@@ -44,45 +44,15 @@ const createJob = async (req, res) => {
       let subCategoryList = req.body.subCategory;
       let skillList = req.body.skill;
 
-      const job = await Job.create(info);
       const client = await Client.findOne({
          where: { id: info.clientId },
       });
-      if (subCategoryList) {
-         subCategoryList.forEach(async (item) => {
-            const subCategory = await Category.findOne({
-               where: { name: item, parentId: { [Op.not]: null } },
-            });
-            subCategory.addJobs(job);
-         });
-      }
-      if (skillList) {
-         skillList.forEach(async (item) => {
-            let skill = await Skill.findOne({ where: { name: item.name } });
-            if (!skill) {
-               skill = await Skill.create({
-                  name: item.name.charAt(0).toUpperCase() + item.name.slice(1),
-               });
-               await JobSkill.create({
-                  jobId: job.id,
-                  level: item.level,
-                  skillId: skill.id,
-               });
-            } else {
-               await JobSkill.create({
-                  jobId: job.id,
-                  level: item.level,
-                  skillId: skill.id,
-               });
-            }
-         });
-      }
       if (parseInt(client.currency) >= postingFee) {
          let newCurrencyValue = client.currency - postingFee;
          client.setDataValue("currency", newCurrencyValue);
          client.save();
 
-         let info = {
+         let infoPayment = {
             amount: postingFee,
             name: "Thanh toán tự động",
             description: `Thanh toán tự động cho công việc "${info.title}"`,
@@ -90,13 +60,47 @@ const createJob = async (req, res) => {
             type: "-",
             clientId: `${info.clientId}`,
          };
-         await paymentController.createAutoCollectFeePayment(info);
+         await paymentController.createAutoCollectFeePayment(infoPayment);
          message =
             "Đã thanh toán tự động cho việc đăng bài" +
             `"${info.title}": -${postingFee}VNĐ` +
             ". Vui lòng kiểu tra số dư toàn khoản trên website. ";
+
+         const job = await Job.create(info);
+         if (subCategoryList) {
+            subCategoryList.forEach(async (item) => {
+               const subCategory = await Category.findOne({
+                  where: { name: item, parentId: { [Op.not]: null } },
+               });
+               subCategory.addJobs(job);
+            });
+         }
+         if (skillList) {
+            skillList.forEach(async (item) => {
+               let skill = await Skill.findOne({ where: { name: item.name } });
+               if (!skill) {
+                  skill = await Skill.create({
+                     name:
+                        item.name.charAt(0).toUpperCase() + item.name.slice(1),
+                  });
+                  await JobSkill.create({
+                     jobId: job.id,
+                     level: item.level,
+                     skillId: skill.id,
+                  });
+               } else {
+                  await JobSkill.create({
+                     jobId: job.id,
+                     level: item.level,
+                     skillId: skill.id,
+                  });
+               }
+            });
+         }
+         res.status(200).send("Tạo Công việc thành công!");
+      } else {
+         res.status(400).send("Không thể đăng bài do không đủ số dư");
       }
-      res.status(200).send("Tạo Công việc thành công!");
    } catch (error) {
       console.error(error);
       res.status(400).json({ message: error.toString() });
