@@ -555,7 +555,8 @@ const createMomoUrl = async (req, res) => {
    var requestId = partnerCode + new Date().getTime();
    var orderId = requestId;
    var orderInfo = "pay with MoMo";
-   var redirectUrl = "http://localhost:3001/payment/momo_return";
+   // var redirectUrl = "http://localhost:3001/payment/momo_return";
+   var redirectUrl = process.env.BE_SERVER;
    var ipnUrl = "https://callback.url/notify";
 
    // var ipnUrl = redirectUrl = "https://webhook.site/454e7b77-f177-4ece-8236-ddf1c26ba7f8";
@@ -649,7 +650,6 @@ const createMomoUrl = async (req, res) => {
       });
    }
    await httpRequetst().then((res) => {
-      console.log(res);
       url = res;
    });
    res.status(200).send({ body: url });
@@ -657,6 +657,10 @@ const createMomoUrl = async (req, res) => {
 
 const receiveMomoResult = async (req, res) => {
    try {
+      const queryParameters = Object.keys(req.query)
+         .map((key) => `${key}=${req.query[key]}`)
+         .join("&");
+      console.log(queryParameters);
       const redirectURL = `${process.env.FE_SERVER}?${queryParameters}`;
       res.redirect(redirectURL);
    } catch (error) {
