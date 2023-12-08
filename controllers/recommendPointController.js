@@ -2,7 +2,6 @@ const db = require("../models");
 
 // create main Model
 const Job = db.jobs;
-const Account = db.accounts;
 const Freelancer = db.freelancers;
 const Application = db.applications;
 const Skill = db.skills;
@@ -13,9 +12,9 @@ const RecommendPoint = db.recommendPoints;
 
 // level
 const levelPoint = {
-   basic: 1,
-   intermediate: 2,
-   advance: 3,
+   "Cơ bản": 1,
+   "Trung cấp": 2,
+   "Thông thạo": 3,
 };
 
 // main work
@@ -62,8 +61,8 @@ const recommendationApplicationForJob = async () => {
          job.skills.forEach((jobSkills) => {
             application.freelancers.skills.forEach((freelancerSkills) => {
                if (jobSkills.id == freelancerSkills.id) {
-                  if (levelPoint[freelancerSkills.freelancerskill.level.toLowerCase()] >=
-                     levelPoint[jobSkills.jobskill.level.toLowerCase()]) {
+                  if (levelPoint[freelancerSkills.freelancerskill.level] >=
+                     levelPoint[jobSkills.jobskill.level]) {
                      point += 1;
                   } else {
                      point += 0.5;
@@ -72,18 +71,16 @@ const recommendationApplicationForJob = async () => {
             });
          });
 
-         if (point > 0) {
-            let recommendPoint = await RecommendPoint.findOne({
-               where: {
-                  jobId: job.id,
-                  freelancerId: application.freelancers.id,
-               },
-            });
+         let recommendPoint = await RecommendPoint.findOne({
+            where: {
+               jobId: job.id,
+               freelancerId: application.freelancers.id,
+            },
+         });
 
-            await recommendPoint.setDataValue("type", "forApplications");
-            await recommendPoint.setDataValue("point", point);
-            await recommendPoint.save();
-         }
+         await recommendPoint.setDataValue("type", "forApplications");
+         await recommendPoint.setDataValue("point", point);
+         await recommendPoint.save();
       });
    });
 };
@@ -126,37 +123,36 @@ const createApplicationDataRecommend = async () => {
 // rate application after create
 const rateApplicationAfterCreate = async (freelancerId, jobId) => {
    const freelancerSkills = await FreelancerSkill.findAll({
-      attributes: ["skillId"],
       where: { freelancerId: freelancerId },
    });
 
    const jobSkills = await JobSkill.findAll({
-      attributes: ["skillId"],
       where: { jobId: jobId },
    });
 
-   let freelancerSkillList = [];
-   let jobSkillList = [];
+   let point = 0;
 
-   freelancerSkills.forEach((item) => {
-      freelancerSkillList.push(item.skillId);
-   });
+   freelancerSkills.forEach(freelancerSkill => {
+      jobSkills.forEach(jobSkill => {
+         if (freelancerSkill.skillId == jobSkill.skillId) {
+            if (levelPoint[freelancerSkill.level] >=
+               levelPoint[jobSkill.level]) {
+               point = point + 1;
+            } else {
+               point = point + 0.5;
+            }
+         }
+      })
+   })
 
-   jobSkills.forEach((item) => {
-      jobSkillList.push(item.skillId);
-   });
-
-   let intersection = jobSkillList.filter((x) =>
-      freelancerSkillList.includes(x)
-   );
-   let point = intersection.length;
-
-   await RecommendPoint.create({
+   const recommendPoint = await RecommendPoint.create({
       freelancerId: freelancerId,
       jobId: jobId,
-      point: point,
-      type: "forApplications",
    });
+
+   recommendPoint.setDataValue("point", point);
+   recommendPoint.setDataValue("type", "forApplications");
+   recommendPoint.save();
 };
 
 // change recommend after update job
@@ -335,8 +331,8 @@ const recommendationForFreelancer = async () => {
          job.skills.forEach((jobSkills) => {
             freelancer.skills.forEach((freelancerSkills) => {
                if (jobSkills.id == freelancerSkills.id) {
-                  if (levelPoint[freelancerSkills.freelancerskill.level.toLowerCase()] >=
-                     levelPoint[jobSkills.jobskill.level.toLowerCase()]) {
+                  if (levelPoint[freelancerSkills.freelancerskill.level] >=
+                     levelPoint[jobSkills.jobskill.level]) {
                      point += 1;
                   } else {
                      point += 0.5;
