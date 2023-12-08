@@ -193,54 +193,54 @@ const getAppointmentById = async (req, res) => {
 };
 
 const getAppointmentByClientId = async (req, res) => {
-  try {
-    let appointment = await Appointment.findAll({
-      include: [
-        {
-          model: Client,
-          as: 'clients',
+   try {
+      let appointment = await Appointment.findAll({
+         include: [
+            {
+               model: Client,
+               as: "clients",
 
-          include: [
-            {
-              model: Account,
-              as: 'accounts',
-              attributes: ['id', 'name', 'email'],
-            },
-          ],
-          attributes: ['id'],
-        },
-        {
-          model: Application,
-          as: 'applications',
-          include: [
-            {
-              model: Job,
-              as: 'jobs',
-              attributes: ['title'],
+               include: [
+                  {
+                     model: Account,
+                     as: "accounts",
+                     attributes: ["id", "name", "email"],
+                  },
+               ],
+               attributes: ["id"],
             },
             {
-              model: Freelancer,
-              as: 'freelancers',
+               model: Application,
+               as: "applications",
+               include: [
+                  {
+                     model: Job,
+                     as: "jobs",
+                     attributes: ["title"],
+                  },
+                  {
+                     model: Freelancer,
+                     as: "freelancers",
 
-              include: [
-                {
-                  model: Account,
-                  as: 'accounts',
-                  attributes: ['id', 'name', 'email'],
-                },
-              ],
-              attributes: ['id'],
+                     include: [
+                        {
+                           model: Account,
+                           as: "accounts",
+                           attributes: ["id", "name", "email"],
+                        },
+                     ],
+                     attributes: ["id"],
+                  },
+               ],
             },
-          ],
-        },
-      ],
-      where: { clientId: req.params.clientId },
-    });
-    res.status(200).send(appointment);
-  } catch (error) {
-    console.error(error);
-    res.status(400).json({ message: error.toString() });
-  }
+         ],
+         where: { clientId: req.params.clientId },
+      });
+      res.status(200).send(appointment);
+   } catch (error) {
+      console.error(error);
+      res.status(400).json({ message: error.toString() });
+   }
 };
 
 const getAppointmentByFreelancerId = async (req, res) => {
@@ -309,29 +309,94 @@ const updateAppointment = async (req, res) => {
    try {
       let appointment = await Appointment.findOne({
          where: { appointmentId: req.params.appointmentId },
+         include: [
+            {
+               model: Application,
+               as: "applications",
+               include: [
+                  {
+                     model: Freelancer,
+                     as: "freelancers",
+
+                     include: [
+                        {
+                           model: Account,
+                           as: "accounts",
+                           attributes: ["name", "email", "image"],
+                        },
+                     ],
+                     attributes: ["id"],
+                  },
+                  {
+                     model: Job,
+                     as: "jobs",
+                     attributes: ["id", "title"],
+                  },
+               ],
+            },
+            {
+               model: Client,
+               as: "clients",
+
+               include: [
+                  {
+                     model: Account,
+                     as: "accounts",
+                     attributes: ["id", "name", "image"],
+                  },
+               ],
+               attributes: ["id"],
+            },
+         ],
       });
 
+      var freelancerEmail = appointment.applications.freelancers.accounts.email;
+      var clientName = appointment.clients.accounts.name;
       const newTime = new Date(req.body.time);
 
       if (appointment.time.getTime() == newTime.getTime()) {
+         sendEmail(
+            freelancerEmail,
+            `[FPT-SEP] THÔNG BÁO THAY ĐỔI LỊCH PHỎNG VẤN TỪ ${clientName}`,
+            `
+            Thân gửi ứng viên, Chúng tôi rất tiếc khi phải thông báo rằng lịch phỏng vấn của bạn đã bị thay đổi. Đây là do một số sự cố kỹ thuật không mong muốn xảy ra từ phía chúng tôi.
+            Chúng tôi rất thành thật xin lỗi vì sự bất tiện và xin mời bạn đến phỏng vấn với lịch trình mới như sau:
+             - Thời gian : ${req.body.time}
+             - Địa điểm : ${req.body.location}
+            Vui lòng xác nhận lại lịch phỏng vấn mới của bạn bằng cách trả lời email này trong vòng 24 giờ. Nếu bạn có bất kỳ thắc mắc hay yêu cầu nào, xin đừng ngần ngại liên hệ với chúng tôi.
+            Cảm ơn và Trân trọng kính chào,
+         `
+         );
          const updatedAppointment = await Appointment.update(req.body, {
             where: { appointmentId: req.params.appointmentId },
          });
-         res.status(200).send(updatedAppointment);
+         res.status(200).send({ message: "Đã cập nhật lịch phỏng vấn" });
       } else {
          let currentTime = new Date();
          let unchangeableTime = appointment.time;
          unchangeableTime.setDate(unchangeableTime.getDate() - 1);
 
-         if (currentTime > unchangeableTime) {
+         if (currentTime.getTime() > unchangeableTime.getTime()) {
             return res.status(406).json({
                message: "Không thể thay đổi thời gian của Appointment!",
             });
          } else {
+            sendEmail(
+               freelancerEmail,
+               `[FPT-SEP] THÔNG BÁO THAY ĐỔI LỊCH PHỎNG VẤN TỪ ${clientName}`,
+               `
+            Thân gửi ứng viên, Chúng tôi rất tiếc khi phải thông báo rằng lịch phỏng vấn của bạn đã bị thay đổi. Đây là do một số sự cố kỹ thuật không mong muốn xảy ra từ phía chúng tôi.
+            Chúng tôi rất thành thật xin lỗi vì sự bất tiện và xin mời bạn đến phỏng vấn với lịch trình mới như sau:
+             - Thời gian : ${req.body.time}
+             - Địa điểm : ${req.body.location}
+            Vui lòng xác nhận lại lịch phỏng vấn mới của bạn bằng cách trả lời email này trong vòng 24 giờ. Nếu bạn có bất kỳ thắc mắc hay yêu cầu nào, xin đừng ngần ngại liên hệ với chúng tôi.
+            Cảm ơn và Trân trọng kính chào,
+         `
+            );
             const updatedAppointment = await Appointment.update(req.body, {
                where: { appointmentId: req.params.appointmentId },
             });
-            res.status(200).send(updatedAppointment);
+            res.status(200).send({ message: "Đã cập nhật lịch phỏng vấn" });
          }
       }
    } catch (error) {
