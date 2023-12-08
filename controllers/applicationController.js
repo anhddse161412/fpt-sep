@@ -5,6 +5,7 @@ const db = require("../models");
 const notificaitonController = require("./notificationController");
 const paymentController = require("./paymentController");
 const feePaymentController = require("./feePaymentController");
+const RecommendPointController = require("./recommendPointController");
 
 // Sequelize operation
 const Op = Sequelize.Op;
@@ -44,7 +45,8 @@ const createApplication = async (req, res) => {
          job.setDataValue("applied", applicationCounter.toString());
          job.save();
 
-         res.status(200).json({ message: "Tạo application thành công" });
+         res.status(200).json({ message: "Gửi đơn ứng tuyển thành công" });
+         RecommendPointController.rateApplicationAfterCreate(req.body.freelancerId, job.id);
       } else {
          res.status(400).json({ message: "Công việc này đã đóng!" });
       }
