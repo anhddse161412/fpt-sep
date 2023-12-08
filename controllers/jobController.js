@@ -7,7 +7,7 @@ const Op = Sequelize.Op;
 
 // controller
 const notificaitonController = require("./notificationController");
-
+const paymentController = require("./paymentController");
 // create main Model
 const Job = db.jobs;
 const Account = db.accounts;
