@@ -1,4 +1,5 @@
 const db = require("../models");
+const { Sequelize } = require("sequelize");
 
 // create main Model
 const Job = db.jobs;
@@ -9,6 +10,8 @@ const FreelancerSkill = db.freelancerSkill;
 const JobSkill = db.jobSkill;
 const RecommendPoint = db.recommendPoints;
 
+// Sequelize operation
+const Op = Sequelize.Op;
 
 // level
 const levelPoint = {
@@ -359,6 +362,23 @@ const recommendationForFreelancer = async () => {
    });
 };
 
+// check close and delete job
+const removeRecommendData = async () => {
+   const jobs = await Job.findAll({
+      attributes: ["id"],
+      where: { status: { [Op.ne]: "open" } },
+   })
+
+   jobs.forEach(job => {
+      RecommendPoint.destroy({
+         where: {
+            jobId: job.id,
+            type: "forFreelancers",
+         }
+      })
+   })
+}
+
 module.exports = {
    createApplicationDataRecommend,
    recommendationApplicationForJob,
@@ -367,4 +387,5 @@ module.exports = {
    rateApplicationAfterCreate,
    createDataForFreelancer,
    recommendationForFreelancer,
+   removeRecommendData,
 };

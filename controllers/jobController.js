@@ -551,7 +551,6 @@ const paginationJob = async (req, res) => {
       let offset = (page - 1) * limit;
 
       if (user && user.result.role == "admin") {
-         console.log("hahahaha");
          const { count, rows: jobs } = await Job.findAndCountAll({
             include: [
                {

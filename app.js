@@ -145,21 +145,21 @@ cron.schedule("1 0 * * *", function () {
    feePaymentController.checkFeePaymentDeadline();
 });
 
-cron.schedule("0 * * * *", function () {
+cron.schedule("0,30 * * * *", function () {
+   console.log("----------removeRecommendData-----------");
+   //will run every 30 minutes
+   recommendPointController.removeRecommendData();
+});
+
+cron.schedule("1,31 * * * *", function () {
    console.log("----------createDataForFreelancer-----------");
-   //will run every hour
+   //will run every 30 minutes
    recommendPointController.createDataForFreelancer();
 });
 
-cron.schedule("1 * * * *", function () {
-   console.log("----------createApplicationDataRecommend-----------");
-   //will run every hour
-   recommendPointController.createApplicationDataRecommend();
-});
-
-cron.schedule("2 * * * *", function () {
+cron.schedule("2,32 * * * *", function () {
    console.log("---------recommendationApplicationForJob------------");
-   //will run every hour
+   //will run every 30 minutes
    recommendPointController.recommendationApplicationForJob();
    console.log("---------recommendationForFreelancer------------");
    recommendPointController.recommendationForFreelancer();
