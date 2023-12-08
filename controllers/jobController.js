@@ -97,9 +97,9 @@ const createJob = async (req, res) => {
                }
             });
          }
-         res.status(200).send("Tạo Công việc thành công!");
+         res.status(200).send("Tạo công việc thành công!");
       } else {
-         res.status(400).send("Không thể đăng bài do không đủ số dư");
+         res.status(400).json({ message: "Không thể đăng bài do không đủ số dư" });
       }
    } catch (error) {
       console.error(error);
