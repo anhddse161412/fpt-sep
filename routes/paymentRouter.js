@@ -11,6 +11,12 @@ router
 
 router.route("/client/:clientId").get(paymentController.getPaymentByClientId);
 
+router.route("/refund/:clientId").post(paymentController.requestRefundPayemnt);
+
+router
+   .route("/refund/approve/:paymentId")
+   .put(paymentController.approveRefundRequest);
+
 router.route("/vnpay").post(paymentController.createVnpayUrl);
 
 router.route("/momo").post(paymentController.createMomoUrl);

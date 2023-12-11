@@ -546,6 +546,8 @@ const sortObject = (obj) => {
    return sorted;
 };
 
+// MOMO
+
 const createMomoUrl = async (req, res) => {
    let url = "";
    //parameters
@@ -669,7 +671,58 @@ const receiveMomoResult = async (req, res) => {
    }
 };
 
-// MOMO
+const requestRefundPayemnt = async (req, res) => {
+   try {
+      let clientId = req.params.clientId;
+      const client = await Client.findOne({
+         where: { id: clientId },
+         include: [
+            {
+               model: Account,
+               as: "accounts",
+            },
+         ],
+      });
+      let info = {
+         amount: client.currency,
+         name: `Đơn yêu cầu rút tiền`,
+         description: `Yêu cầu rút tiền của tài khoản : ${client.accounts.name}`,
+         status: false,
+         type: "-",
+      };
+
+      const payment = await Payment.create(info);
+
+      client.addPayment(payment);
+
+      res.status(200).send({ message: "Đơn yêu cầU rút tiền đã được gửi đi" });
+   } catch (error) {
+      console.error(error);
+      res.status(400).json({ message: error.toString() });
+   }
+};
+
+const approveRefundRequest = async (req, res) => {
+   try {
+      let payment = await Payment.findOne({
+         where: { id: req.params.paymentId },
+      });
+      let clientId = payment.clientId;
+      let client = await Client.findOne({
+         where: { id: clientId },
+      });
+      payment.setDataValue("status", true);
+      payment.save();
+
+      client.setDataValue("currency", 0);
+      client.save();
+
+      res.status(200).send({ message: "Đã duyệt đơn rút tiền" });
+   } catch (error) {
+      console.error(error);
+      res.status(400).json({ message: error.toString() });
+   }
+};
 
 module.exports = {
    getPaymentByClientId,
@@ -684,4 +737,6 @@ module.exports = {
    getDeposit,
    createMomoUrl,
    receiveMomoResult,
+   requestRefundPayemnt,
+   approveRefundRequest,
 };
