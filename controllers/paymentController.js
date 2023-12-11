@@ -1,6 +1,6 @@
 const db = require("../models");
 const config = require("../config/vnpayConfig");
-
+const { Sequelize } = require("sequelize");
 const moment = require("moment");
 const axios = require("axios");
 const request = require("request");
@@ -12,6 +12,8 @@ const Application = db.applications;
 const Job = db.jobs;
 const SystemValue = db.systemValues;
 const Account = db.accounts;
+
+const Op = Sequelize.Op;
 
 const getAllPayment = async (req, res) => {
    try {
@@ -57,7 +59,11 @@ const getRevenue = async (req, res) => {
                ],
             },
          ],
-         where: { type: "-", status: true },
+         where: {
+            type: "-",
+            status: true,
+            name: { [Op.notLike]: "%Đơn yêu cầu rút tiền%" },
+         },
          order: [["createdAt", "DESC"]],
       });
 
@@ -695,19 +701,39 @@ const requestRefundPayemnt = async (req, res) => {
             },
          ],
       });
-      let info = {
-         amount: client.currency,
-         name: `Đơn yêu cầu rút tiền`,
-         description: `Yêu cầu rút tiền của tài khoản : ${client.accounts.name}`,
-         status: false,
-         type: "-",
-      };
+      if (client.currency <= 0) {
+         return res.status(400).send({ message: "Không đủ số dư để rút tiền" });
+      }
 
-      const payment = await Payment.create(info);
+      if (
+         await Payment.findOne({
+            where: {
+               clientId: clientId,
+               name: "Đơn yêu cầu rút tiền",
+               status: false,
+            },
+         })
+      ) {
+         res.status(400).send({
+            message: "Vui lòng chờ đơn rút tiền được duyệt",
+         });
+      } else {
+         let info = {
+            amount: client.currency,
+            name: `Đơn yêu cầu rút tiền`,
+            description: `Yêu cầu rút tiền của tài khoản : ${client.accounts.name}`,
+            status: false,
+            type: "-",
+         };
 
-      client.addPayment(payment);
+         const payment = await Payment.create(info);
 
-      res.status(200).send({ message: "Đơn yêu cầU rút tiền đã được gửi đi" });
+         client.addPayment(payment);
+
+         res.status(200).send({
+            message: "Đơn yêu cầU rút tiền đã được gửi đi",
+         });
+      }
    } catch (error) {
       console.error(error);
       res.status(400).json({ message: error.toString() });
