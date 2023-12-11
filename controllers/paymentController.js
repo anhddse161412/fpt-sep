@@ -57,7 +57,7 @@ const getRevenue = async (req, res) => {
                ],
             },
          ],
-         where: { type: "-" },
+         where: { type: "-", status: true },
          order: [["createdAt", "DESC"]],
       });
 
@@ -671,6 +671,18 @@ const receiveMomoResult = async (req, res) => {
    }
 };
 
+const getRequestRefundPayment = async (req, res) => {
+   try {
+      let payment = await Payment.findAll({
+         where: { status: false },
+      });
+      res.status(200).send({ payment });
+   } catch (error) {
+      console.error(error);
+      res.status(400).json({ message: error.toString() });
+   }
+};
+
 const requestRefundPayemnt = async (req, res) => {
    try {
       let clientId = req.params.clientId;
@@ -739,4 +751,5 @@ module.exports = {
    receiveMomoResult,
    requestRefundPayemnt,
    approveRefundRequest,
+   getRequestRefundPayment,
 };
