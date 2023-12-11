@@ -11,6 +11,7 @@ router
 
 router.route("/client/:clientId").get(paymentController.getPaymentByClientId);
 
+router.route("/refund").get(paymentController.getRequestRefundPayment);
 router.route("/refund/:clientId").post(paymentController.requestRefundPayemnt);
 
 router
