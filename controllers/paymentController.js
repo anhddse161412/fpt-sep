@@ -681,6 +681,20 @@ const getRequestRefundPayment = async (req, res) => {
    try {
       let payment = await Payment.findAll({
          where: { status: false },
+         include: [
+            {
+               model: Client,
+               as: "clients",
+               attributes: ["id"],
+               include: [
+                  {
+                     model: Account,
+                     as: "accounts",
+                     attributes: ["id", "name", "email"],
+                  },
+               ],
+            },
+         ],
       });
       res.status(200).send({ payment });
    } catch (error) {
@@ -748,13 +762,19 @@ const approveRefundRequest = async (req, res) => {
       let clientId = payment.clientId;
       let client = await Client.findOne({
          where: { id: clientId },
+         include: [{ model: Account, as: "accounts" }],
       });
       payment.setDataValue("status", true);
       payment.save();
 
       client.setDataValue("currency", 0);
       client.save();
-
+      sendEmail(
+         client.accounts.email,
+         `[FPT-SEP] Đơn yêu cầu rút tiền đã được duyệt`,
+         `Đơn yêu cầu rút tiền của bạn đã được phê duyệt. Vui lòng kiểm tra số dư tài khoản. 
+         Trân trọng `
+      );
       res.status(200).send({ message: "Đã duyệt đơn rút tiền" });
    } catch (error) {
       console.error(error);
