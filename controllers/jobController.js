@@ -178,7 +178,12 @@ const getJobById = async (req, res) => {
                   ],
                },
             ],
-            where: { id: req.params.jobID },
+            where: {
+               id: req.params.jobID,
+               status: {
+                  [Op.ne]: "delete"
+               },
+            },
          });
          if (job) {
             res.status(200).send(job);
@@ -209,7 +214,12 @@ const getJobById = async (req, res) => {
                   ],
                },
             ],
-            where: { id: req.params.jobID },
+            where: {
+               id: req.params.jobID,
+               status: {
+                  [Op.ne]: "delete"
+               },
+            },
          });
 
          if (!job) {
@@ -231,7 +241,12 @@ const getJobById = async (req, res) => {
                      ],
                   },
                ],
-               where: { id: req.params.jobID },
+               where: {
+                  id: req.params.jobID,
+                  status: {
+                     [Op.ne]: "delete"
+                  },
+               },
             });
          }
          if (job) {
