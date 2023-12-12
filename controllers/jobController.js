@@ -854,10 +854,21 @@ const inactiveJob = async (req, res) => {
          where: { id: req.params.jobID },
       });
 
-      job.setDataValue("status", "delete");
-      job.save();
+      const applicationCheck = await Application.findOne({
+         where: {
+            jobId: req.params.jobID,
+            status: "approved",
+         },
+      })
 
-      res.status(200).send("Xóa công việc thành công!");
+      if (applicationCheck) {
+         res.status(400).json({ message: "Không thể xóa công việc!" });
+      } else {
+         job.setDataValue("status", "delete");
+         job.save();
+
+         res.status(200).send("Xóa công việc thành công!");
+      }
    } catch (error) {
       console.error(error);
       res.status(400).json({ message: error.toString() });
