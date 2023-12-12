@@ -767,12 +767,13 @@ const approveRefundRequest = async (req, res) => {
       payment.setDataValue("status", true);
       payment.save();
 
-      client.setDataValue("currency", 0);
+      let newCurrencyValue = client.currency - payment.amount;
+      client.setDataValue("currency", newCurrencyValue);
       client.save();
       sendEmail(
          client.accounts.email,
          `[FPT-SEP] Đơn yêu cầu rút tiền đã được duyệt`,
-         `Đơn yêu cầu rút tiền của bạn đã được phê duyệt. Vui lòng kiểm tra số dư tài khoản. 
+         `Đơn yêu cầu rút tiền của bạn đã được phê duyệt. Vui lòng kiểm tra số dư tài khoản.
          Trân trọng `
       );
       res.status(200).send({ message: "Đã duyệt đơn rút tiền" });
