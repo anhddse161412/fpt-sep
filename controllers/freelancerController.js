@@ -1,6 +1,8 @@
 const db = require("../models");
 
-// image Upload
+// Controller
+const RecommendPointController = require('./recommendPointController');
+
 
 // create main Model
 const Account = db.accounts;
@@ -244,6 +246,7 @@ const updateSkillSet = async (req, res) => {
       })
 
       res.status(200).send("Cập nhật thành công!")
+      RecommendPointController.updateRecommendationWhenFreelancerUpdate(freelancer.id);
    } catch (error) {
       console.error(error);
       res.status(400).json({ message: error.toString() });

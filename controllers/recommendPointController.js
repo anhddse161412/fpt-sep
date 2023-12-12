@@ -215,18 +215,12 @@ const updateRecommendationWhenJobUpdate = async (jobId) => {
 };
 
 // change recommend after update freelancer skill
-const updateRecommendationWhenFreelancerUpdate = async (freelanacerId) => {
-   const freelancers = await Freelancer.findOne({
-      include: [
-         {
-            model: Skill,
-            as: "skills",
-            attributes: ["id"],
-            through: { attributes: ["level"] },
-         },
-      ],
-      where: { id: freelanacerId },
-   });
+const updateRecommendationWhenFreelancerUpdate = async (freelancerId) => {
+   const freelancerSkills = await FreelancerSkill.findAll({
+      where: {
+         freelancerId: freelancerId,
+      }
+   })
 
    const jobs = await Job.findAll({
       include: [
@@ -243,30 +237,35 @@ const updateRecommendationWhenFreelancerUpdate = async (freelanacerId) => {
 
    jobs.forEach(async (job) => {
       let jobSkillList = [];
-      let freelancerSkillList = [];
+      let point = 0;
 
       job.skills.forEach((skill) => {
-         jobSkillList.push(skill.id);
+         jobSkillList.push(skill);
       });
 
-      freelancers.skills.forEach((skill) => {
-         freelancerSkillList.push(skill.id);
+      jobSkillList.forEach(jobSkill => {
+         freelancerSkills.forEach(freelancerSkill => {
+            if (jobSkill.id == freelancerSkill.id) {
+               if (levelPoint[freelancerSkill.level] >=
+                  levelPoint[jobSkill.level]) {
+                  point += 1;
+               } else {
+                  point += 0.5;
+               }
+            }
+         })
+      })
+
+      let recommendPoint = await RecommendPoint.findOne({
+         where: {
+            jobId: job.id,
+            freelancerId: freelancerId,
+         },
       });
 
-      let intersection = jobSkillList.filter((x) =>
-         freelancerSkillList.includes(x)
-      );
-      let point = intersection.length;
-
-      if (point) {
-         let recommendPoint = await RecommendPoint.findOne({
-            where: { jobId: job.id, freelancerId: freelancers.id },
-         });
-
-         if (recommendPoint) {
-            await recommendPoint.setDataValue("point", point);
-            await recommendPoint.save();
-         }
+      if (recommendPoint) {
+         await recommendPoint.setDataValue("point", point);
+         await recommendPoint.save();
       }
    });
 };
