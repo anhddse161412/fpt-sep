@@ -190,6 +190,12 @@ const login = async (req, res) => {
          });
       }
 
+      if (account.status == false) {
+         return res.status(400).json({
+            message: "Tài khoản này đã bị vô hiệu hóa!",
+         });
+      }
+
       const checkPassword = compareSync(req.body.password, account.password);
       if (checkPassword) {
          const jsontoken = sign({ result: account }, process.env.JWT_KEY, {
@@ -236,7 +242,14 @@ const loginGoogle = async (req, res) => {
          const freelancer = await Freelancer.create({ status: "true" });
          newAccount.setFreelancers(freelancer);
          account = newAccount;
+      } else {
+         if (account.status == false) {
+            return res.status(400).json({
+               message: "Tài khoản này đã bị vô hiệu hóa!",
+            });
+         }
       }
+
       const jsontoken = sign({ result: account }, process.env.JWT_KEY, {
          expiresIn: "1h",
       });
