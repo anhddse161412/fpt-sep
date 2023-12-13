@@ -148,14 +148,23 @@ const rateApplicationAfterCreate = async (freelancerId, jobId) => {
       })
    })
 
-   const recommendPoint = await RecommendPoint.create({
+   const recommendPoint = await RecommendPoint.findOne({
       freelancerId: freelancerId,
       jobId: jobId,
    });
 
-   recommendPoint.setDataValue("point", point);
-   recommendPoint.setDataValue("type", "forApplications");
-   recommendPoint.save();
+   if (!recommendPoint) {
+      recommendPoint = await RecommendPoint.create({
+         freelancerId: freelancerId,
+         jobId: jobId,
+         point: point,
+         type: "forApplications",
+      });
+   } else {
+      recommendPoint.setDataValue("point", point);
+      recommendPoint.setDataValue("type", "forApplications");
+      recommendPoint.save();
+   }
 };
 
 // change recommend after update job
