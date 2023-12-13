@@ -362,7 +362,9 @@ const updateAppointment = async (req, res) => {
             Thân gửi ứng viên, Chúng tôi rất tiếc khi phải thông báo rằng lịch phỏng vấn của bạn đã bị thay đổi. Đây là do một số sự cố kỹ thuật không mong muốn xảy ra từ phía chúng tôi.
             Chúng tôi rất thành thật xin lỗi vì sự bất tiện và xin mời bạn đến phỏng vấn với lịch trình mới như sau:
              - Thời gian : ${req.body.time}
-             - Địa điểm : ${req.body.location}
+             - Địa điểm : ${
+                req.body.location ? req.body.location : req.body.link
+             }
             Vui lòng xác nhận lại lịch phỏng vấn mới của bạn bằng cách trả lời email này trong vòng 24 giờ. Nếu bạn có bất kỳ thắc mắc hay yêu cầu nào, xin đừng ngần ngại liên hệ với chúng tôi.
             Cảm ơn và Trân trọng kính chào,
          `
