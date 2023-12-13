@@ -228,7 +228,6 @@ const updateRecommendationWhenFreelancerUpdate = async (freelancerId) => {
             model: Skill,
             as: "skills",
             attributes: ["id"],
-            through: { attributes: ["level"] },
          },
       ],
       attributes: ["id"],
@@ -245,7 +244,7 @@ const updateRecommendationWhenFreelancerUpdate = async (freelancerId) => {
 
       jobSkillList.forEach(jobSkill => {
          freelancerSkills.forEach(freelancerSkill => {
-            if (jobSkill.id == freelancerSkill.id) {
+            if (jobSkill.jobskill.skillId == freelancerSkill.skillId) {
                if (levelPoint[freelancerSkill.level] >=
                   levelPoint[jobSkill.level]) {
                   point += 1;
