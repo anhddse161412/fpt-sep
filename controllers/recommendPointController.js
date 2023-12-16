@@ -149,8 +149,10 @@ const rateApplicationAfterCreate = async (freelancerId, jobId) => {
    })
 
    const recommendPoint = await RecommendPoint.findOne({
-      freelancerId: freelancerId,
-      jobId: jobId,
+      where: {
+         freelancerId: freelancerId,
+         jobId: jobId
+      },
    });
 
    if (!recommendPoint) {
