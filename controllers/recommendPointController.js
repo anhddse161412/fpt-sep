@@ -224,7 +224,7 @@ const updateRecommendationWhenJobUpdate = async (jobId) => {
 };
 
 // change recommend after update freelancer skill
-const updateRecommendationWhenFreelancerUpdate = async (freelancerId) => {
+async function updateRecommendationWhenFreelancerUpdate(freelancerId) {
    const freelancerSkills = await FreelancerSkill.findAll({
       where: {
          freelancerId: freelancerId,
@@ -276,7 +276,16 @@ const updateRecommendationWhenFreelancerUpdate = async (freelancerId) => {
          await recommendPoint.save();
       }
    });
+
+   return ("done");
 };
+
+const wait60s = async (freelancerId) => {
+   return new Promise(
+      resolve => setTimeout(
+         () => updateRecommendationWhenFreelancerUpdate(freelancerId), 60000
+      ));
+}
 
 // remove recommendPoint when job is removed
 const deleteRecommendPointWhenJobRemoved = async (job) => {
@@ -395,4 +404,5 @@ module.exports = {
    createDataForFreelancer,
    recommendationForFreelancer,
    removeRecommendData,
+   wait60s,
 };

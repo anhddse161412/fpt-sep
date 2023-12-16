@@ -246,7 +246,7 @@ const updateSkillSet = async (req, res) => {
       })
 
       res.status(200).send("Cập nhật thành công!")
-      RecommendPointController.updateRecommendationWhenFreelancerUpdate(freelancer.id);
+      RecommendPointController.wait60s(freelancer.id);
    } catch (error) {
       console.error(error);
       res.status(400).json({ message: error.toString() });
