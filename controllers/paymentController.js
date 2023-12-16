@@ -15,6 +15,8 @@ const Account = db.accounts;
 
 const Op = Sequelize.Op;
 
+const { sendEmail } = require("../util/sendEmail");
+
 const getAllPayment = async (req, res) => {
    try {
       let payments = await Payment.findAll({
