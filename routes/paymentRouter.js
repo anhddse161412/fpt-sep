@@ -12,7 +12,12 @@ router
 router.route("/client/:clientId").get(paymentController.getPaymentByClientId);
 
 router.route("/refund").get(paymentController.getRequestRefundPayment);
+
 router.route("/refund/:clientId").post(paymentController.requestRefundPayemnt);
+
+router
+   .route("/refund/approved")
+   .get(paymentController.getListApprovedRefundPayment);
 
 router
    .route("/refund/approve/:paymentId")

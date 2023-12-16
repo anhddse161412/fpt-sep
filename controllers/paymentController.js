@@ -785,6 +785,32 @@ const approveRefundRequest = async (req, res) => {
    }
 };
 
+const getListApprovedRefundPayment = async (req, res) => {
+   try {
+      let payment = await Payment.findAll({
+         where: { name: "Đơn yêu cầu rút tiền", status: true },
+         include: [
+            {
+               model: Client,
+               as: "clients",
+               attributes: ["id"],
+               include: [
+                  {
+                     model: Account,
+                     as: "accounts",
+                     attributes: ["id", "name", "email"],
+                  },
+               ],
+            },
+         ],
+      });
+      res.status(200).send({ payment });
+   } catch (error) {
+      console.error(error);
+      res.status(400).json({ message: error.toString() });
+   }
+};
+
 module.exports = {
    getPaymentByClientId,
    createPayment,
@@ -801,4 +827,5 @@ module.exports = {
    requestRefundPayemnt,
    approveRefundRequest,
    getRequestRefundPayment,
+   getListApprovedRefundPayment,
 };
