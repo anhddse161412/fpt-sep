@@ -464,14 +464,14 @@ const approveApplication = async (req, res) => {
          let info = {
             amount: approveFee,
             name: "Thanh toán tự động",
-            description: `Thanh toán tự động cho công việc "${application.jobs.title}"`,
+            description: `Thanh toán tự động cho việc nhận ứng viên của công việc: "${application.jobs.title}"`,
             status: true,
             type: "-",
             clientId: `${application.jobs.clients.id}`,
          };
          await paymentController.createAutoCollectFeePayment(info);
          message =
-            "Đã thanh toán tự động cho công việc" +
+            "Đã thanh toán tự động cho việc nhận ứng viên" +
             `"${application.jobs.title}": -${approveFee}VNĐ` +
             ". Vui lòng kiểu tra số dư toàn khoản trên website. ";
       } else {
