@@ -5,9 +5,13 @@ const { verify } = require("jsonwebtoken");
 // Sequelize operation
 const Op = Sequelize.Op;
 
+// util
+const { sendEmail } = require("../util/sendEmail");
+
 // controller
 const notificaitonController = require("./notificationController");
 const paymentController = require("./paymentController");
+
 // create main Model
 const Job = db.jobs;
 const Account = db.accounts;
@@ -850,7 +854,31 @@ const getJobHasAppointmentByClientId = async (req, res) => {
 // inactive job
 const inactiveJob = async (req, res) => {
    try {
+      let user;
+      let token = req.get("authorization");
+      if (token) {
+         token = token.slice(7);
+         verify(token, process.env.JWT_KEY, (err, decoded) => {
+            if (err) {
+            } else {
+               user = decoded;
+            }
+         });
+      }
+
       const job = await Job.findOne({
+         include: [
+            {
+               model: Client,
+               as: "clients",
+               include: [
+                  {
+                     model: Account,
+                     as: "accounts"
+                  },
+               ],
+            },
+         ],
          where: { id: req.params.jobID },
       });
 
@@ -866,6 +894,18 @@ const inactiveJob = async (req, res) => {
       } else {
          job.setDataValue("status", "delete");
          job.save();
+
+         if (user && user.result.role == "admin") {
+            sendEmail(
+               job.clients.accounts.email,
+               `[FPT-SEP] Xóa bài đăng do vi phạm tiêu chuẩn`,
+               `Xin chào,
+
+Chúng tôi thông báo rằng bài đăng "${job.title}" của bạn đã bị xóa do vi phạm các điều khoản và quy định của chúng tôi. Nếu bạn cần thêm thông tin hoặc có bất kỳ thắc mắc nào, vui lòng liên hệ với chúng tôi qua email hoặc số điện thoại hỗ trợ khách hàng.
+
+Trân trọng,`
+            );
+         }
 
          res.status(200).send("Xóa công việc thành công!");
       }
