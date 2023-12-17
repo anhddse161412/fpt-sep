@@ -19,6 +19,7 @@ var notificaitonController = require("./controllers/notificationController");
 var jobController = require("./controllers/jobController");
 var recommendPointController = require("./controllers/recommendPointController");
 var feePaymentController = require("./controllers/feePaymentController");
+var applicationController = require("./controllers/applicationController")
 
 const swaggerUI = require("swagger-ui-express");
 const swaggerFile = require("./swagger_output.json");
@@ -144,6 +145,12 @@ cron.schedule("1 0 * * *", function () {
    //will run every day at 00:01 AM
    feePaymentController.checkFeePaymentDeadline();
 });
+
+cron.schedule("0 * * * *", function () {
+   console.log("----------declineCloseJobApplication-----------");
+   //will run every hour
+   applicationController.declineCloseJobApplication();
+})
 
 cron.schedule("0,30 * * * *", function () {
    console.log("----------removeRecommendData-----------");

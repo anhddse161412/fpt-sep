@@ -610,6 +610,35 @@ const declineApplication = async (req, res) => {
    }
 };
 
+// close all application when job close
+const declineCloseJobApplication = async (req, res) => {
+   const jobs = await Job.findAll({
+      attributes: ["id"],
+      where: {
+         status: {
+            [Op.ne]: "open"
+         },
+      }
+   });
+
+   const applications = await Application.findAll({
+      where: {
+         jobId: {
+            [Op.in]: jobs.map((job) => job.dataValues.id),
+         },
+         status: {
+            [Op.ne]: "approve"
+         },
+      },
+   })
+
+   applications.forEach(application => {
+      application.setDataValue('status', 'declined');
+      application.save();
+   })
+};
+
+
 module.exports = {
    createApplication,
    getAllApplication,
@@ -622,4 +651,5 @@ module.exports = {
    getApplicationByClientId,
    getRecommendApplicationByJobId,
    interviewApplication,
+   declineCloseJobApplication
 };
