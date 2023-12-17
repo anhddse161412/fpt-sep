@@ -766,6 +766,10 @@ const approveRefundRequest = async (req, res) => {
          where: { id: clientId },
          include: [{ model: Account, as: "accounts" }],
       });
+      payment.setDataValue(
+         "description",
+         `Rút tiền thành công của tài khoản : ${client.accounts.name}`
+      );
       payment.setDataValue("status", true);
       payment.save();
 
