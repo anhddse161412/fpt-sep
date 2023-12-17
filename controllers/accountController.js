@@ -439,6 +439,16 @@ const deactiveAccount = async (req, res) => {
       account.setDataValue("status", false);
       account.save();
 
+      sendEmail(
+         account.email,
+         `[FPT-SEP] Tài khoản của bạn đã bị vô hiệu hóa`,
+         `Xin chào,
+
+Chúng tôi xin thông báo rằng tài khoản của bạn đã bị vô hiệu hóa. Lý do vô hiệu hóa tài khoản là do vi phạm các điều khoản và quy định của chúng tôi. Nếu bạn có bất kỳ thắc mắc nào hoặc cần hỗ trợ, vui lòng liên hệ với chúng tôi qua email hoặc số điện thoại hỗ trợ khách hàng.
+         
+Trân trọng,`
+      );
+
       res.status(200).send("Đã đóng tài khoản!");
    } catch (error) {
       console.error(error);
@@ -454,6 +464,16 @@ const activeAccount = async (req, res) => {
 
       account.setDataValue("status", true);
       account.save();
+
+      sendEmail(
+         account.email,
+         `[FPT-SEP] Tài khoản của bạn đã được tái kích hoạt`,
+         `Xin chào,
+
+Chúng tôi xin thông báo rằ tài khoản của bạn đã được tái kích hoạt thành công. Bây giờ bạn có thể truy cập và sử dụng tài khoản như bình thường. Nếu bạn có bất kỳ thắc mắc nào hoặ cần hỗ trợ, vui lòng liên hệ với chúng tôi qua email hoặc số điện thoại hỗ tr khách hàng.
+         
+Trân trọng,`
+      );
 
       res.status(200).send("Đã tái kích hoạt tài khoản!");
    } catch (error) {
