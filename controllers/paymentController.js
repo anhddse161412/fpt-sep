@@ -803,6 +803,7 @@ const getListApprovedRefundPayment = async (req, res) => {
                ],
             },
          ],
+         order: [["updatedAt", "DESC"]],
       });
       res.status(200).send({ payment });
    } catch (error) {
