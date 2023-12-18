@@ -38,6 +38,7 @@ const createAppointment = async (req, res) => {
             },
          ],
       });
+
       const application = await Application.findOne({
          include: [
             {
@@ -59,26 +60,30 @@ const createAppointment = async (req, res) => {
          ],
          where: { id: req.body.applicationId },
       });
-      console.log(application);
 
       const appointment = await Appointment.create(info);
       application.setAppointments(appointment);
 
-      // const notification = await notificaitonController.createNotificationInfo(
-      //    client.accountId,
-      //    `New appointment created`,
-      //    `You just got a new appointment for Job ${application.jobs.title}`
-      // );
+      let time = new Date(info.time).toLocaleString('vi-VN', {
+         hour12: false,
+      })
+
+      const notification = await notificaitonController.createNotificationInfo(
+         application.freelancers.accounts.id,
+         `Có lịch phỏng vấn mới`,
+         `Bạn có lịch phỏng vấn mới vào thời gian ${time}`,
+         application.jobs.id
+      );
 
       let email = application.freelancers.accounts.email;
       sendEmail(
          email,
          `[FPT-SEP] LỜI MỜI PHỎNG VẤN TỪ ${client.accounts.name}`,
          `
-         Cảm ơn bạn đã quan tâm đến ${client.accounts.name}. Chúng tôi rất ấn tượng bởi nền tảng của bạn và xin mời bạn đến phỏng vấn với lịch trình như sau:
-          - Thời gian : ${info.time}
-          - Địa điểm : ${info.location}
-         Vui lòng đến đúng giờ để có thể trao đổi thêm thông tin.
+         Cảm ơn bạn đã quan tâm đến ${application.jobs.title}. Chúng tôi rất ấn tượng bởi nền tảng của bạn và xin mời bạn đến phỏng vấn với lịch trình như sau:
+          - Thời gian : ${time}
+          - Địa điểm : ${req.body.location ? req.body.location : req.body.link}
+         Vui lòng có mặt đúng giờ để có thể trao đổi thêm thông tin.
          Cảm ơn và Trân trọng kính chào,
       `
       );
@@ -362,9 +367,8 @@ const updateAppointment = async (req, res) => {
             Thân gửi ứng viên, Chúng tôi rất tiếc khi phải thông báo rằng lịch phỏng vấn của bạn đã bị thay đổi. Đây là do một số sự cố kỹ thuật không mong muốn xảy ra từ phía chúng tôi.
             Chúng tôi rất thành thật xin lỗi vì sự bất tiện và xin mời bạn đến phỏng vấn với lịch trình mới như sau:
              - Thời gian : ${req.body.time}
-             - Địa điểm : ${
-                req.body.location ? req.body.location : req.body.link
-             }
+             - Địa điểm : ${req.body.location ? req.body.location : req.body.link
+            }
             Vui lòng xác nhận lại lịch phỏng vấn mới của bạn bằng cách trả lời email này trong vòng 24 giờ. Nếu bạn có bất kỳ thắc mắc hay yêu cầu nào, xin đừng ngần ngại liên hệ với chúng tôi.
             Cảm ơn và Trân trọng kính chào,
          `
