@@ -64,12 +64,12 @@ const createAppointment = async (req, res) => {
       const appointment = await Appointment.create(info);
       application.setAppointments(appointment);
 
-      const notification = await notificaitonController.createNotificationInfo(
-         application.freelancers.accounts.id,
-         `Có lịch phỏng vấn mới`,
-         `Bạn có lịch phỏng vấn mới vào thời gian ${info.time}`,
-         application.jobs.id
-      );
+      // const notification = await notificaitonController.createNotificationInfo(
+      //    application.freelancers.accounts.id,
+      //    `Có lịch phỏng vấn mới`,
+      //    `Bạn có lịch phỏng vấn mới vào thời gian ${info.time}`,
+      //    application.jobs.id
+      // );
 
       let email = application.freelancers.accounts.email;
       sendEmail(
