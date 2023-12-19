@@ -64,14 +64,10 @@ const createAppointment = async (req, res) => {
       const appointment = await Appointment.create(info);
       application.setAppointments(appointment);
 
-      let time = new Date(info.time).toLocaleString('vi-VN', {
-         hour12: false,
-      })
-
       const notification = await notificaitonController.createNotificationInfo(
          application.freelancers.accounts.id,
          `Có lịch phỏng vấn mới`,
-         `Bạn có lịch phỏng vấn mới vào thời gian ${time}`,
+         `Bạn có lịch phỏng vấn mới vào thời gian ${info.time}`,
          application.jobs.id
       );
 
@@ -81,7 +77,7 @@ const createAppointment = async (req, res) => {
          `[FPT-SEP] LỜI MỜI PHỎNG VẤN TỪ ${client.accounts.name}`,
          `
          Cảm ơn bạn đã quan tâm đến ${application.jobs.title}. Chúng tôi rất ấn tượng bởi nền tảng của bạn và xin mời bạn đến phỏng vấn với lịch trình như sau:
-          - Thời gian : ${time}
+          - Thời gian : ${info.time}
           - Địa điểm : ${req.body.location ? req.body.location : req.body.link}
          Vui lòng có mặt đúng giờ để có thể trao đổi thêm thông tin.
          Cảm ơn và Trân trọng kính chào,
